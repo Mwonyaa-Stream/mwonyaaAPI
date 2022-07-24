@@ -548,7 +548,7 @@ class Handler
 
         if ($this->albumID) {
             $this->pageNO = floatval($this->pageNO);
-            $no_of_records_per_page = 6;
+            $no_of_records_per_page = 20;
             $offset = ($this->pageNO - 1) * $no_of_records_per_page;
 
             $sql = "SELECT COUNT(*) as count FROM songs WHERE album = '". $this->albumID . "'  limit 1";
@@ -558,7 +558,7 @@ class Handler
             $total_pages = ceil($total_rows / $no_of_records_per_page);
 
             $itemRecords["page"] = $this->pageNO;
-            $itemRecords["selectedAlbum"] = array();
+            $itemRecords["Album"] = array();
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
             $album = new Album($this->conn, $this->albumID);
@@ -582,7 +582,7 @@ class Handler
                     $temp['tag'] = $album->getTag();
                     $temp['trackPath'] = $album->getSongPaths();
 
-                    array_push($itemRecords["selectedAlbum"], $temp);
+                    array_push($itemRecords["Album"], $temp);
 
                 }
 
@@ -590,8 +590,7 @@ class Handler
 
 
             // get products id from the same cat
-            $same_cat_IDs = $album->getSongIds();
-
+            $same_cat_IDs = $album->getSongIds($offset, $no_of_records_per_page);
             $allProducts = array();
 
             foreach ($same_cat_IDs as $row) {
@@ -615,7 +614,7 @@ class Handler
 
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
-            array_push($itemRecords['selectedAlbum'], $slider_temps);
+            array_push($itemRecords['Album'], $slider_temps);
 
 
 

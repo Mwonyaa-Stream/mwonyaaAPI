@@ -101,8 +101,8 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             return $track_count;
         }
 
-        public function getSongIds(){
-            $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
+        public function getSongIds($offset,$no_of_records_per_page){
+            $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC LIMIT " . $offset . "," . $no_of_records_per_page . "");
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
