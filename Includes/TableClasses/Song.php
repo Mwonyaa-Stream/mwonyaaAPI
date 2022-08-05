@@ -22,6 +22,7 @@
 
 
             if(mysqli_num_rows($query) == 0){
+                $this->id = null;
                 $this->title = null;
                 $this->artistId = null;
                 $this->albumId = null;

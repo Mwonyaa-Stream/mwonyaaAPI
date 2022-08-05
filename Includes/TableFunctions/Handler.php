@@ -536,8 +536,56 @@ class Handler
         return $itemRecords;
     }
 
+    function readUserLikedSongs(){
+        $itemRecords = array();
 
-    //get selected Product details and similar product
+        $userID = htmlspecialchars(strip_tags($_GET["userID"]));
+        $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
+
+        if ($userID) {
+            $this->pageNO = floatval($this->pageNO);
+            $no_of_records_per_page = 15;
+            $offset = ($this->pageNO - 1) * $no_of_records_per_page;
+            $likedSong = new LikedSong($this->conn, $userID);
+
+            $total_rows = $likedSong->getNumberOfSongs();
+            $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+            $itemRecords["page"] = $this->pageNO;
+            $itemRecords["Tracks"] = array();
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+
+            // get products id from the same cat
+            $likedSong_IDs = $likedSong->getLikedSongIds($offset, $no_of_records_per_page);
+
+            foreach ($likedSong_IDs as $song) {
+                $songLiked = new Song($this->conn, $song);
+                if($songLiked->getId() != null){
+                    $temp = array();
+                    $temp['id'] = $songLiked->getId();
+                    $temp['title'] = $songLiked->getTitle();
+                    $temp['artist'] = $songLiked->getArtist()->getName();
+                    $temp['album'] = $songLiked->getAlbum()->getTitle();
+                    $temp['artworkPath'] = $songLiked->getAlbum()->getArtworkPath();
+                    $temp['genre'] = $songLiked->getGenre()->getGenre();
+                    $temp['genreID'] = $songLiked->getGenre()->getGenreid();
+                    $temp['duration'] = $songLiked->getDuration();
+                    $temp['path'] = $songLiked->getPath();
+                    $temp['totalplays'] = $songLiked->getPlays();
+                    $temp['weeklyplays'] = $songLiked->getWeeklyplays();
+                    array_push($itemRecords['Tracks'], $temp);
+                }
+
+            }
+
+        }
+
+        return $itemRecords;
+    }
+
+
+    //get selected Album details and similar product
     function readSelectedAlbum()
     {
 

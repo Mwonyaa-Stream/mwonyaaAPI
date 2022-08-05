@@ -1,3 +1,4 @@
 RewriteEngine On    # Turn on the rewriting engine
 RewriteRule ^selectedAlbum$ selectedAlbum.php [NC,L]
+RewriteRule ^user_liked_songs$ user_liked_songs.php [NC,L]
 RewriteRule ^account$ account.php [NC,L]

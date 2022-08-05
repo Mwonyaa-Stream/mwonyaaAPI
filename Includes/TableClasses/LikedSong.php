@@ -48,25 +48,24 @@ class LikedSong
     }
 
 
-
     public function getNumberOfSongs()
     {
         $query = mysqli_query($this->con, "SELECT DISTINCT songId  FROM likedsongs WHERE userID='$this->userID'");
-        return mysqli_num_rows($query);
+        return floatval(mysqli_num_rows($query));
     }
 
-    public function getSongIds()
-    {
-        $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM likedsongs WHERE userID='$this->userID' ORDER BY songorder DESC");
 
+    public function getLikedSongIds($offset,$no_of_records_per_page){
+        $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM likedsongs WHERE userID='$this->userID' ORDER BY songorder DESC LIMIT " . $offset . "," . $no_of_records_per_page . "");
         $array = array();
 
-        while ($row = mysqli_fetch_array($query)) {
+        while($row = mysqli_fetch_array($query)){
             array_push($array, $row['songId']);
         }
 
         return $array;
     }
+
 
     public function getArtistIds()
     {
