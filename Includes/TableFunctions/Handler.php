@@ -14,6 +14,67 @@ class Handler
     }
 
 
+    function readArtistProfile()
+    {
+
+        $itemRecords = array();
+
+        $artistID = htmlspecialchars(strip_tags($_GET["artistID"]));
+        $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
+
+        if ($artistID) {
+            $this->pageNO = floatval($this->pageNO);
+            $artist = new Artist($this->conn, $artistID);
+
+            // latest release
+            $itemRecords["page"] = $this->pageNO;
+            $itemRecords["ArtistPage"] = array();
+
+            $arry = $artist->getLatestRelease();
+            $slidermeta_img_path = array();
+            $slidermeta_img_path['id'] = $arry->getId();
+            $slidermeta_img_path['title_heading'] = "Latest Release";
+            $slidermeta_img_path['name'] = $arry->getTitle();
+            $slidermeta_img_path['Date'] = $arry->getDatecreated();
+            $slidermeta_img_path['artwork'] = $arry->getArtworkPath();
+            array_push($itemRecords["ArtistPage"], $slidermeta_img_path);
+
+
+            $populartracks = $artist->getSongIds();
+
+            $popular = array();
+            foreach ($populartracks as $songId) {
+                $song = new Song($this->conn, $songId);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+                array_push($popular, $temp);
+            }
+
+
+            $popular_temps = array();
+            $popular_temps['Popular'] = $popular;
+            array_push($itemRecords["ArtistPage"], $popular_temps);
+
+
+            $itemRecords["total_pages"] = 1;
+            $itemRecords["total_results"] = 1;
+
+
+        }
+        return $itemRecords;
+    }
+
 
     function allCombined()
     {
@@ -62,7 +123,6 @@ class Handler
             array_push($menuCategory, $slider_temps);
 
             //end getSliderbanner
-
 
 
             //get featured categories
@@ -356,100 +416,6 @@ class Handler
     }
 
 
-    function searchHomePage()
-    {
-        $this->pageno = floatval($this->page);
-        $no_of_records_per_page = 10;
-        $offset = ($this->pageno - 1) * $no_of_records_per_page;
-
-        $sql = "SELECT COUNT(DISTINCT(category_id)) as count FROM products WHERE published = 1 ORDER BY `products`.`featured` DESC limit 1";
-        $result = mysqli_query($this->conn, $sql);
-        $data = mysqli_fetch_assoc($result);
-        $total_rows = floatval($data['count']);
-        $total_pages = ceil($total_rows / $no_of_records_per_page);
-
-        $menuCategory = array();
-        $itemRecords = array();
-
-        //  popular search Begin
-        $bestsellingProductsID = array();
-        $bestSellingProducts = array();
-        $category_stmts = "SELECT `id`, `query`, `count`, `created_at`, `updated_at` FROM `searches` ORDER BY count DESC LIMIT 30";
-        $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
-
-        while ($row = mysqli_fetch_array($menu_type_id_results)) {
-
-            array_push($bestsellingProductsID, $row);
-        }
-
-        foreach ($bestsellingProductsID as $row) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['query'] = $row['query'];
-            $temp['count'] = $row['count'];
-            $temp['created_at'] = $row['created_at'];
-            $temp['updated_at'] = $row['updated_at'];
-            array_push($bestSellingProducts, $temp);
-        }
-
-
-        $slider_temps = array();
-        $slider_temps['popularSearch'] = $bestSellingProducts;
-        array_push($menuCategory, $slider_temps);
-
-        // end popular search  Fetch
-
-
-        //get search featured categories
-
-        $feat_CatIDs = array();
-        $featuredCategory = array();
-
-
-        $category_featured_stmt = "SELECT id FROM categories  WHERE featured = 1;";
-        $feat_cat_id_result = mysqli_query($this->conn, $category_featured_stmt);
-
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-
-            array_push($feat_CatIDs, $row);
-        }
-
-        foreach ($feat_CatIDs as $row) {
-            $category = new Category($this->conn, intval($row['id']));
-            $temp = array();
-            $temp['id'] = $category->getId();
-            $temp['parent_id'] = $category->getParent_id();
-            $temp['level'] = $category->getLevel();
-            $temp['name'] = $category->getName();
-            $temp['order_level'] = $category->getOrder_level();
-            $temp['commision_rate'] = $category->getCommission_rate();
-            $temp['banner'] = $category->getBanner();
-            $temp['icon'] = $category->getIcon();
-            $temp['featured'] = $category->getFeatured();
-            $temp['top'] = $category->getTop();
-            $temp['digital'] = $category->getDigital();
-            $temp['slug'] = $category->getSlug();
-            $temp['meta_title'] = $category->getMeta_title();
-            $temp['meta_description'] = $category->getMeta_description();
-            $temp['created_at'] = $category->getCreated_at();
-            $temp['updated_at'] = $category->getUpdated_at();
-            $temp['featuredCategoriesProduct'] = null;
-            array_push($featuredCategory, $temp);
-        }
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['featuredCategories'] = $featuredCategory;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-        $itemRecords["page"] = 1;
-        $itemRecords["searchCategoriees"] = $menuCategory;
-        $itemRecords["total_pages"] = 1;
-        $itemRecords["total_results"] = 14;
-
-        return $itemRecords;
-    }
-
     function searchFullText()
     {
         $search_algorithm = "fulltext";
@@ -536,7 +502,8 @@ class Handler
         return $itemRecords;
     }
 
-    function readUserLikedSongs(){
+    function readUserLikedSongs()
+    {
         $itemRecords = array();
 
         $userID = htmlspecialchars(strip_tags($_GET["userID"]));
@@ -561,7 +528,7 @@ class Handler
 
             foreach ($likedSong_IDs as $song) {
                 $songLiked = new Song($this->conn, $song);
-                if($songLiked->getId() != null){
+                if ($songLiked->getId() != null) {
                     $temp = array();
                     $temp['id'] = $songLiked->getId();
                     $temp['title'] = $songLiked->getTitle();
@@ -599,7 +566,7 @@ class Handler
             $no_of_records_per_page = 20;
             $offset = ($this->pageNO - 1) * $no_of_records_per_page;
 
-            $sql = "SELECT COUNT(*) as count FROM songs WHERE album = '". $this->albumID . "'  limit 1";
+            $sql = "SELECT COUNT(*) as count FROM songs WHERE album = '" . $this->albumID . "'  limit 1";
             $result = mysqli_query($this->conn, $sql);
             $data = mysqli_fetch_assoc($result);
             $total_rows = floatval($data['count']);
@@ -614,7 +581,7 @@ class Handler
 
             if ($this->pageNO == 1) {
 
-                if($album){
+                if ($album) {
                     $temp = array();
                     $temp['id'] = $album->getId();
                     $temp['title'] = $album->getTitle();
@@ -642,7 +609,7 @@ class Handler
             $allProducts = array();
 
             foreach ($same_cat_IDs as $row) {
-                $song = new Song($this->conn,$row);
+                $song = new Song($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -665,13 +632,11 @@ class Handler
             array_push($itemRecords['Album'], $slider_temps);
 
 
-
         }
 
 
         return $itemRecords;
     }
-
 
 
 }

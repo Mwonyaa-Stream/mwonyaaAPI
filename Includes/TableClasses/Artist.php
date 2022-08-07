@@ -104,9 +104,7 @@ class Artist
 
     public function getGenrename()
     {
-        $query = mysqli_query($this->con, "SELECT name FROM genres WHERE id='$this->genre'");
-        $row = mysqli_fetch_array($query);
-        return $row['name'];
+        return  new Genre($this->con, $this->genre);
     }
 
     public function getTotalSongs()
@@ -115,6 +113,7 @@ class Artist
         $row = mysqli_fetch_array($query);
         return $row['totalsongs'];
     }
+
     public function getTotalablums()
     {
         $query = mysqli_query($this->con, "SELECT COUNT(*) as totalalbum FROM albums WHERE artist ='$this->id'");
@@ -122,9 +121,49 @@ class Artist
         return $row['totalalbum'];
     }
 
+
+    public function getTotalPlays()
+    {
+        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs where `artist` = '$this->id' and tag != 'ad'");
+        $row = mysqli_fetch_array($query);
+        return $row['totalplays'];
+    }
+
+    public function getLatestRelease()
+    {
+        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad' ORDER BY datecreated DESC LIMIT 1");
+        $row = mysqli_fetch_array($query);
+        $id = $row['id'];
+        return new Album($this->con, $id);
+    }
+
     public function getSongIds()
     {
         $query = mysqli_query($this->con, "SELECT id FROM songs WHERE artist='$this->id' and tag != 'ad' ORDER BY plays DESC");
+        $array = array();
+
+        while ($row = mysqli_fetch_array($query)) {
+            array_push($array, $row['id']);
+        }
+
+        return $array;
+    }
+
+    public function getRelatedArtists()
+    {
+        $query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' AND name != '$this->name' ORDER BY overalplays DESC Limit 8");
+        $array = array();
+
+        while ($row = mysqli_fetch_array($query)) {
+            array_push($array, $row['id']);
+        }
+
+        return $array;
+    }
+
+    public function getArtistAlbums()
+    {
+        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad'");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
