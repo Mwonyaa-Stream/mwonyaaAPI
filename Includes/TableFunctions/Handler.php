@@ -511,7 +511,7 @@ class Handler
 
         if ($userID) {
             $this->pageNO = floatval($this->pageNO);
-            $no_of_records_per_page = 15;
+            $no_of_records_per_page = 200;
             $offset = ($this->pageNO - 1) * $no_of_records_per_page;
             $likedSong = new LikedSong($this->conn, $userID);
 
