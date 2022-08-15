@@ -519,12 +519,30 @@ class Handler
             $total_pages = ceil($total_rows / $no_of_records_per_page);
 
             $itemRecords["page"] = $this->pageNO;
-            $itemRecords["Tracks"] = array();
+            $itemRecords["UserLikedTracks"] = array();
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
 
+            $user = new User($this->conn, $userID);
+
+            if ($this->pageNO == 1) {
+
+                if ($user) {
+                    $temp = array();
+                    $temp['title'] = "Liked Tracks";
+                    $temp['subtitle'] = "Tracks Liked by you";
+                    $temp['userid'] = $user->getId();
+                    $temp['user_name'] = $user->getFirstname();
+                    $temp['user_profile'] = $user->getProfilePic();
+                    array_push($itemRecords["UserLikedTracks"], $temp);
+
+                }
+
+            }
+
             // get products id from the same cat
             $likedSong_IDs = $likedSong->getLikedSongIds($offset, $no_of_records_per_page);
+            $allProducts = array();
 
             foreach ($likedSong_IDs as $song) {
                 $songLiked = new Song($this->conn, $song);
@@ -541,10 +559,17 @@ class Handler
                     $temp['path'] = $songLiked->getPath();
                     $temp['totalplays'] = $songLiked->getPlays();
                     $temp['weeklyplays'] = $songLiked->getWeeklyplays();
-                    array_push($itemRecords['Tracks'], $temp);
+                    array_push($allProducts, $temp);
                 }
 
             }
+
+            $slider_temps = array();
+            $slider_temps['Tracks'] = $allProducts;
+            array_push($itemRecords['UserLikedTracks'], $slider_temps);
+
+
+
 
         }
 
