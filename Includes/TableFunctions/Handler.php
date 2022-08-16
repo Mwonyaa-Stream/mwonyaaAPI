@@ -31,13 +31,13 @@ class Handler
             $itemRecords["ArtistPage"] = array();
 
             $arry = $artist->getLatestRelease();
-            $slidermeta_img_path = array();
-            $slidermeta_img_path['id'] = $arry->getId();
-            $slidermeta_img_path['title_heading'] = "Latest Release";
-            $slidermeta_img_path['name'] = $arry->getTitle();
-            $slidermeta_img_path['Date'] = $arry->getDatecreated();
-            $slidermeta_img_path['artwork'] = $arry->getArtworkPath();
-            array_push($itemRecords["ArtistPage"], $slidermeta_img_path);
+            $temp = array();
+            $temp['id'] = $arry->getId();
+            $temp['title_heading'] = "Latest Release";
+            $temp['name'] = $arry->getTitle();
+            $temp['Date'] = $arry->getDatecreated();
+            $temp['artwork'] = $arry->getArtworkPath();
+            array_push($itemRecords["ArtistPage"], $temp);
 
 
             $populartracks = $artist->getSongIds();
@@ -63,7 +63,57 @@ class Handler
 
 
             $popular_temps = array();
-            $popular_temps['Popular'] = $popular;
+            $popular_temps['heading'] = "Popular Tracks";
+            $popular_temps['subheading'] = "Popular Tracks";
+            $popular_temps['Tracks'] = $popular;
+            array_push($itemRecords["ArtistPage"], $popular_temps);
+
+
+            $albumsIDs = $artist->getArtistAlbums();
+            $popular_release = array();
+            foreach ($albumsIDs as $Id) {
+                $album = new Album($this->conn, $Id);
+                $temp = array();
+                $temp['id'] = $album->getId();
+                $temp['title'] = $album->getTitle();
+                $temp['artist'] = $album->getArtist()->getName();
+                $temp['genre'] = $album->getGenre()->getGenre();
+                $temp['artworkPath'] = $album->getArtworkPath();
+                $temp['tag'] = $album->getTag();
+                $temp['description'] = $album->getDescription();
+                $temp['datecreated'] = $album->getDatecreated();
+                $temp['totalsongplays'] = $album->getTotaltrackplays();
+
+
+                array_push($popular_release, $temp);
+            }
+
+            $popular_temps = array();
+            $popular_temps['heading'] = "Popular Release";
+            $popular_temps['subheading'] = "View all";
+            $popular_temps['Albums'] = $popular_release;
+            array_push($itemRecords["ArtistPage"], $popular_temps);
+
+
+
+
+
+            $related_artists = $artist->getRelatedArtists();
+            $popular_release = array();
+            foreach ($related_artists as $Id) {
+                $artist = new Artist($this->conn, $Id);
+                $temp = array();
+                $temp['id'] = $artist->getId();
+                $temp['name'] = $artist->getName();
+                $temp['genre'] = $artist->getGenrename()->getGenre();
+                $temp['profilephoto'] = $artist->getProfilePath();
+                array_push($popular_release, $temp);
+            }
+
+            $popular_temps = array();
+            $popular_temps['heading'] = "Related Artist";
+            $popular_temps['subheading'] = "Base on this artist";
+            $popular_temps['RelatedArtist'] = $popular_release;
             array_push($itemRecords["ArtistPage"], $popular_temps);
 
 
