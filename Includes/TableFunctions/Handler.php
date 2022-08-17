@@ -30,23 +30,34 @@ class Handler
             $itemRecords["Artist"] = array();
 
             // Artist Bio
+            $artist_into = array();
             $temp = array();
             $temp['id'] = $artist_instance->getId();
             $temp['name'] = $artist_instance->getName();
             $temp['profilephoto'] = $artist_instance->getProfilePath();
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
-            array_push($itemRecords["Artist"], $temp);
+            array_push($artist_into, $temp);
+
+            $artistIntro = array();
+            $artistIntro['ArtistIntro'] = $artist_into;
+            array_push($itemRecords["Artist"], $artistIntro);
 
             // latest release
             $arry = $artist_instance->getLatestRelease();
+            $lR = array();
             $temp = array();
             $temp['id'] = $arry->getId();
             $temp['title_heading'] = "Latest Release";
             $temp['name'] = $arry->getTitle();
             $temp['Date'] = $arry->getDatecreated();
             $temp['artwork'] = $arry->getArtworkPath();
-            array_push($itemRecords["Artist"], $temp);
+            array_push($lR, $temp);
+
+
+            $artist_latest_release = array();
+            $artist_latest_release['ArtistLatestRelease'] = $lR;
+            array_push($itemRecords["Artist"], $artist_latest_release);
 
             // popular tracks
             $populartracks = $artist_instance->getSongIds();
