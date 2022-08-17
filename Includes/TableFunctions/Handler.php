@@ -48,7 +48,6 @@ class Handler
             $lR = array();
             $temp = array();
             $temp['id'] = $arry->getId();
-            $temp['title_heading'] = "Latest Release";
             $temp['name'] = $arry->getTitle();
             $temp['Date'] = $arry->getDatecreated();
             $temp['artwork'] = $arry->getArtworkPath();
@@ -56,6 +55,7 @@ class Handler
 
 
             $artist_latest_release = array();
+            $artist_latest_release['heading'] = "Latest Release";
             $artist_latest_release['ArtistLatestRelease'] = $lR;
             array_push($itemRecords["Artist"], $artist_latest_release);
 
@@ -83,7 +83,6 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Popular Tracks";
-            $popular_temps['subheading'] = "Popular Tracks";
             $popular_temps['Tracks'] = $popular;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -91,7 +90,6 @@ class Handler
             // Artist Pick - Top playlist created by the Artist
             $events_array = array();
             $events_array['heading'] = "Artist Pick";
-            $events_array['subheading'] = "Fresh & Hot";
             $events_array['Playlist'] = [];
             array_push($itemRecords["Artist"], $events_array);
 
@@ -117,7 +115,6 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Popular Release";
-            $popular_temps['subheading'] = "View all";
             $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -138,7 +135,6 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Related Artist";
-            $popular_temps['subheading'] = "Base on this artist";
             $popular_temps['RelatedArtist'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -146,7 +142,6 @@ class Handler
             // Event
             $events_array = array();
             $events_array['heading'] = "Artist Events";
-            $events_array['subheading'] = "Don't miss our";
             $events_array['Events'] = [];
             array_push($itemRecords["Artist"], $events_array);
 
@@ -175,7 +170,6 @@ class Handler
 
             $events_array = array();
             $events_array['heading'] = "Artist Bio";
-            $events_array['subheading'] = "All about the Artist";
             $events_array['Bio'] = $bio_array;
             array_push($itemRecords["Artist"], $events_array);
 
