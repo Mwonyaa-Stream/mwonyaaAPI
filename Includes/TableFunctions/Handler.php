@@ -24,24 +24,32 @@ class Handler
 
         if ($artistID) {
             $this->pageNO = floatval($this->pageNO);
-            $artist = new Artist($this->conn, $artistID);
+            $artist_instance = new Artist($this->conn, $artistID);
+
+            $itemRecords["page"] = $this->pageNO;
+            $itemRecords["Artist"] = array();
+
+            // Artist Bio
+            $temp = array();
+            $temp['id'] = $artist_instance->getId();
+            $temp['name'] = $artist_instance->getName();
+            $temp['profilephoto'] = $artist_instance->getProfilePath();
+            $temp['coverimage'] = $artist_instance->getArtistCoverPath();
+            $temp['monthly'] = $artist_instance->getTotalPlays();
+            array_push($itemRecords["Artist"], $temp);
 
             // latest release
-            $itemRecords["page"] = $this->pageNO;
-            $itemRecords["ArtistPage"] = array();
-
-            $arry = $artist->getLatestRelease();
+            $arry = $artist_instance->getLatestRelease();
             $temp = array();
             $temp['id'] = $arry->getId();
             $temp['title_heading'] = "Latest Release";
             $temp['name'] = $arry->getTitle();
             $temp['Date'] = $arry->getDatecreated();
             $temp['artwork'] = $arry->getArtworkPath();
-            array_push($itemRecords["ArtistPage"], $temp);
+            array_push($itemRecords["Artist"], $temp);
 
-
-            $populartracks = $artist->getSongIds();
-
+            // popular tracks
+            $populartracks = $artist_instance->getSongIds();
             $popular = array();
             foreach ($populartracks as $songId) {
                 $song = new Song($this->conn, $songId);
@@ -66,10 +74,18 @@ class Handler
             $popular_temps['heading'] = "Popular Tracks";
             $popular_temps['subheading'] = "Popular Tracks";
             $popular_temps['Tracks'] = $popular;
-            array_push($itemRecords["ArtistPage"], $popular_temps);
+            array_push($itemRecords["Artist"], $popular_temps);
 
 
-            $albumsIDs = $artist->getArtistAlbums();
+            // Artist Pick - Top playlist created by the Artist
+            $events_array = array();
+            $events_array['heading'] = "Artist Pick";
+            $events_array['subheading'] = "Fresh & Hot";
+            $events_array['Playlist'] = [];
+            array_push($itemRecords["Artist"], $events_array);
+
+            // popular releases
+            $albumsIDs = $artist_instance->getArtistAlbums();
             $popular_release = array();
             foreach ($albumsIDs as $Id) {
                 $album = new Album($this->conn, $Id);
@@ -92,13 +108,12 @@ class Handler
             $popular_temps['heading'] = "Popular Release";
             $popular_temps['subheading'] = "View all";
             $popular_temps['Albums'] = $popular_release;
-            array_push($itemRecords["ArtistPage"], $popular_temps);
+            array_push($itemRecords["Artist"], $popular_temps);
 
 
 
-
-
-            $related_artists = $artist->getRelatedArtists();
+            //Related Artist
+            $related_artists = $artist_instance->getRelatedArtists();
             $popular_release = array();
             foreach ($related_artists as $Id) {
                 $artist = new Artist($this->conn, $Id);
@@ -114,7 +129,44 @@ class Handler
             $popular_temps['heading'] = "Related Artist";
             $popular_temps['subheading'] = "Base on this artist";
             $popular_temps['RelatedArtist'] = $popular_release;
-            array_push($itemRecords["ArtistPage"], $popular_temps);
+            array_push($itemRecords["Artist"], $popular_temps);
+
+
+            // Event
+            $events_array = array();
+            $events_array['heading'] = "Artist Events";
+            $events_array['subheading'] = "Don't miss our";
+            $events_array['Events'] = [];
+            array_push($itemRecords["Artist"], $events_array);
+
+            // Artist Bio
+            $bio_array = array();
+            $temp = array();
+            $temp['id'] = $artist_instance->getId();
+            $temp['name'] = $artist_instance->getName();
+            $temp['email'] = $artist_instance->getEmail();
+            $temp['phone'] = $artist_instance->getPhone();
+            $temp['facebookurl'] = $artist_instance->getFacebookurl();
+            $temp['twitterurl'] = $artist_instance->getTwitterurl();
+            $temp['instagramurl'] = $artist_instance->getInstagramurl();
+            $temp['RecordLable'] = $artist_instance->getRecordLable();
+            $temp['profilephoto'] = $artist_instance->getProfilePath();
+            $temp['coverimage'] = $artist_instance->getArtistCoverPath();
+
+            $temp['bio'] = $artist_instance->getArtistBio();
+            $temp['genre'] = $artist_instance->getGenrename()->getGenre();
+            $temp['datecreated'] = $artist_instance->getdateadded();
+            $temp['tag'] = $artist_instance->getTag();
+            $temp['overalplays'] = $artist_instance->getOveralplays();
+            $temp['monthly'] = $artist_instance->getTotalPlays();
+            $temp['status'] = $artist_instance->getStatus();
+            array_push($bio_array, $temp);
+
+            $events_array = array();
+            $events_array['heading'] = "Artist Bio";
+            $events_array['subheading'] = "All about the Artist";
+            $events_array['Bio'] = $bio_array;
+            array_push($itemRecords["Artist"], $events_array);
 
 
             $itemRecords["total_pages"] = 1;

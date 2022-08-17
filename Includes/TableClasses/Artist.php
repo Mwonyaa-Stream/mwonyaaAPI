@@ -5,49 +5,68 @@ class Artist
 
     private $con;
     private $id;
+    private $no;
     private $name;
     private $email;
+    private $phone;
+    private $facebookurl;
+    private $twitterurl;
+    private $instagramurl;
+    private $RecordLable;
     private $profilephoto;
     private $coverimage;
     private $bio;
     private $genre;
     private $tag;
     private $dateAdded;
-    private $totalsongs;
-    private $totalalbum;
-
+    private $overalplays;
+    private $status;
 
     public function __construct($con, $id)
     {
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT * FROM artists WHERE id='$this->id'");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status` FROM artists WHERE id='$this->id'");
         $artistfetched = mysqli_fetch_array($query);
 
 
         if (mysqli_num_rows($query) < 1) {
-
+            $this->no = null;
+            $this->id = null;
             $this->name = null;
             $this->email = null;
+            $this->phone = null;
+            $this->facebookurl = null;
+            $this->twitterurl = null;
+            $this->instagramurl = null;
+            $this->RecordLable = null;
             $this->profilephoto = null;
             $this->coverimage = null;
             $this->bio = null;
             $this->genre = null;
             $this->tag = null;
             $this->dateAdded = null;
-            $this->totalsongs = null;
-            $this->totalalbum = null;
+            $this->overalplays = null;
+            $this->status = null;
         } else {
-
+            $this->no = $artistfetched['no'];
+            $this->name = $artistfetched['id'];
             $this->name = $artistfetched['name'];
             $this->email = $artistfetched['email'];
+            $this->phone = $artistfetched['phone'];
+            $this->facebookurl = $artistfetched['facebookurl'];;
+            $this->twitterurl = $artistfetched['twitterurl'];;
+            $this->instagramurl = $artistfetched['instagramurl'];;
+            $this->RecordLable = $artistfetched['RecordLable'];;
             $this->profilephoto = $artistfetched['profilephoto'];
             $this->coverimage = $artistfetched['coverimage'];
             $this->bio = $artistfetched['bio'];
             $this->genre = $artistfetched['genre'];
             $this->tag = $artistfetched['tag'];
             $this->dateAdded = $artistfetched['datecreated'];
+            $this->overalplays = $artistfetched['overalplays'];
+            $this->status = $artistfetched['status'];
         }
     }
 
@@ -74,6 +93,63 @@ class Artist
     {
         return $this->email;
     }
+
+    /**
+     * @return mixed|null
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getFacebookurl()
+    {
+        return $this->facebookurl;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getTwitterurl()
+    {
+        return $this->twitterurl;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getInstagramurl()
+    {
+        return $this->instagramurl;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getRecordLable()
+    {
+        return $this->RecordLable;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getOveralplays()
+    {
+        return $this->overalplays;
+    }
+
 
 
     public function getProfilePath()
@@ -139,7 +215,7 @@ class Artist
 
     public function getSongIds()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM songs WHERE artist='$this->id' and tag != 'ad' ORDER BY plays DESC");
+        $query = mysqli_query($this->con, "SELECT id FROM songs WHERE artist='$this->id' and tag != 'ad' ORDER BY plays DESC Limit 8");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
@@ -163,7 +239,7 @@ class Artist
 
     public function getArtistAlbums()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad'");
+        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad' LIMIT 8");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
@@ -172,4 +248,6 @@ class Artist
 
         return $array;
     }
+
+
 }
