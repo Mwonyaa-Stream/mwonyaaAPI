@@ -107,7 +107,7 @@ class Handler
             $popular_temps = array();
             $popular_temps['heading'] = "Popular Release";
             $popular_temps['subheading'] = "View all";
-            $popular_temps['Albums'] = $popular_release;
+            $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
 
 
