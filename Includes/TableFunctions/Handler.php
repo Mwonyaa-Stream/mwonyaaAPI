@@ -88,10 +88,21 @@ class Handler
 
 
             // Artist Pick - Top playlist created by the Artist
-            $events_array = array();
-            $events_array['heading'] = "Artist Pick";
-            $events_array['Playlist'] = [];
-            array_push($itemRecords["Artist"], $events_array);
+            $ArtistPick = array();
+            $artistiPick = new ArtistPick($this->conn, $artistID);
+            $temp = array();
+            $temp['id'] = $artistiPick->getId();
+            $temp['type'] = "Playlist";
+            $temp['out_now'] = $artistiPick->getTitle()." - out now";;
+            $temp['coverimage'] = $artistiPick->getCoverArt();
+            $temp['song_title'] = $artistiPick->getArtist()->getName()." - " . $artistiPick->getSong()->getTitle();
+            $temp['song_cover'] = $artistiPick->getSong()->getAlbum()->getArtworkPath();
+            array_push($ArtistPick, $temp);
+
+            $artistpick_array = array();
+            $artistpick_array['heading'] = "Artist Pick";
+            $artistpick_array['ArtistPlaylist'] = $ArtistPick;
+            array_push($itemRecords["Artist"], $artistpick_array);
 
             // popular releases
             $albumsIDs = $artist_instance->getArtistAlbums();
@@ -117,7 +128,6 @@ class Handler
             $popular_temps['heading'] = "Popular Release";
             $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
-
 
 
             //Related Artist
@@ -674,8 +684,6 @@ class Handler
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['UserLikedTracks'], $slider_temps);
-
-
 
 
         }
