@@ -101,7 +101,7 @@ class Handler
 
             $artistpick_array = array();
             $artistpick_array['heading'] = "Artist Pick";
-            $artistpick_array['ArtistPlaylist'] = $ArtistPick;
+            $artistpick_array['ArtistPick'] = $ArtistPick;
             array_push($itemRecords["Artist"], $artistpick_array);
 
             // popular releases
