@@ -10,6 +10,7 @@ require "../../Includes/TableClasses/SharedPlaylist.php";
 require "../../Includes/TableClasses/Shared.php";
 require "../../Includes/TableClasses/LikedSong.php";
 require "../../Includes/TableClasses/ArtistPick.php";
+require "../../Includes/TableClasses/ArtistEvents.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
 

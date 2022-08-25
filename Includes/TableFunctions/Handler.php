@@ -151,9 +151,21 @@ class Handler
 
 
             // Event
+            $ArtistEvent = array();
+            $artist_event = new ArtistEvents($this->conn, $artistID);
+            $temp = array();
+            $temp['id'] = $artist_event->getId();
+            $temp['name'] = $artist_event->getName();
+            $temp['title'] = $artist_event->getTitle();
+            $temp['description'] = $artist_event->getDescription();
+            $temp['venue'] = $artist_event->getVenu();
+            $temp['date'] = $artist_event->getDate();
+            $temp['time'] = $artist_event->getTime();
+            array_push($ArtistEvent, $temp);
+
             $events_array = array();
             $events_array['heading'] = "Artist Events";
-            $events_array['Events'] = [];
+            $events_array['Events'] = $ArtistEvent;
             array_push($itemRecords["Artist"], $events_array);
 
             // Artist Bio
