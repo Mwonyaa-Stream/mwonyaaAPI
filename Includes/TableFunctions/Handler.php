@@ -134,8 +134,8 @@ class Handler
             //Related Artist
             $related_artists = $artist_instance->getRelatedArtists();
             $popular_release = array();
-            foreach ($related_artists as $Id) {
-                $artist = new Artist($this->conn, $Id);
+            foreach ($related_artists as $re_artist) {
+                $artist = new Artist($this->conn, $re_artist);
                 $temp = array();
                 $temp['id'] = $artist->getId();
                 $temp['name'] = $artist->getName();

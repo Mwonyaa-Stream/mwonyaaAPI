@@ -227,14 +227,14 @@ class Artist
 
     public function getRelatedArtists()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' AND name != '$this->name' ORDER BY overalplays DESC Limit 8");
-        $array = array();
+        $rel_array_query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' ORDER BY overalplays DESC Limit 8");
+        $rel_array = array();
 
-        while ($row = mysqli_fetch_array($query)) {
-            array_push($array, $row['id']);
+        while ($rel_array_row = mysqli_fetch_array($rel_array_query)) {
+            array_push($rel_array, $rel_array_row['id']);
         }
 
-        return $array;
+        return $rel_array;
     }
 
     public function getArtistAlbums()
