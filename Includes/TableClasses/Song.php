@@ -58,6 +58,24 @@
         public function getId(){
             return $this->id;
         }
+
+        /**
+         * @return mixed|null
+         */
+        public function getArtistId()
+        {
+            return $this->artistId;
+        }
+
+        /**
+         * @return mixed|null
+         */
+        public function getAlbumId()
+        {
+            return $this->albumId;
+        }
+
+
         public function getArtist(){
             return new Artist($this->con, $this->artistId);
         }

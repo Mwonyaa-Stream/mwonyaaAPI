@@ -68,6 +68,7 @@ class Handler
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
                 $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                 $temp['genre'] = $song->getGenre()->getGenre();
@@ -668,6 +669,7 @@ class Handler
                     $temp['id'] = $songLiked->getId();
                     $temp['title'] = $songLiked->getTitle();
                     $temp['artist'] = $songLiked->getArtist()->getName();
+                    $temp['artistID'] = $song->getArtistId();
                     $temp['album'] = $songLiked->getAlbum()->getTitle();
                     $temp['artworkPath'] = $songLiked->getAlbum()->getArtworkPath();
                     $temp['genre'] = $songLiked->getGenre()->getGenre();
@@ -754,6 +756,7 @@ class Handler
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
                 $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                 $temp['genre'] = $song->getGenre()->getGenre();
