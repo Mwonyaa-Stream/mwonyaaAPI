@@ -669,7 +669,7 @@ class Handler
                     $temp['id'] = $songLiked->getId();
                     $temp['title'] = $songLiked->getTitle();
                     $temp['artist'] = $songLiked->getArtist()->getName();
-                    $temp['artistID'] = $song->getArtistId();
+                    $temp['artistID'] = $songLiked->getArtistId();
                     $temp['album'] = $songLiked->getAlbum()->getTitle();
                     $temp['artworkPath'] = $songLiked->getAlbum()->getArtworkPath();
                     $temp['genre'] = $songLiked->getGenre()->getGenre();
