@@ -96,9 +96,9 @@ class Handler
             $temp = array();
             $temp['id'] = $artistiPick->getId();
             $temp['type'] = "Playlist";
-            $temp['out_now'] = $artistiPick->getTitle()." - out now";;
+            $temp['out_now'] = $artistiPick->getTitle() . " - out now";;
             $temp['coverimage'] = $artistiPick->getCoverArt();
-            $temp['song_title'] = $artistiPick->getArtist()->getName()." - " . $artistiPick->getSong()->getTitle();
+            $temp['song_title'] = $artistiPick->getArtist()->getName() . " - " . $artistiPick->getSong()->getTitle();
             $temp['song_cover'] = $artistiPick->getSong()->getAlbum()->getArtworkPath();
             array_push($ArtistPick, $temp);
 
@@ -224,287 +224,125 @@ class Handler
         $total_pages = ceil($total_rows / $no_of_records_per_page);
 
 
-        $categoryids = array();
+        $category_ids = array();
         $menuCategory = array();
         $itemRecords = array();
 
 
-//        if ($this->pageno == 1) {
-//
-//            // getSliderbanner
-//            $banners = new BusinessSettings($this->conn, 84);
-//            // $remove_brackets = str_replace(array('[', ']'), '', $banners->getHomeSliders());
-//            // $remove_braces = str_replace(array('"', '"'), '', $remove_brackets);
-//            // $str_arr = explode(",", $remove_braces);
-//            $str_arr = json_decode($banners->getHomeSliders());
-//            $slidermeta_img_path = array();
-//
-//
-//            foreach ($str_arr as $imageID) {
-//                $temp = array();
-//                $upload = new Upload($this->conn, $imageID);
-//                $filename = $this->imagePathRoot . $upload->getFile_name();
-//                $temp['id'] = 1;
-//                $temp['link'] = 2;
-//                $temp['filePath'] = $filename;
-//                array_push($slidermeta_img_path, $temp);
-//            }
-//
-//
-//            $slider_temps = array();
-//            $slider_temps['header_ad'] = "https://d2t03bblpoql2z.cloudfront.net/uploads/all/a8LWbZP0CdfEu5fw7uUPuSAaq6oYlC4jI7EtA6tq.gif";
-//            $slider_temps['sliderBanners'] = $slidermeta_img_path;
-//            array_push($menuCategory, $slider_temps);
-//
-//            //end getSliderbanner
-//
-//
-//            //get featured categories
-//
-//            $feat_CatIDs = array();
-//            $featuredCategory = array();
-//
-//
-//            $category_featured_stmt = "SELECT id FROM categories  WHERE featured = 1;";
-//            $feat_cat_id_result = mysqli_query($this->conn, $category_featured_stmt);
-//
-//            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-//
-//                array_push($feat_CatIDs, $row);
-//            }
-//
-//            foreach ($feat_CatIDs as $row) {
-//                $category = new Category($this->conn, intval($row['id']));
-//                $temp = array();
-//                $temp['id'] = $category->getId();
-//                $temp['parent_id'] = $category->getParent_id();
-//                $temp['level'] = $category->getLevel();
-//                $temp['name'] = $category->getName();
-//                $temp['order_level'] = $category->getOrder_level();
-//                $temp['commision_rate'] = $category->getCommission_rate();
-//                $temp['banner'] = $category->getBanner();
-//                $temp['icon'] = $category->getIcon();
-//                $temp['featured'] = $category->getFeatured();
-//                $temp['top'] = $category->getTop();
-//                $temp['digital'] = $category->getDigital();
-//                $temp['slug'] = $category->getSlug();
-//                $temp['meta_title'] = $category->getMeta_title();
-//                $temp['meta_description'] = $category->getMeta_description();
-//                $temp['created_at'] = $category->getCreated_at();
-//                $temp['updated_at'] = $category->getUpdated_at();
-//                $temp['featuredCategoriesProduct'] = $category->getCategoryProducts();
-//                array_push($featuredCategory, $temp);
-//            }
-//
-//            $feat_Cat_temps = array();
-//            $feat_Cat_temps['featuredCategories'] = $featuredCategory;
-//            array_push($menuCategory, $feat_Cat_temps);
-//
-//
-//            ///end featuredCategories
-//
-//
-//            //get Flash sales
-//
-//            $feat_CatIDs = array();
-//            $featuredCategory = array();
-//
-//
-//            $category_featured_stmt = "SELECT id FROM flash_deals WHERE status = 1 ORDER BY id DESC";
-//            $feat_cat_id_result = mysqli_query($this->conn, $category_featured_stmt);
-//            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-//                array_push($feat_CatIDs, $row['id']);
-//            }
-//            foreach ($feat_CatIDs as $row) {
-//                $category = new FlashDeals($row, $this->conn);
-//                $temp = array();
-//                $temp['id'] = $category->getId();
-//                $temp['name'] = "Flash Deals";
-//                $temp['title'] = $category->getTitle();
-//                $temp['start_date'] = $category->getStartDate();
-//                $temp['end_date'] = $category->getEndDate();
-//                $temp['timeleft'] = $category->getTimeRemaining();
-//                $temp['status'] = $category->getStatus();
-//                $temp['featured'] = $category->getFeatured();
-//                $temp['background_color'] = $category->getBackgroundColor();
-//                $temp['text_color'] = $category->getTextColor();
-//                $temp['banner'] = $category->getBanner();
-//                $temp['slug'] = $category->getSlug();
-//                $temp['created_at'] = $category->getCreatedAt();
-//                $temp['updated_at'] = $category->getUpdatedAt();
-//                $temp['flashProducts'] = $category->getProducts();
-//                array_push($featuredCategory, $temp);
-//            }
-//
-//            $feat_Cat_temps = array();
-//            $feat_Cat_temps['FlashDeals'] = $featuredCategory;
-//            array_push($menuCategory, $feat_Cat_temps);
-//            ///end Flash sales
-//
-//            // Todays Deal Begin
-//
-//            $bestsellingProductsID = array();
-//            $bestSellingProducts = array();
-//            $category_stmts = "SELECT DISTINCT(id) FROM products   WHERE published = 1 AND `todays_deal` = 1 ORDER BY `products`.`created_at` DESC  LIMIT 8";
-//            $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
-//
-//            while ($row = mysqli_fetch_array($menu_type_id_results)) {
-//
-//                array_push($bestsellingProductsID, $row);
-//            }
-//
-//            foreach ($bestsellingProductsID as $row) {
-//                $product = new Product($this->conn, intval($row['id']));
-//                $temp = array();
-//                $temp['id'] = $product->getId();
-//                $temp['name'] = $product->getName();
-//                $temp['category_id'] = $product->getCategory_id();
-//                $temp['photos'] = $product->getPhotos();
-//                $temp['thumbnail_img'] = $product->getThumbnail_img();
-//                $temp['unit_price'] = $product->getUnit_price();
-//                $temp['discount'] = $product->getDiscount();
-//                $temp['purchase_price'] = $product->getPurchase_price();
-//                $temp['meta_title'] = $product->getMeta_title();
-//                $temp['meta_description'] = $product->getMeta_description();
-//                $temp['meta_img'] = $product->getMeta_img();
-//                $temp['min_qtn'] = $product->getMin_qty();
-//                $temp['published'] = $product->getPublished();
-//
-//                array_push($bestSellingProducts, $temp);
-//            }
-//
-//
-//            $best_temps = array();
-//            $best_temps['id'] = 100;
-//            $best_temps['parent_id'] = 100;
-//            $best_temps['level'] = 1;
-//            $best_temps['name'] = "Today's Deal";
-//            $best_temps['order_level'] = 0;
-//            $best_temps['commision_rate'] = 0;
-//            $best_temps['banner'] = null;
-//            $best_temps['icon'] = null;
-//            $best_temps['featured'] = 0;
-//            $best_temps['top'] = 0;
-//            $best_temps['digital'] = 0;
-//            $best_temps['slug'] = "Today's Deal";
-//            $best_temps['meta_title'] = null;
-//            $best_temps['meta_description'] = null;
-//            $best_temps['created_at'] = "10 Jul 2021";
-//            $best_temps['updated_at'] = "10 Jul 2021";
-//            $best_temps['products'] = $bestSellingProducts;
-//            array_push($menuCategory, $best_temps);
-//
-//            // end Todays Deal  Fetch
-//
-//            // Featured Products Begin
-//
-//            $bestsellingProductsID = array();
-//            $bestSellingProducts = array();
-//            $category_stmts = "SELECT DISTINCT(id) FROM products   WHERE published = 1 AND `featured` = 1 ORDER BY `products`.`created_at` DESC  LIMIT 8";
-//            $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
-//
-//            while ($row = mysqli_fetch_array($menu_type_id_results)) {
-//
-//                array_push($bestsellingProductsID, $row);
-//            }
-//
-//            foreach ($bestsellingProductsID as $row) {
-//                $product = new Product($this->conn, intval($row['id']));
-//                $temp = array();
-//                $temp['id'] = $product->getId();
-//                $temp['name'] = $product->getName();
-//                $temp['category_id'] = $product->getCategory_id();
-//                $temp['photos'] = $product->getPhotos();
-//                $temp['thumbnail_img'] = $product->getThumbnail_img();
-//                $temp['unit_price'] = $product->getUnit_price();
-//                $temp['discount'] = $product->getDiscount();
-//                $temp['purchase_price'] = $product->getPurchase_price();
-//                $temp['meta_title'] = $product->getMeta_title();
-//                $temp['meta_description'] = $product->getMeta_description();
-//                $temp['meta_img'] = $product->getMeta_img();
-//                $temp['min_qtn'] = $product->getMin_qty();
-//                $temp['published'] = $product->getPublished();
-//
-//                array_push($bestSellingProducts, $temp);
-//            }
-//
-//            $best_temps = array();
-//            $best_temps['id'] = 100;
-//            $best_temps['parent_id'] = 100;
-//            $best_temps['level'] = 1;
-//            $best_temps['name'] = "Featured Products";
-//            $best_temps['order_level'] = 0;
-//            $best_temps['commision_rate'] = 0;
-//            $best_temps['banner'] = null;
-//            $best_temps['icon'] = null;
-//            $best_temps['featured'] = 0;
-//            $best_temps['top'] = 0;
-//            $best_temps['digital'] = 0;
-//            $best_temps['slug'] = "Featured Products";
-//            $best_temps['meta_title'] = null;
-//            $best_temps['meta_description'] = null;
-//            $best_temps['created_at'] = "10 Jul 2021";
-//            $best_temps['updated_at'] = "10 Jul 2021";
-//            $best_temps['products'] = $bestSellingProducts;
-//            array_push($menuCategory, $best_temps);
-//
-//            // end Featured Products Fetch
-//
-//
-//            //BEST selling  fetch Begin
-//
-//            $bestsellingProductsID = array();
-//            $bestSellingProducts = array();
-//            $category_stmts = "SELECT DISTINCT(id) FROM products  WHERE published = 1 ORDER BY `products`.`num_of_sale` DESC  LIMIT 8";
-//            $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
-//
-//            while ($row = mysqli_fetch_array($menu_type_id_results)) {
-//
-//                array_push($bestsellingProductsID, $row);
-//            }
-//
-//            foreach ($bestsellingProductsID as $row) {
-//                $product = new Product($this->conn, intval($row['id']));
-//                $temp = array();
-//                $temp['id'] = $product->getId();
-//                $temp['name'] = $product->getName();
-//                $temp['category_id'] = $product->getCategory_id();
-//                $temp['photos'] = $product->getPhotos();
-//                $temp['thumbnail_img'] = $product->getThumbnail_img();
-//                $temp['unit_price'] = $product->getUnit_price();
-//                $temp['discount'] = $product->getDiscount();
-//                $temp['purchase_price'] = $product->getPurchase_price();
-//                $temp['meta_title'] = $product->getMeta_title();
-//                $temp['meta_description'] = $product->getMeta_description();
-//                $temp['meta_img'] = $product->getMeta_img();
-//                $temp['min_qtn'] = $product->getMin_qty();
-//                $temp['published'] = $product->getPublished();
-//
-//                array_push($bestSellingProducts, $temp);
-//            }
-//
-//            $best_temps = array();
-//            $best_temps['id'] = 100;
-//            $best_temps['parent_id'] = 100;
-//            $best_temps['level'] = 1;
-//            $best_temps['name'] = "Best Selling";
-//            $best_temps['order_level'] = 0;
-//            $best_temps['commision_rate'] = 0;
-//            $best_temps['banner'] = null;
-//            $best_temps['icon'] = null;
-//            $best_temps['featured'] = 0;
-//            $best_temps['top'] = 0;
-//            $best_temps['digital'] = 0;
-//            $best_temps['slug'] = "Best Selling";
-//            $best_temps['meta_title'] = null;
-//            $best_temps['meta_description'] = null;
-//            $best_temps['created_at'] = "10 Jul 2021";
-//            $best_temps['updated_at'] = "10 Jul 2021";
-//            $best_temps['products'] = $bestSellingProducts;
-//            array_push($menuCategory, $best_temps);
-//
-//            // end Best Selling Fetch
-//        }
+        if ($page == 1) {
+
+            // get_Slider_banner
+            $slider_temps = array();
+            $slider_temps['sliderBanners'] = [];
+            array_push($menuCategory, $slider_temps);
+            // end get_Slider_banner
+
+
+            //get Trending Artist
+
+            $featuredartists = array();
+            $featuredCategory = array();
+
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' ORDER BY overalplays DESC LIMIT 20";
+            $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
+            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+                array_push($featuredartists, $row);
+            }
+
+
+            foreach ($featuredartists as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['profilephoto'] = $row['profilephoto'];
+                $temp['name'] = $row['name'];
+                array_push($featuredCategory, $temp);
+            }
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+
+
+            //get Featured Playlist
+            $featured_playlist = array();
+            $featuredPlaylist = array();
+
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+            $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
+            while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
+                array_push($featured_playlist, $row);
+            }
+
+
+            foreach ($featured_playlist as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['name'] = $row['name'];
+                $temp['owner'] = $row['owner'];
+                $temp['coverurl'] = $row['coverurl'];
+                array_push($featuredPlaylist, $temp);
+            }
+
+            $feat_playlist_temps = array();
+            $feat_playlist_temps['featuredPlaylist'] = $featuredPlaylist;
+            array_push($menuCategory, $feat_playlist_temps);
+            ///end featuredArtist
+
+
+            //get featured Album
+            $featured_albums = array();
+            $featuredAlbums = array();
+
+            $featured_album_Query = "SELECT * FROM albums WHERE tag = \"music\" ORDER BY totalsongplays DESC LIMIT  20";
+            $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+            while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+                array_push($featured_albums, $row);
+            }
+
+
+            foreach ($featured_albums as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['title'] = $row['title'];
+                $temp['artworkPath'] = $row['artworkPath'];
+                $temp['tag'] = $row['tag'];
+                array_push($featuredAlbums, $temp);
+            }
+
+            $feat_albums_temps = array();
+            $feat_albums_temps['featuredAlbums'] = $featuredAlbums;
+            array_push($menuCategory, $feat_albums_temps);
+            ///end featuredAlbums
+
+
+            //get featured Dj mixes
+            $featured_dj_mixes = array();
+            $featuredDJMIXES = array();
+
+            $featured_mixes_Query = "SELECT * FROM albums WHERE tag = \"dj\" ORDER BY datecreated DESC LIMIT 20";
+            $featured_mixes_Query_result = mysqli_query($this->conn, $featured_mixes_Query);
+            while ($row = mysqli_fetch_array($featured_mixes_Query_result)) {
+                array_push($featured_dj_mixes, $row);
+            }
+
+
+            foreach ($featured_dj_mixes as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['title'] = $row['title'];
+                $temp['artworkPath'] = $row['artworkPath'];
+                $temp['tag'] = $row['tag'];
+                array_push($featuredDJMIXES, $temp);
+            }
+
+            $feat_albums_temps = array();
+            $feat_albums_temps['Dj Mixes'] = $featuredDJMIXES;
+            array_push($menuCategory, $feat_albums_temps);
+            ///end featuredAlbums
+
+
+        }
 
 
         //fetch other categories Begin
@@ -518,7 +356,7 @@ class Handler
         }
 
         foreach ($home_genreIDs as $row) {
-            $genre = new Genre($this->conn,$row);
+            $genre = new Genre($this->conn, $row);
             $temp = array();
             $temp['id'] = $genre->getGenreid();
             $temp['name'] = $genre->getGenre();
