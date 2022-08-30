@@ -357,7 +357,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['Dj Mixes'] = $featuredDJMIXES;
+            $feat_albums_temps['FeaturedDjMixes'] = $featuredDJMIXES;
             array_push($menuCategory, $feat_albums_temps);
             ///end featuredAlbums
 
