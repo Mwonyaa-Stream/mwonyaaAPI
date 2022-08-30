@@ -253,9 +253,37 @@ class Handler
             }
 
             $slider_temps = array();
+            $slider_temps['heading'] = "Discover";
             $slider_temps['featured_sliderBanners'] = $sliders;
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
+
+
+            //get genres
+            $top_home_genreIDs = array();
+            $featured_genres = array();
+            $top_genre_stmt = "SELECT DISTINCT(genre) FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT 8;";
+            $top_genre_stmt_result = mysqli_query($this->conn, $top_genre_stmt);
+
+            while ($row = mysqli_fetch_array($top_genre_stmt_result)) {
+                array_push($top_home_genreIDs, $row['genre']);
+            }
+
+            foreach ($top_home_genreIDs as $row) {
+                $genre = new Genre($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $genre->getGenreid();
+                $temp['name'] = $genre->getGenre();
+                $temp['tag'] = $genre->getTag();
+                array_push($featured_genres, $temp);
+            }
+
+            $feat_genres = array();
+            $feat_genres['heading'] = "Featured genres";
+            $feat_genres['featuredGenres'] = $featured_genres;
+            array_push($menuCategory, $feat_genres);
+
+            // end genres
 
 
             //get Trending Artist
@@ -279,6 +307,7 @@ class Handler
             }
 
             $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Featured Artists";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
@@ -305,6 +334,7 @@ class Handler
             }
 
             $feat_playlist_temps = array();
+            $feat_playlist_temps['heading'] = "Featured Playlists";
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredArtist
@@ -331,6 +361,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
+            $feat_albums_temps['heading'] = "Featured Albums";
             $feat_albums_temps['featuredAlbums'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end featuredAlbums
@@ -357,6 +388,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
+            $feat_albums_temps['heading'] = "Featured Mixes";
             $feat_albums_temps['FeaturedDjMixes'] = $featuredDJMIXES;
             array_push($menuCategory, $feat_albums_temps);
             ///end featuredAlbums
