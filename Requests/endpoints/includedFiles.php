@@ -11,6 +11,7 @@ require "../../Includes/TableClasses/Shared.php";
 require "../../Includes/TableClasses/LikedSong.php";
 require "../../Includes/TableClasses/ArtistPick.php";
 require "../../Includes/TableClasses/ArtistEvents.php";
+require "../../Includes/TableClasses/PlaylistSlider.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
 

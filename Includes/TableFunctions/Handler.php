@@ -232,8 +232,28 @@ class Handler
         if ($page == 1) {
 
             // get_Slider_banner
+            $slider_id = array();
+            $sliders = array();
+
+
+            $slider_query = "SELECT id FROM playlist_sliders WHERE status=1 ORDER BY date_created DESC LIMIT 8";
+            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
+            while ($row = mysqli_fetch_array($slider_query_id_result)) {
+                array_push($slider_id, $row['id']);
+            }
+
+
+            foreach ($slider_id as $row) {
+                $temp = array();
+                $slider = new PlaylistSlider($this->conn, $row);
+                $temp['id'] = $slider->getId();
+                $temp['playlistID'] = $slider->getPlaylistID();
+                $temp['imagepath'] = $slider->getImagepath();
+                array_push($sliders, $temp);
+            }
+
             $slider_temps = array();
-            $slider_temps['sliderBanners'] = [];
+            $slider_temps['featured_sliderBanners'] = $sliders;
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
@@ -243,7 +263,7 @@ class Handler
             $featuredartists = array();
             $featuredCategory = array();
 
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' ORDER BY overalplays DESC LIMIT 20";
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' ORDER BY overalplays DESC LIMIT 8";
             $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
             while ($row = mysqli_fetch_array($feat_cat_id_result)) {
                 array_push($featuredartists, $row);
@@ -268,7 +288,7 @@ class Handler
             $featured_playlist = array();
             $featuredPlaylist = array();
 
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 8";
             $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
             while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
                 array_push($featured_playlist, $row);
@@ -294,7 +314,7 @@ class Handler
             $featured_albums = array();
             $featuredAlbums = array();
 
-            $featured_album_Query = "SELECT * FROM albums WHERE tag = \"music\" ORDER BY totalsongplays DESC LIMIT  20";
+            $featured_album_Query = "SELECT * FROM albums WHERE tag = \"music\" ORDER BY totalsongplays DESC LIMIT  8";
             $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
             while ($row = mysqli_fetch_array($featured_album_Query_result)) {
                 array_push($featured_albums, $row);
@@ -320,7 +340,7 @@ class Handler
             $featured_dj_mixes = array();
             $featuredDJMIXES = array();
 
-            $featured_mixes_Query = "SELECT * FROM albums WHERE tag = \"dj\" ORDER BY datecreated DESC LIMIT 20";
+            $featured_mixes_Query = "SELECT * FROM albums WHERE tag = \"dj\" ORDER BY datecreated DESC LIMIT 8";
             $featured_mixes_Query_result = mysqli_query($this->conn, $featured_mixes_Query);
             while ($row = mysqli_fetch_array($featured_mixes_Query_result)) {
                 array_push($featured_dj_mixes, $row);
@@ -367,7 +387,7 @@ class Handler
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
-        $itemRecords["home_feed"] = $menuCategory;
+        $itemRecords["featured"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
         $itemRecords["total_results"] = $total_rows;
 
