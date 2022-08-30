@@ -305,7 +305,7 @@ class Handler
             }
 
             $feat_playlist_temps = array();
-            $feat_playlist_temps['featuredPlaylist'] = $featuredPlaylist;
+            $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredArtist
 
