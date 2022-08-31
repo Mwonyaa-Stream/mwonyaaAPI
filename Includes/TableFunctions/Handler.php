@@ -661,6 +661,7 @@ class Handler
 
 
             $slider_temps = array();
+            $slider_temps['heading'] = "Popular Search";
             $slider_temps['popularSearch'] = $bestSellingProducts;
             array_push($menuCategory, $slider_temps);
 
