@@ -12,6 +12,7 @@ require "../../Includes/TableClasses/LikedSong.php";
 require "../../Includes/TableClasses/ArtistPick.php";
 require "../../Includes/TableClasses/ArtistEvents.php";
 require "../../Includes/TableClasses/PlaylistSlider.php";
+require "../../Includes/TableClasses/SearchSlider.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
 
