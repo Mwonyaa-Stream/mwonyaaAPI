@@ -689,6 +689,7 @@ class Handler
             $temp['id'] = $genre->getGenreid();
             $temp['name'] = $genre->getGenre();
             $temp['tag'] = $genre->getTag();
+            $temp['cover_image'] = $genre->getGenreTopPic();
             array_push($menuCategory, $temp);
         }
 

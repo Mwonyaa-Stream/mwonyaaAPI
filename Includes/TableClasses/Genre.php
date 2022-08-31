@@ -47,6 +47,16 @@ class Genre
         return $this->tag;
     }
 
+
+    public function getGenreTopPic(){
+        $sql = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 1";
+        $result = mysqli_query($this->con, $sql);
+        $id_data = mysqli_fetch_assoc($result);
+        $song = new Song($this->con,$id_data['id']);
+
+        return $song->getAlbum()->getArtworkPath();
+    }
+
     public function getGenre_Songs(){
 
         //fetch other categories Begin
