@@ -591,114 +591,103 @@ class Handler
     public function searchHomePage()
     {
 
-        $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
-
-        $page = floatval($home_page);
-        $no_of_records_per_page = 12;
-        $offset = ($page - 1) * $no_of_records_per_page;
-
-        $sql = "SELECT COUNT(DISTINCT(genre)) as count FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`weekplays` DESC limit 1";
-        $result = mysqli_query($this->conn, $sql);
-        $data = mysqli_fetch_assoc($result);
-        $total_rows = floatval($data['count']);
-        $total_pages = ceil($total_rows / $no_of_records_per_page);
 
         $menuCategory = array();
         $itemRecords = array();
 
 
-        if ($page == 1) {
-
-            // get_Slider_banner
-            $slider_id = array();
-            $sliders = array();
+        // get_Slider_banner
+        $slider_id = array();
+        $sliders = array();
 
 
-            $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
-            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
-            while ($row = mysqli_fetch_array($slider_query_id_result)) {
-                array_push($slider_id, $row['id']);
-            }
-
-
-            foreach ($slider_id as $row) {
-                $temp = array();
-                $slider = new SearchSlider($this->conn, $row);
-                $temp['id'] = $slider->getId();
-                $temp['playlistID'] = $slider->getPlaylistID();
-                $temp['imagepath'] = $slider->getImagepath();
-                array_push($sliders, $temp);
-            }
-
-            $slider_temps = array();
-            $slider_temps['heading'] = "Discover";
-            $slider_temps['search_sliders'] = $sliders;
-            array_push($menuCategory, $slider_temps);
-            // end get_Slider_banner
-
-
-            //get genres
-            //  popular search Begin
-            $bestsellingProductsID = array();
-            $bestSellingProducts = array();
-            $category_stmts = "SELECT `id`, `query`, `count`, `created_at`, `updated_at` FROM `searches` ORDER BY count DESC LIMIT 30";
-            $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
-
-            while ($row = mysqli_fetch_array($menu_type_id_results)) {
-
-                array_push($bestsellingProductsID, $row);
-            }
-
-            foreach ($bestsellingProductsID as $row) {
-                $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['query'] = $row['query'];
-                $temp['count'] = $row['count'];
-                $temp['created_at'] = $row['created_at'];
-                $temp['updated_at'] = $row['updated_at'];
-                array_push($bestSellingProducts, $temp);
-            }
-
-
-            $slider_temps = array();
-            $slider_temps['heading'] = "Popular Search";
-            $slider_temps['popularSearch'] = $bestSellingProducts;
-            array_push($menuCategory, $slider_temps);
-
-            // end popular search  Fetch
-
-            // end genres
-
-
-
+        $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
+        $slider_query_id_result = mysqli_query($this->conn, $slider_query);
+        while ($row = mysqli_fetch_array($slider_query_id_result)) {
+            array_push($slider_id, $row['id']);
         }
 
 
+        foreach ($slider_id as $row) {
+            $temp = array();
+            $slider = new SearchSlider($this->conn, $row);
+            $temp['id'] = $slider->getId();
+            $temp['playlistID'] = $slider->getPlaylistID();
+            $temp['imagepath'] = $slider->getImagepath();
+            array_push($sliders, $temp);
+        }
+
+        $slider_temps = array();
+        $slider_temps['heading'] = "Discover";
+        $slider_temps['search_sliders'] = $sliders;
+        array_push($menuCategory, $slider_temps);
+        // end get_Slider_banner
+
+
+        //get genres
+        //  popular search Begin
+        $bestsellingProductsID = array();
+        $bestSellingProducts = array();
+        $category_stmts = "SELECT `id`, `query`, `count`, `created_at`, `updated_at` FROM `searches` ORDER BY count DESC LIMIT 30";
+        $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
+
+        while ($row = mysqli_fetch_array($menu_type_id_results)) {
+
+            array_push($bestsellingProductsID, $row);
+        }
+
+        foreach ($bestsellingProductsID as $row) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['query'] = $row['query'];
+            $temp['count'] = $row['count'];
+            $temp['created_at'] = $row['created_at'];
+            $temp['updated_at'] = $row['updated_at'];
+            array_push($bestSellingProducts, $temp);
+        }
+
+
+        $slider_temps = array();
+        $slider_temps['heading'] = "Popular Search";
+        $slider_temps['popularSearch'] = $bestSellingProducts;
+        array_push($menuCategory, $slider_temps);
+
+        // end popular search  Fetch
+
+        // end genres
+
+
         //fetch other categories Begin
-        $home_genreIDs = array();
-        $genre_stmt = "SELECT DISTINCT(genre) FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $Search_genreIDs = array();
+        $SearchGenreBody = array();
+        $genre_stmt = "SELECT DISTINCT(genre) FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 10";
         $genre_stmt_result = mysqli_query($this->conn, $genre_stmt);
 
         while ($row = mysqli_fetch_array($genre_stmt_result)) {
 
-            array_push($home_genreIDs, $row['genre']);
+            array_push($Search_genreIDs, $row['genre']);
         }
 
-        foreach ($home_genreIDs as $row) {
+        foreach ($Search_genreIDs as $row) {
             $genre = new Genre($this->conn, $row);
             $temp = array();
             $temp['id'] = $genre->getGenreid();
             $temp['name'] = $genre->getGenre();
             $temp['tag'] = $genre->getTag();
             $temp['cover_image'] = $genre->getGenreTopPic();
-            array_push($menuCategory, $temp);
+            array_push($SearchGenreBody, $temp);
         }
 
+        $genreCategory = array();
+        $genreCategory['heading'] = "Browse";
+        $genreCategory['genreCategories'] = $SearchGenreBody;
+        array_push($menuCategory, $genreCategory);
+
         $itemRecords["version"] = $this->version;
-        $itemRecords["page"] = $page;
+        $itemRecords["page"] = 1;
         $itemRecords["searchMain"] = $menuCategory;
-        $itemRecords["total_pages"] = $total_pages;
-        $itemRecords["total_results"] = $total_rows;
+        $itemRecords["total_pages"] = 1;
+        $itemRecords["total_results"] = 1;
 
         return $itemRecords;
     }
@@ -738,7 +727,7 @@ class Handler
         $sh_data = mysqli_fetch_assoc($sh_result);
         if ($sh_data != null) {
             $sh_id = floatval($sh_data['id']);
-            $countQuery = mysqli_query($this->conn,"SELECT `count` FROM searches WHERE id = $sh_id");
+            $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = $sh_id");
             $shq_data = mysqli_fetch_assoc($countQuery);
             $shq_count = floatval($shq_data['count']);
             $shq_count += 1;
@@ -748,7 +737,6 @@ class Handler
             //insert data
             mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $sch_term . "',1)");
         }
-
 
 
         // check if the search query returned any results
