@@ -787,18 +787,20 @@ class Handler
             }
 
             $itemRecords["page"] = $page;
+            $itemRecords["version"] =1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
-            $itemRecords["products"] = $menuCategory;
+            $itemRecords["search_results"] = $menuCategory;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
 
 
         } else {
             $itemRecords["page"] = $page;
+            $itemRecords["version"] =1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
-            $itemRecords["products"] = null;
+            $itemRecords["search_results"] = [];
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
         }
