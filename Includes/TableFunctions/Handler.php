@@ -699,20 +699,21 @@ class Handler
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "normal";
         // create the base variables for building the search query
-        $search_string = "SELECT * FROM songs WHERE `songs`.`tag` NOT IN ('ad') AND (";
-        $display_words = "";
-
-        // format each of search keywords into the db query to be run
-        $keywords = explode(' ', $search_query);
-        foreach ($keywords as $word) {
-            $search_string .= "title LIKE '%" . $word . "%' OR ";
-            $display_words .= $word . ' ';
-        }
-        $search_string = substr($search_string, 0, strlen($search_string) - 4);
-        $search_string = $search_string.')';
-        $display_words = substr($display_words, 0, strlen($display_words) - 1);
 
 //        echo $search_string;
+        $search_string = "(SELECT id,title,path,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
+           UNION
+           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
+           UNION
+           (SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
+           UNION
+           (SELECT id,name,'path',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
+
+
+//        echo $search_string;
+
+
+
         // run the query in the db and search through each of the records returned
         $query = mysqli_query($this->conn, $search_string);
         $result_count = mysqli_num_rows($query);
@@ -738,34 +739,55 @@ class Handler
 
             $category_stmt = $search_string . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
+//            echo $category_stmt;
+
 
             $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
 
             while ($row = mysqli_fetch_array($menu_type_id_result)) {
-
                 array_push($categoryids, $row);
             }
 
             foreach ($categoryids as $row) {
-                $song = new Song($this->conn, intval($row['id']));
                 $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+                if($row['type'] == "song"){
+                    $temp['id'] = $row['id'];
+                    $song = new Song($this->conn,$row['id']);
+                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['type'] = $row['type'];
+                } if ($row['type'] == "album"){
+                    $temp['id'] = $row['id'];
+                    $album = new Album($this->conn,$row['id']);
+                    $temp['artist'] =$album->getArtist()->getName();
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }if ($row['type'] == "artist"){
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] =$row['title'];
+                    $temp['title'] = '';
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }if ($row['type'] == "playlist"){
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] ='';
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+
                 array_push($menuCategory, $temp);
             }
 
             $itemRecords["page"] = $page;
-            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["products"] = $menuCategory;
             $itemRecords["total_pages"] = $total_pages;
@@ -774,7 +796,7 @@ class Handler
 
         } else {
             $itemRecords["page"] = $page;
-            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["products"] = null;
             $itemRecords["total_pages"] = $total_pages;
