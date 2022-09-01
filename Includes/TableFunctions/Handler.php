@@ -693,6 +693,97 @@ class Handler
     }
 
 
+
+    function searchNormal(){
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
+        $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
+        $search_algorithm = "normal";
+        // create the base variables for building the search query
+        $search_string = "SELECT * FROM songs WHERE `songs`.`tag` NOT IN ('ad') AND (";
+        $display_words = "";
+
+        // format each of search keywords into the db query to be run
+        $keywords = explode(' ', $search_query);
+        foreach ($keywords as $word) {
+            $search_string .= "title LIKE '%" . $word . "%' OR ";
+            $display_words .= $word . ' ';
+        }
+        $search_string = substr($search_string, 0, strlen($search_string) - 4);
+        $search_string = $search_string.')';
+        $display_words = substr($display_words, 0, strlen($display_words) - 1);
+
+//        echo $search_string;
+        // run the query in the db and search through each of the records returned
+        $query = mysqli_query($this->conn, $search_string);
+        $result_count = mysqli_num_rows($query);
+
+        $page = floatval($page);
+        $no_of_records_per_page = 10;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+
+        $total_rows = floatval(number_format($result_count));
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+        $itemRecords = array();
+
+
+        // check if the search query returned any results
+        if ($result_count > 0) {
+
+            $categoryids = array();
+            $menuCategory = array();
+
+
+            $category_stmt = $search_string . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+
+            $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
+
+            while ($row = mysqli_fetch_array($menu_type_id_result)) {
+
+                array_push($categoryids, $row);
+            }
+
+            foreach ($categoryids as $row) {
+                $song = new Song($this->conn, intval($row['id']));
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+                array_push($menuCategory, $temp);
+            }
+
+            $itemRecords["page"] = $page;
+            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["products"] = $menuCategory;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+
+
+        } else {
+            $itemRecords["page"] = $page;
+            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["products"] = null;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        }
+        return $itemRecords;
+    }
+
+
     function searchFullText()
     {
         $search_algorithm = "fulltext";
