@@ -93,14 +93,29 @@ class Handler
             // Artist Pick - Top playlist created by the Artist
             $ArtistPick = array();
             $artistiPick = new ArtistPick($this->conn, $artistID);
-            $temp = array();
-            $temp['id'] = $artistiPick->getId();
-            $temp['type'] = "Playlist";
-            $temp['out_now'] = $artistiPick->getTitle() . " - out now";;
-            $temp['coverimage'] = $artistiPick->getCoverArt();
-            $temp['song_title'] = $artistiPick->getArtist()->getName() . " - " . $artistiPick->getSong()->getTitle();
-            $temp['song_cover'] = $artistiPick->getSong()->getAlbum()->getArtworkPath();
-            array_push($ArtistPick, $temp);
+
+            if ($artistiPick->getId() != null) {
+                $temp = array();
+                $temp['id'] = $artistiPick->getId();
+                $temp['type'] = "Playlist";
+                $temp['out_now'] = $artistiPick->getTitle() . " - out now";;
+                $temp['coverimage'] = $artistiPick->getCoverArt();
+                $temp['song_title'] = $artistiPick->getArtist()->getName() . " - " . $artistiPick->getSong()->getTitle();
+                $temp['song_cover'] = $artistiPick->getSong()->getAlbum()->getArtworkPath();
+                array_push($ArtistPick, $temp);
+            } else {
+                // latest release
+                $arry = $artist_instance->getLatestRelease();
+                $temp = array();
+                $temp['id'] = $arry->getId();
+                $temp['type'] = "Album";
+                $temp['out_now'] = $arry->getTitle() . " - out now";;
+                $temp['coverimage'] = $arry->getArtworkPath();
+                $temp['song_title'] = $arry->getArtist()->getName() . " - " . $arry->getTitle();
+                $temp['song_cover'] = $arry->getArtworkPath();
+                array_push($ArtistPick, $temp);
+            }
+
 
             $artistpick_array = array();
             $artistpick_array['heading'] = "Artist Pick";
@@ -693,8 +708,8 @@ class Handler
     }
 
 
-
-    function searchNormal(){
+    function searchNormal()
+    {
         $page = htmlspecialchars(strip_tags($_GET["page"]));
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "normal";
@@ -703,15 +718,14 @@ class Handler
 //        echo $search_string;
         $search_string = "(SELECT id,title,path,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
-           UNION
            (SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
+           UNION
+           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
            (SELECT id,name,'path',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
 
 
 //        echo $search_string;
-
 
 
         // run the query in the db and search through each of the records returned
@@ -737,7 +751,7 @@ class Handler
             $menuCategory = array();
 
 
-            $category_stmt = $search_string . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
+            $category_stmt = $search_string . " ORDER BY `title` ASC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
 //            echo $category_stmt;
 
@@ -751,32 +765,35 @@ class Handler
             foreach ($categoryids as $row) {
                 $temp = array();
 
-                if($row['type'] == "song"){
+                if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
-                    $song = new Song($this->conn,$row['id']);
+                    $song = new Song($this->conn, $row['id']);
                     $temp['artist'] = $song->getArtist()->getName();
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
-                } if ($row['type'] == "album"){
+                }
+                if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
-                    $album = new Album($this->conn,$row['id']);
-                    $temp['artist'] =$album->getArtist()->getName();
+                    $album = new Album($this->conn, $row['id']);
+                    $temp['artist'] = $album->getArtist()->getName();
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
-                }if ($row['type'] == "artist"){
+                }
+                if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] =$row['title'];
+                    $temp['artist'] = $row['title'];
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
-                }if ($row['type'] == "playlist"){
+                }
+                if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] ='';
+                    $temp['artist'] = '';
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -787,7 +804,7 @@ class Handler
             }
 
             $itemRecords["page"] = $page;
-            $itemRecords["version"] =1;
+            $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
@@ -797,7 +814,7 @@ class Handler
 
         } else {
             $itemRecords["page"] = $page;
-            $itemRecords["version"] =1;
+            $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = [];
@@ -810,25 +827,34 @@ class Handler
 
     function searchFullText()
     {
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
+        $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "fulltext";
-        // SELECT * FROM products WHERE MATCH (name) AGAINST ('cooking oil')
-
         // create the base variables for building the search query
-        $search_string = "SELECT * FROM products WHERE published = 1 AND ";
-        $display_words = "";
 
-        // format each of search keywords into the db query to be run
-        $search_string .= "MATCH (name,tags) AGAINST ('" . $this->query . "' IN NATURAL LANGUAGE MODE)";
-        $display_words .= $this->query . ' ';
+//        SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE MATCH(name) AGAINST('oil phone' IN NATURAL LANGUAGE MODE)
 
 //        echo $search_string;
+        $search_string = "
+            (SELECT id,title,path,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+           UNION
+           (SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+           UNION
+           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
+           UNION
+           (SELECT id,name,'path',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
+
+
+//        echo $search_string;
+
+
         // run the query in the db and search through each of the records returned
         $query = mysqli_query($this->conn, $search_string);
         $result_count = mysqli_num_rows($query);
 
-        $this->pageno = floatval($this->page);
+        $page = floatval($page);
         $no_of_records_per_page = 10;
-        $offset = ($this->pageno - 1) * $no_of_records_per_page;
+        $offset = ($page - 1) * $no_of_records_per_page;
 
 
         $total_rows = floatval(number_format($result_count));
@@ -836,22 +862,6 @@ class Handler
 
 
         $itemRecords = array();
-
-        $sch_term = htmlspecialchars(strip_tags($this->query));
-        $sh_result = mysqli_query($this->conn, "SELECT * FROM `searches` WHERE `query`='" . $sch_term . "' LIMIT 1;");
-        $sh_data = mysqli_fetch_assoc($sh_result);
-        if ($sh_data != null) {
-            $sh_id = floatval($sh_data['id']);
-            $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = $sh_id");
-            $shq_data = mysqli_fetch_assoc($countQuery);
-            $shq_count = floatval($shq_data['count']);
-            $shq_count += 1;
-            mysqli_query($this->conn, "UPDATE `searches` SET `count`= $shq_count WHERE id = $sh_id");
-
-        } else {
-            //insert data
-            mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $sch_term . "',1)");
-        }
 
 
         // check if the search query returned any results
@@ -861,52 +871,76 @@ class Handler
             $menuCategory = array();
 
 
-            $category_stmt = $search_string . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
+            $category_stmt = $search_string . " ORDER BY `title` ASC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+//            echo $category_stmt;
 
 
             $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
 
             while ($row = mysqli_fetch_array($menu_type_id_result)) {
-
                 array_push($categoryids, $row);
             }
 
             foreach ($categoryids as $row) {
-                $product = new Product($this->conn, intval($row['id']));
                 $temp = array();
-                $temp['id'] = $product->getId();
-                $temp['name'] = $product->getName();
-                $temp['category_id'] = $product->getCategory_id();
-                $temp['photos'] = $product->getPhotos();
-                $temp['thumbnail_img'] = $product->getThumbnail_img();
-                $temp['unit_price'] = intVal($product->getUnit_price());
-                $temp['discount'] = intVal($product->getDiscount());
-                $temp['purchase_price'] = intVal($product->getPurchase_price());
-                $temp['meta_title'] = $product->getMeta_title();
-                $temp['meta_description'] = $product->getMeta_description();
-                $temp['meta_img'] = $product->getMeta_img();
-                $temp['min_qtn'] = $product->getMin_qty();
-                $temp['published'] = $product->getPublished();
+
+                if ($row['type'] == "song") {
+                    $temp['id'] = $row['id'];
+                    $song = new Song($this->conn, $row['id']);
+                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "album") {
+                    $temp['id'] = $row['id'];
+                    $album = new Album($this->conn, $row['id']);
+                    $temp['artist'] = $album->getArtist()->getName();
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "artist") {
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] = $row['title'];
+                    $temp['title'] = '';
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "playlist") {
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] = '';
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+
                 array_push($menuCategory, $temp);
             }
 
-
-            $itemRecords["page"] = $this->pageno;
-            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
-            $itemRecords["products"] = $menuCategory;
+            $itemRecords["search_results"] = $menuCategory;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
 
+
         } else {
-            $itemRecords["page"] = $this->pageno;
-            $itemRecords["searchTerm"] = $display_words;
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
-            $itemRecords["products"] = null;
+            $itemRecords["search_results"] = [];
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
         }
-
         return $itemRecords;
     }
 }
