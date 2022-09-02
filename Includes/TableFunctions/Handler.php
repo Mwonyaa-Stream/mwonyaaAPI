@@ -716,13 +716,13 @@ class Handler
         // create the base variables for building the search query
 
 //        echo $search_string;
-        $search_string = "(SELECT id,title,path,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
+        $search_string = "(SELECT id,title,artist,path,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
+           (SELECT id,name,'artist','path',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
+           (SELECT id,title,artist,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,name,'path',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
+           (SELECT id,name,'artist','path',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
 
 
 //        echo $search_string;
@@ -769,6 +769,7 @@ class Handler
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
                     $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -778,6 +779,7 @@ class Handler
                     $temp['id'] = $row['id'];
                     $album = new Album($this->conn, $row['id']);
                     $temp['artist'] = $album->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -786,6 +788,7 @@ class Handler
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
                     $temp['artist'] = $row['title'];
+                    $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -794,6 +797,7 @@ class Handler
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
                     $temp['artist'] = '';
+                    $temp['artistID'] = '';
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -836,13 +840,13 @@ class Handler
 
 //        echo $search_string;
         $search_string = "
-            (SELECT id,title,path,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+            (SELECT id,title,artist,path,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+           (SELECT id,name,'artist','path',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,title,'path',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
+           (SELECT id,title,artist,'path',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
            UNION
-           (SELECT id,name,'path',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
+           (SELECT id,name,'artist','path',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
 
 
 //        echo $search_string;
@@ -889,6 +893,7 @@ class Handler
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
                     $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -898,6 +903,7 @@ class Handler
                     $temp['id'] = $row['id'];
                     $album = new Album($this->conn, $row['id']);
                     $temp['artist'] = $album->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -906,6 +912,7 @@ class Handler
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
                     $temp['artist'] = $row['title'];
+                    $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
@@ -914,6 +921,7 @@ class Handler
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
                     $temp['artist'] = '';
+                    $temp['artistID'] = '';
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['artworkPath'] = $row['artworkPath'];
