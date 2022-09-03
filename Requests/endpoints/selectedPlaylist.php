@@ -5,8 +5,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-    $result = $handler->searchNormal();
-//    $result = $handler->searchFullText();
+    $result = $handler->readSelectedPlaylist();
 
     if($result){
         http_response_code(200);
@@ -19,5 +18,7 @@ if (!empty($db)) {
     }
 
 }
+
+
 
 

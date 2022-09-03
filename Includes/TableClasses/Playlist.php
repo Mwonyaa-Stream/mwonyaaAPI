@@ -15,8 +15,7 @@ class Playlist
 
 	public function __construct($con, $data)
 	{
-		$results = [];
-		//code...
+
 		if (!is_array($data)) {
 
 			//data is a string
