@@ -232,7 +232,7 @@ class Handler
         $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
 
-        $sql = "SELECT COUNT(DISTINCT(genre)) as count FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`weekplays` DESC limit 1";
+        $sql = "SELECT DISTINCT(genre) as count FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT 1";
         $result = mysqli_query($this->conn, $sql);
         $data = mysqli_fetch_assoc($result);
         $total_rows = floatval($data['count']);
@@ -414,7 +414,7 @@ class Handler
 
         //fetch other categories Begin
         $home_genreIDs = array();
-        $genre_stmt = "SELECT DISTINCT(genre) FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $genre_stmt = "SELECT DISTINCT(genre) FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
         $genre_stmt_result = mysqli_query($this->conn, $genre_stmt);
 
         while ($row = mysqli_fetch_array($genre_stmt_result)) {
