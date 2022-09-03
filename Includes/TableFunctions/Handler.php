@@ -1028,4 +1028,77 @@ class Handler
 
         return $itemRecords;
     }
+
+    function readSong()
+    {
+
+        $itemRecords = array();
+
+        $songID = htmlspecialchars(strip_tags($_GET["songID"]));
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
+
+        if ($songID) {
+            $page = floatval($page);
+
+            $itemRecords["page"] = $page;
+            $itemRecords["Song"] = array();
+
+            // Song
+            $song = new Song($this->conn, $songID);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['albumID'] = $song->getAlbumId();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+            array_push($itemRecords['Song'], $temp);
+
+
+            // get products id from the same cat
+            $related_song_ids = $song->getRelatedSongs();
+            $all_Related_Songs = array();
+
+            foreach ($related_song_ids as $row) {
+                $song = new Song($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+                array_push($all_Related_Songs, $temp);
+            }
+
+            $slider_temps = array();
+            $slider_temps['Related Songs'] = "Related Songs";
+            $slider_temps['Tracks'] = $all_Related_Songs;
+            array_push($itemRecords['Song'], $slider_temps);
+
+
+
+            $itemRecords["total_pages"] = 1;
+            $itemRecords["total_results"] = 1;
+
+
+        }
+        return $itemRecords;
+    }
 }

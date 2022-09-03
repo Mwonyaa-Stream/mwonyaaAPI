@@ -36,7 +36,7 @@
 
             else {
                 $this->mysqliData = mysqli_fetch_array($query);
-
+                $this->id = $this->mysqliData['id'];
                 $this->title = $this->mysqliData['title'];
                 $this->artistId = $this->mysqliData['artist'];
                 $this->albumId = $this->mysqliData['album'];
@@ -76,6 +76,7 @@
         }
 
 
+
         public function getArtist(){
             return new Artist($this->con, $this->artistId);
         }
@@ -103,6 +104,16 @@
             return $this->weekplays;
         }
 
+        public function getRelatedSongs(){
+            $query = mysqli_query($this->con, "SELECT * FROM `songs` WHERE genre = '$this->genre' AND id != '$this->id'  ORDER by weekplays DESC LIMIT 14 ");
+            $array = array();
+
+            while($row = mysqli_fetch_array($query)){
+                array_push($array, $row['id']);
+            }
+
+            return $array;
+        }
     
 
 
