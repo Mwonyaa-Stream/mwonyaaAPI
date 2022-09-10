@@ -127,7 +127,7 @@ class Playlist
 
     public function getSongIds()
     {
-        $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM playlistsongs WHERE playlistId='mwPL61c3429798c03mw61c' ORDER BY playlistOrder ASC");
+        $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM playlistsongs WHERE playlistId='$this->id' ORDER BY playlistOrder ASC");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
