@@ -962,7 +962,7 @@ class Handler
 
         if ($playlistID) {
             $page = floatval($page);
-            $no_of_records_per_page = 20;
+            $no_of_records_per_page = 50;
             $offset = ($this->pageNO - 1) * $no_of_records_per_page;
 
             $sql = "SELECT COUNT(id) as count FROM playlistsongs WHERE playlistId = '" . $playlistID . "'  limit 1";
@@ -972,10 +972,11 @@ class Handler
             $total_pages = ceil($total_rows / $no_of_records_per_page);
 
             $itemRecords["page"] = $page;
-            $itemRecords["Playlist"] = array();
+            $itemRecords["Playlists"] = array();
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
             $playlist = new Playlist($this->conn, $playlistID);
+
 
             if ($page == 1) {
 
@@ -984,10 +985,11 @@ class Handler
                     $temp['id'] = $playlist->getId();
                     $temp['name'] = $playlist->getName();
                     $temp['owner'] = $playlist->getOwner();
-                    $temp['cover'] = $playlist->getCoverimage();
-
-
-                    array_push($itemRecords["Playlist"], $temp);
+                    $temp['cover'] = $playlist->getCoverurl();
+                    $temp['description'] = $playlist->getDescription();
+                    $temp['status'] = $playlist->getStatus();
+                    $temp['total'] = $total_rows;
+                    array_push($itemRecords["Playlists"], $temp);
 
                 }
 
@@ -1020,7 +1022,7 @@ class Handler
 
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
-            array_push($itemRecords['Playlist'], $slider_temps);
+            array_push($itemRecords['Playlists'], $slider_temps);
 
 
         }
