@@ -428,7 +428,7 @@ class Handler
             $temp['id'] = $genre->getGenreid();
             $temp['name'] = $genre->getGenre();
             $temp['tag'] = $genre->getTag();
-            $temp['Tracks'] = $genre->getGenre_Songs();
+            $temp['Tracks'] = $genre->getGenre_Songs(6);
             array_push($menuCategory, $temp);
         }
 
@@ -949,6 +949,61 @@ class Handler
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
         }
+        return $itemRecords;
+    }
+
+
+    function readSelectedGenre(){
+
+        $genreID = htmlspecialchars(strip_tags($_GET["genreID"]));
+        $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
+
+        $menuCategory = array();
+        $itemRecords = array();
+
+
+        // get_Slider_banner
+        $slider_id = array();
+        $sliders = array();
+
+
+        $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
+        $slider_query_id_result = mysqli_query($this->conn, $slider_query);
+        while ($row = mysqli_fetch_array($slider_query_id_result)) {
+            array_push($slider_id, $row['id']);
+        }
+
+
+        foreach ($slider_id as $row) {
+            $temp = array();
+            $slider = new SearchSlider($this->conn, $row);
+            $temp['id'] = $slider->getId();
+            $temp['playlistID'] = $slider->getPlaylistID();
+            $temp['imagepath'] = $slider->getImagepath();
+            array_push($sliders, $temp);
+        }
+
+        $slider_temps = array();
+        $slider_temps['heading'] = "Discover";
+        $slider_temps['search_sliders'] = $sliders;
+        array_push($menuCategory, $slider_temps);
+        // end get_Slider_banner
+
+
+        // genre songs id
+        $genre = new Genre($this->conn, $genreID);
+        $temp = array();
+        $temp['id'] = $genre->getGenreid();
+        $temp['name'] = $genre->getGenre();
+        $temp['tag'] = $genre->getTag();
+        $temp['Tracks'] = $genre->getGenre_Songs(36);
+        array_push($menuCategory, $temp);
+
+        $itemRecords["version"] = $this->version;
+        $itemRecords["page"] = 1;
+        $itemRecords["genreMain"] = $menuCategory;
+        $itemRecords["total_pages"] = 1;
+        $itemRecords["total_results"] = 1;
         return $itemRecords;
     }
 

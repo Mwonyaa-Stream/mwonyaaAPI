@@ -21,6 +21,8 @@ class Genre
         if (mysqli_num_rows($checkgenre) == 0) {
             $this->genre = null;
             $this->tag = null;
+            $this->genreid = null;
+
         } else {
             $this->genre = $genrefetched['name'];
             $this->tag = $genrefetched['tag'];
@@ -57,12 +59,12 @@ class Genre
         return $song->getAlbum()->getArtworkPath();
     }
 
-    public function getGenre_Songs(){
+    public function getGenre_Songs($limit){
 
         //fetch other categories Begin
         $song_ids = array();
         $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 6";
+        $genre_song_stmt = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT $limit";
         $genre_song_stmt_result = mysqli_query($this->con, $genre_song_stmt);
 
         while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
