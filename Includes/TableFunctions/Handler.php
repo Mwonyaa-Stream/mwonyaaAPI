@@ -953,7 +953,8 @@ class Handler
     }
 
 
-    function readSelectedGenre(){
+    function readSelectedGenre()
+    {
 
         $genreID = htmlspecialchars(strip_tags($_GET["genreID"]));
         $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
@@ -1150,12 +1151,169 @@ class Handler
             array_push($itemRecords['Song'], $slider_temps);
 
 
-
             $itemRecords["total_pages"] = 1;
             $itemRecords["total_results"] = 1;
 
 
         }
+        return $itemRecords;
+    }
+
+
+    function podcastHome()
+    {
+
+        $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+
+        $page = floatval($home_page);
+        $no_of_records_per_page = 5;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+        $sql = "SELECT COUNT(id) as count FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT 1";
+        $result = mysqli_query($this->conn, $sql);
+        $data = mysqli_fetch_assoc($result);
+        $total_rows = floatval($data['count']);
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+        $category_ids = array();
+        $menuCategory = array();
+        $itemRecords = array();
+
+
+        if ($page == 1) {
+
+            // get_Slider_banner
+            $song_ids = array();
+            $home_genre_tracks = array();
+            $genre_song_stmt = "SELECT id FROM songs  WHERE tag = 'podcast' ORDER BY `songs`.`plays` DESC LIMIT 8";
+            $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
+
+            while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
+
+                array_push($song_ids, $row['id']);
+            }
+
+            foreach ($song_ids as $row) {
+                $song = new Song($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+                array_push($home_genre_tracks, $temp);
+            }
+
+
+            $podcast_temps = array();
+            $podcast_temps['heading'] = "Podcast";
+            $podcast_temps['subheading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
+            $podcast_temps['tracks'] = $home_genre_tracks;
+            array_push($menuCategory, $podcast_temps);
+            // end get_Slider_banner
+
+
+            //get Trending Artist
+
+            $featuredartists = array();
+            $featuredCategory = array();
+
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='podcast' ORDER BY overalplays DESC LIMIT 8";
+            $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
+            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+                array_push($featuredartists, $row);
+            }
+
+
+            foreach ($featuredartists as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['profilephoto'] = $row['profilephoto'];
+                $temp['name'] = $row['name'];
+                array_push($featuredCategory, $temp);
+            }
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Featured Artists";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+
+            // get_Slider_banner
+            $slider_id = array();
+            $sliders = array();
+
+
+            $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
+            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
+            while ($row = mysqli_fetch_array($slider_query_id_result)) {
+                array_push($slider_id, $row['id']);
+            }
+
+
+            foreach ($slider_id as $row) {
+                $temp = array();
+                $slider = new SearchSlider($this->conn, $row);
+                $temp['id'] = $slider->getId();
+                $temp['playlistID'] = $slider->getPlaylistID();
+                $temp['imagepath'] = $slider->getImagepath();
+                array_push($sliders, $temp);
+            }
+
+            $slider_temps = array();
+            $slider_temps['heading'] = "Discover";
+            $slider_temps['podcast_sliders'] = $sliders;
+            array_push($menuCategory, $slider_temps);
+            // end get_Slider_banner
+
+
+        }
+
+
+        //get featured Album
+        $featured_albums = array();
+        $featuredAlbums = array();
+
+        $featured_album_Query = "SELECT * FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+        $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+            array_push($featured_albums, $row);
+        }
+
+
+        foreach ($featured_albums as $row) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['title'] = $row['title'];
+            $temp['artworkPath'] = $row['artworkPath'];
+            $temp['tag'] = $row['tag'];
+            array_push($featuredAlbums, $temp);
+        }
+
+        $feat_albums_temps = array();
+        $feat_albums_temps['heading'] = "Featured Podcasts";
+        $feat_albums_temps['featuredPodcasts'] = $featuredAlbums;
+        array_push($menuCategory, $feat_albums_temps);
+        ///end featuredAlbums
+
+
+        $itemRecords["version"] = $this->version;
+        $itemRecords["page"] = $page;
+        $itemRecords["podcastHome"] = $menuCategory;
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_rows;
+
         return $itemRecords;
     }
 }
