@@ -1306,10 +1306,12 @@ class Handler
             array_push($featuredAlbums, $temp);
         }
 
-        $feat_albums_temps = array();
-        $feat_albums_temps['heading'] = "Featured Podcasts";
-        $feat_albums_temps['featuredPodcasts'] = $featuredAlbums;
-        array_push($menuCategory, $feat_albums_temps);
+//        $feat_albums_temps = array();
+//        $feat_albums_temps['heading'] = "Featured Podcasts";
+//        $feat_albums_temps['featuredPodcasts'] = $featuredAlbums;
+//        array_push($menuCategory, $feat_albums_temps);
+
+        array_push($menuCategory, $featuredAlbums);
         ///end featuredAlbums
 
 
