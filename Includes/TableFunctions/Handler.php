@@ -1303,7 +1303,8 @@ class Handler
             $temp['artistImage'] = $pod->getArtist()->getProfilePath();
             $temp['genre'] = $pod->getGenre()->getGenre();
             $temp['tag'] = $pod->getTag();
-            array_push($featuredAlbums, $temp);
+//            array_push($featuredAlbums, $temp);
+            array_push($menuCategory, $temp);
         }
 
 //        $feat_albums_temps = array();
@@ -1311,7 +1312,6 @@ class Handler
 //        $feat_albums_temps['featuredPodcasts'] = $featuredAlbums;
 //        array_push($menuCategory, $feat_albums_temps);
 
-        array_push($menuCategory, $featuredAlbums);
         ///end featuredAlbums
 
 
