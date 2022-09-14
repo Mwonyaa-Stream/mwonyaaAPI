@@ -1284,20 +1284,25 @@ class Handler
         $featured_albums = array();
         $featuredAlbums = array();
 
-        $featured_album_Query = "SELECT * FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $featured_album_Query = "SELECT id FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
         $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
         while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-            array_push($featured_albums, $row);
+            array_push($featured_albums, $row['id']);
         }
 
 
         foreach ($featured_albums as $row) {
+            $pod = new Album($this->conn, $row);
             $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['title'] = $row['title'];
-            $temp['artworkPath'] = $row['artworkPath'];
-            $temp['tag'] = $row['tag'];
+            $temp['id'] = $pod->getId();
+            $temp['title'] = $pod->getTitle();
+            $temp['description'] = $pod->getDescription();
+            $temp['artworkPath'] = $pod->getArtworkPath();
+            $temp['artist'] = $pod->getArtist()->getName();
+            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+            $temp['genre'] = $pod->getGenre()->getGenre();
+            $temp['tag'] = $pod->getTag();
             array_push($featuredAlbums, $temp);
         }
 
