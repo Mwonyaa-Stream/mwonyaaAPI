@@ -1166,7 +1166,7 @@ class Handler
         $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
         $page = floatval($home_page);
-        $no_of_records_per_page = 5;
+        $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
 
         $sql = "SELECT COUNT(id) as count FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT 1";
@@ -1271,7 +1271,7 @@ class Handler
             }
 
             $slider_temps = array();
-            $slider_temps['heading'] = "Discover";
+            $slider_temps['heading'] = "Discover Exclusive Shows on Mwonyaa";
             $slider_temps['podcast_sliders'] = $sliders;
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
@@ -1290,7 +1290,6 @@ class Handler
         while ($row = mysqli_fetch_array($featured_album_Query_result)) {
             array_push($featured_albums, $row['id']);
         }
-
 
         foreach ($featured_albums as $row) {
             $pod = new Album($this->conn, $row);
