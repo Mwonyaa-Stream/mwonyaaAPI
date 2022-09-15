@@ -227,7 +227,7 @@ class Artist
 
     public function getRelatedArtists()
     {
-        $rel_array_query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' ORDER BY overalplays DESC Limit 8");
+        $rel_array_query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' AND id != '$this->id'  ORDER BY overalplays DESC Limit 8");
         $rel_array = array();
 
         while ($rel_array_row = mysqli_fetch_array($rel_array_query)) {
