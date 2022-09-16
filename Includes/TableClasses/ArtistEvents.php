@@ -22,7 +22,7 @@ class ArtistEvents
 
         //select using artistID
 
-        $query = mysqli_query($this->con, "SELECT `id`, `name`, `artistID`, `title`, `venu`, `description`, `date`, `status`, `date_created` FROM `events` WHERE  artistID='$this->artistID' ORDER BY `events`.`date` ASC");
+        $query = mysqli_query($this->con, "SELECT `id`, `name`, `artistID`, `title`, `venu`, `description`, `date`, `status`, `date_created` FROM `artist_events` WHERE  artistID='$this->artistID' ORDER BY `artist_events`.`date` ASC");
 
 
         if (mysqli_num_rows($query) == 0) {

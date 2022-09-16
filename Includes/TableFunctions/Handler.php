@@ -1322,4 +1322,144 @@ class Handler
 
         return $itemRecords;
     }
+
+
+    function EventsHome()
+    {
+
+        $event_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+
+        $page = floatval($event_page);
+        $no_of_records_per_page = 10;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+
+        $sql = "SELECT COUNT(id) as count FROM events WHERE featured = '1' LIMIT 1";
+        $result = mysqli_query($this->conn, $sql);
+        $data = mysqli_fetch_assoc($result);
+        $total_rows = floatval($data['count']);
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+        $category_ids = array();
+        $menuCategory = array();
+        $itemRecords = array();
+
+
+        if ($page == 1) {
+
+            $event_ids = array();
+            $today_s_event = array();
+            $today_s_event_stmt = "SELECT id FROM events  WHERE featured = 1 ORDER BY `events`.`ranking` DESC LIMIT 8";
+            $today_s_event_stmt_result = mysqli_query($this->conn, $today_s_event_stmt);
+
+            while ($row = mysqli_fetch_array($today_s_event_stmt_result)) {
+
+                array_push($event_ids, $row['id']);
+
+            }
+
+            foreach ($event_ids as $row) {
+                $event = new Events($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $event->getId();
+                $temp['title'] = $event->getTitle();
+                $temp['description'] = $event->getDescription();
+                $temp['startDate'] = $event->getStartDate();
+                $temp['startTime'] = $event->getStartTime();
+                $temp['endDate'] = $event->getEndDate();
+                $temp['endtime'] = $event->getEndtime();
+                $temp['location'] = $event->getLocation();
+                $temp['host_name'] = $event->getHostName();
+                $temp['host_contact'] = $event->getHostContact();
+                $temp['image'] = $event->getImage();
+                $temp['ranking'] = $event->getRanking();
+                $temp['featured'] = $event->getFeatured();
+                $temp['date_created'] = $event->getDateCreated();
+                array_push($today_s_event, $temp);
+            }
+
+
+            $podcast_temps = array();
+            $podcast_temps['heading'] = "Today";
+            $podcast_temps['subheading'] = "Be in the Know";
+            $podcast_temps['FeaturedEvents'] = $today_s_event;
+            array_push($menuCategory, $podcast_temps);
+            // end get_Slider_banner
+
+
+
+
+            // get_Slider_banner
+            $slider_id = array();
+            $sliders = array();
+
+
+            $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
+            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
+            while ($row = mysqli_fetch_array($slider_query_id_result)) {
+                array_push($slider_id, $row['id']);
+            }
+
+
+            foreach ($slider_id as $row) {
+                $temp = array();
+                $slider = new SearchSlider($this->conn, $row);
+                $temp['id'] = $slider->getId();
+                $temp['playlistID'] = $slider->getPlaylistID();
+                $temp['imagepath'] = $slider->getImagepath();
+                array_push($sliders, $temp);
+            }
+
+            $slider_temps = array();
+            $slider_temps['heading'] = "Discover Exclusive Shows on Mwonyaa";
+            $slider_temps['podcast_sliders'] = $sliders;
+            array_push($menuCategory, $slider_temps);
+            // end get_Slider_banner
+
+
+        }
+
+
+        //get featured Album
+        $other_events = array();
+
+        $other_events_Query = "SELECT id FROM events  WHERE featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+        $other_events_Query_result = mysqli_query($this->conn, $other_events_Query);
+        while ($row = mysqli_fetch_array($other_events_Query_result)) {
+            array_push($other_events, $row['id']);
+        }
+
+        foreach ($other_events as $row) {
+            $event = new Events($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $event->getId();
+            $temp['title'] = $event->getTitle();
+            $temp['description'] = $event->getDescription();
+            $temp['startDate'] = $event->getStartDate();
+            $temp['startTime'] = $event->getStartTime();
+            $temp['endDate'] = $event->getEndDate();
+            $temp['endtime'] = $event->getEndtime();
+            $temp['location'] = $event->getLocation();
+            $temp['host_name'] = $event->getHostName();
+            $temp['host_contact'] = $event->getHostContact();
+            $temp['image'] = $event->getImage();
+            $temp['ranking'] = $event->getRanking();
+            $temp['featured'] = $event->getFeatured();
+            $temp['date_created'] = $event->getDateCreated();
+            array_push($menuCategory, $temp);
+        }
+
+
+
+
+        $itemRecords["version"] = $this->version;
+        $itemRecords["page"] = $page;
+        $itemRecords["EventsHome"] = $menuCategory;
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_rows;
+
+        return $itemRecords;
+    }
 }
