@@ -1381,8 +1381,8 @@ class Handler
 
 
             $podcast_temps = array();
-            $podcast_temps['heading'] = "Today";
-            $podcast_temps['subheading'] = "Be in the Know";
+            $podcast_temps['heading'] = "Events";
+            $podcast_temps['subheading'] = "This is where you Happen! find out more and contact the hosts directly";
             $podcast_temps['TodayEvents'] = $today_s_event;
             array_push($menuCategory, $podcast_temps);
             // end get_Slider_banner
