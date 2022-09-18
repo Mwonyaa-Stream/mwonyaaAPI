@@ -1388,8 +1388,6 @@ class Handler
             // end get_Slider_banner
 
 
-
-
             // get_Slider_banner
             $slider_id = array();
             $sliders = array();
@@ -1452,11 +1450,95 @@ class Handler
         }
 
 
+        $itemRecords["version"] = $this->version;
+        $itemRecords["page"] = $page;
+        $itemRecords["EventsHome"] = $menuCategory;
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_rows;
+
+        return $itemRecords;
+    }
+
+
+    function SelectedEvents()
+    {
+
+        $event_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+        $event_id = (isset($_GET['eventID']) && $_GET['eventID']) ? htmlspecialchars(strip_tags($_GET["eventID"])) : '1';
+
+        $page = floatval($event_page);
+        $no_of_records_per_page = 10;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+
+        $sql = "SELECT COUNT(id) as count FROM events WHERE id != $event_id AND featured = '1' LIMIT 1";
+        $result = mysqli_query($this->conn, $sql);
+        $data = mysqli_fetch_assoc($result);
+        $total_rows = floatval($data['count']);
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+        $menuCategory = array();
+        $itemRecords = array();
+
+
+        if ($page == 1) {
+            $event = new Events($this->conn, $event_id);
+            $temp = array();
+            $temp['id'] = $event->getId();
+            $temp['title'] = $event->getTitle();
+            $temp['description'] = $event->getDescription();
+            $temp['startDate'] = $event->getStartDate();
+            $temp['startTime'] = $event->getStartTime();
+            $temp['endDate'] = $event->getEndDate();
+            $temp['endtime'] = $event->getEndtime();
+            $temp['location'] = $event->getLocation();
+            $temp['host_name'] = $event->getHostName();
+            $temp['host_contact'] = $event->getHostContact();
+            $temp['image'] = $event->getImage();
+            $temp['ranking'] = $event->getRanking();
+            $temp['featured'] = $event->getFeatured();
+            $temp['date_created'] = $event->getDateCreated();
+            array_push($menuCategory, $temp);
+            // end selected event
+
+        }
+
+
+        //get featured Album
+        $other_events = array();
+
+        $other_events_Query = "SELECT id FROM events  WHERE id != $event_id AND featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+        $other_events_Query_result = mysqli_query($this->conn, $other_events_Query);
+        while ($row = mysqli_fetch_array($other_events_Query_result)) {
+            array_push($other_events, $row['id']);
+        }
+
+        foreach ($other_events as $row) {
+            $event = new Events($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $event->getId();
+            $temp['title'] = $event->getTitle();
+            $temp['description'] = $event->getDescription();
+            $temp['startDate'] = $event->getStartDate();
+            $temp['startTime'] = $event->getStartTime();
+            $temp['endDate'] = $event->getEndDate();
+            $temp['endtime'] = $event->getEndtime();
+            $temp['location'] = $event->getLocation();
+            $temp['host_name'] = $event->getHostName();
+            $temp['host_contact'] = $event->getHostContact();
+            $temp['image'] = $event->getImage();
+            $temp['ranking'] = $event->getRanking();
+            $temp['featured'] = $event->getFeatured();
+            $temp['date_created'] = $event->getDateCreated();
+            array_push($menuCategory, $temp);
+        }
 
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
-        $itemRecords["EventsHome"] = $menuCategory;
+        $itemRecords["Events"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
         $itemRecords["total_results"] = $total_rows;
 
