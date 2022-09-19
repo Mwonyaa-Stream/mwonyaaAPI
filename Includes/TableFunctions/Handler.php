@@ -1332,9 +1332,10 @@ class Handler
         $page = floatval($event_page);
         $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
+        $date_now = date('Y-m-d');
 
 
-        $sql = "SELECT COUNT(id) as count FROM events WHERE featured = '1' LIMIT 1";
+        $sql = "SELECT COUNT(id) as count FROM events WHERE (endDate >= '$date_now') AND featured = '1' LIMIT 1";
         $result = mysqli_query($this->conn, $sql);
         $data = mysqli_fetch_assoc($result);
         $total_rows = floatval($data['count']);
@@ -1350,13 +1351,12 @@ class Handler
 
             $event_ids = array();
             $today_s_event = array();
-            $today_s_event_stmt = "SELECT id FROM events  WHERE featured = 1 ORDER BY `events`.`ranking` DESC LIMIT 8";
+            $today_s_event_stmt = "SELECT id FROM events  WHERE (endDate >= '$date_now') AND featured = 1  ORDER BY `events`.`ranking` DESC LIMIT 8";
             $today_s_event_stmt_result = mysqli_query($this->conn, $today_s_event_stmt);
 
             while ($row = mysqli_fetch_array($today_s_event_stmt_result)) {
 
                 array_push($event_ids, $row['id']);
-
             }
 
             foreach ($event_ids as $row) {
@@ -1422,7 +1422,7 @@ class Handler
         //get featured Album
         $other_events = array();
 
-        $other_events_Query = "SELECT id FROM events  WHERE featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $other_events_Query = "SELECT id FROM events  WHERE (endDate >= '$date_now') AND featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
         $other_events_Query_result = mysqli_query($this->conn, $other_events_Query);
         while ($row = mysqli_fetch_array($other_events_Query_result)) {
@@ -1469,9 +1469,9 @@ class Handler
         $page = floatval($event_page);
         $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
+        $date_now = date('Y-m-d');
 
-
-        $sql = "SELECT COUNT(id) as count FROM events WHERE id != $event_id AND featured = '1' LIMIT 1";
+        $sql = "SELECT COUNT(id) as count FROM events WHERE id != $event_id AND (endDate >= '$date_now') AND featured = '1' LIMIT 1";
         $result = mysqli_query($this->conn, $sql);
         $data = mysqli_fetch_assoc($result);
         $total_rows = floatval($data['count']);
@@ -1508,7 +1508,7 @@ class Handler
         //get featured Album
         $other_events = array();
 
-        $other_events_Query = "SELECT id FROM events  WHERE id != $event_id AND featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $other_events_Query = "SELECT id FROM events  WHERE id != $event_id AND (endDate >= '$date_now') AND featured = 1 ORDER BY `events`.`ranking` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
         $other_events_Query_result = mysqli_query($this->conn, $other_events_Query);
         while ($row = mysqli_fetch_array($other_events_Query_result)) {
