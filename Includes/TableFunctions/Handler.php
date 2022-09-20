@@ -1544,4 +1544,58 @@ class Handler
 
         return $itemRecords;
     }
+
+
+    function getSongRadio()
+    {
+
+        $songID = (isset($_GET['songID']) && $_GET['songID']) ? htmlspecialchars(strip_tags($_GET["songID"])) : '200';
+
+        $date_now = date('d/M/Y');
+
+        $menuCategory = array();
+        $itemRecords = array();
+
+        // Song
+        $song = new Song($this->conn, $songID);
+
+        $itemRecords['id'] = $song->getId();
+        $itemRecords["artworkPath"] = $song->getAlbum()->getArtworkPath();;
+        $itemRecords["title"] = $song->getTitle();
+        $itemRecords["artist"] = $song->getArtist()->getName();
+        $itemRecords["artistID"] = $song->getArtistId();
+        $itemRecords["genre"] = $song->getGenre()->getGenre();
+        $itemRecords["heading"] = "Mwonyaa Mix Station: ". $song->getTitle() ;
+        $itemRecords["subheading"] = "Selection of tracks based on ".$song->getTitle() . " by ".$song->getArtist()->getName();
+        $itemRecords["updated"] = $date_now;
+
+        // get products id from the same cat
+        $related_song_ids = $song->getRelatedSongs();
+
+        foreach ($related_song_ids as $row) {
+            $song = new Song($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+            array_push($menuCategory, $temp);
+        }
+
+
+        $itemRecords["Tracks"] = $menuCategory;
+
+
+        return $itemRecords;
+    }
 }
