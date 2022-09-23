@@ -114,6 +114,17 @@
 
             return $array;
         }
+
+        public function getSongRadio(){
+            $query = mysqli_query($this->con, "SELECT * FROM `songs` WHERE genre = '$this->genre' AND id != '$this->id' ORDER by RAND(), weekplays DESC, plays DESC LIMIT 14 ");
+            $array = array();
+
+            while($row = mysqli_fetch_array($query)){
+                array_push($array, $row['id']);
+            }
+
+            return $array;
+        }
     
 
 

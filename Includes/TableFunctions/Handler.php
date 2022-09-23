@@ -1570,7 +1570,7 @@ class Handler
         $itemRecords["updated"] = $date_now;
 
         // get products id from the same cat
-        $related_song_ids = $song->getRelatedSongs();
+        $related_song_ids = $song->getSongRadio();
 
         foreach ($related_song_ids as $row) {
             $song = new Song($this->conn, $row);
