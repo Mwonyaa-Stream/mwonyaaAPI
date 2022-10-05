@@ -274,6 +274,14 @@ class Handler
             // end get_Slider_banner
 
 
+            // recently played array
+            $recently_played = array();
+            $recently_played['heading'] = "Recently Played";
+            $recently_played['subheading'] = "Tracks Last Listened to";
+            array_push($menuCategory, $recently_played);
+
+
+
             //get genres
             $top_home_genreIDs = array();
             $featured_genres = array();
