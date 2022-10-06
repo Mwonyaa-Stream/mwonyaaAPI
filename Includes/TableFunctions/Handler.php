@@ -334,36 +334,6 @@ class Handler
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
-
-
-            //get Featured Playlist
-            $featured_playlist = array();
-            $featuredPlaylist = array();
-
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 8";
-            $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
-            while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
-                array_push($featured_playlist, $row);
-            }
-
-
-            foreach ($featured_playlist as $row) {
-                $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['name'] = $row['name'];
-                $temp['owner'] = $row['owner'];
-                $temp['coverurl'] = $row['coverurl'];
-                array_push($featuredPlaylist, $temp);
-            }
-
-            $feat_playlist_temps = array();
-            $feat_playlist_temps['heading'] = "Featured Playlists";
-            $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
-            array_push($menuCategory, $feat_playlist_temps);
-            ///end featuredArtist
-
-
-
             //get latest Release 14 days
             $featured_albums = array();
             $featuredAlbums = array();
@@ -394,6 +364,35 @@ class Handler
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
+
+
+            //get Featured Playlist
+            $featured_playlist = array();
+            $featuredPlaylist = array();
+
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 8";
+            $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
+            while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
+                array_push($featured_playlist, $row);
+            }
+
+
+            foreach ($featured_playlist as $row) {
+                $temp = array();
+                $temp['id'] = $row['id'];
+                $temp['name'] = $row['name'];
+                $temp['owner'] = $row['owner'];
+                $temp['coverurl'] = $row['coverurl'];
+                array_push($featuredPlaylist, $temp);
+            }
+
+            $feat_playlist_temps = array();
+            $feat_playlist_temps['heading'] = "Featured Playlists";
+            $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
+            array_push($menuCategory, $feat_playlist_temps);
+            ///end featuredPlaylist
+
+
 
             //get featured Album
             $featured_albums = array();
