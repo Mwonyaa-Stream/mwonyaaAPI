@@ -123,6 +123,40 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             return $array;
         }
 
+        public function getTracks(){
+            $array = array();
+            $allProducts = array();
+            // get products id from the same cat
+            $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
+
+
+            while($row = mysqli_fetch_array($query)){
+                array_push($array, $row['id']);
+            }
+
+            foreach ($array as $row) {
+                $song = new Song($this->con, $row);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+                array_push($allProducts, $temp);
+            }
+
+            return $allProducts;
+        }
+
         /**
          * @return mixed
          */

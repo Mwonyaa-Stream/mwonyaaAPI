@@ -363,6 +363,38 @@ class Handler
             ///end featuredArtist
 
 
+
+            //get latest Release 14 days
+            $featured_albums = array();
+            $featuredAlbums = array();
+
+            $featured_album_Query = "SELECT id FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) ORDER BY `albums`.`datecreated` DESC LIMIT  8";
+            $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+            while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+                array_push($featured_albums, $row['id']);
+            }
+
+            foreach ($featured_albums as $row) {
+                $al = new Album($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $al->getId();
+                $temp['heading'] = "New Release From";
+                $temp['title'] = $al->getTitle();
+                $temp['artworkPath'] = $al->getArtworkPath();
+                $temp['tag'] = $al->getTag();
+                $temp['artistId'] = $al->getArtistId();
+                $temp['artist'] = $al->getArtist()->getName();
+                $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
+                $temp['Tracks'] = $al->getTracks();
+                array_push($featuredAlbums, $temp);
+            }
+
+            $feat_albums_temps = array();
+            $feat_albums_temps['heading'] = "Latest Release Albums";
+            $feat_albums_temps['HomeRelease'] = $featuredAlbums;
+            array_push($menuCategory, $feat_albums_temps);
+            ///end latest Release 14 days
+
             //get featured Album
             $featured_albums = array();
             $featuredAlbums = array();
