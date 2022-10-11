@@ -755,13 +755,13 @@ class Handler
         // create the base variables for building the search query
 
 //        echo $search_string;
-        $search_string = "(SELECT id,title,artist,path,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
+        $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,name,'artist','path',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,title,artist,'path',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,name,'artist','path',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
 
 
 //        echo $search_string;
@@ -811,6 +811,8 @@ class Handler
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
                 }
@@ -821,6 +823,8 @@ class Handler
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
@@ -830,6 +834,8 @@ class Handler
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
@@ -839,6 +845,8 @@ class Handler
                     $temp['artistID'] = '';
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
@@ -879,13 +887,13 @@ class Handler
 
 //        echo $search_string;
         $search_string = "
-            (SELECT id,title,artist,path,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+            (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,name,'artist','path',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,title,artist,'path',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
            UNION
-           (SELECT id,name,'artist','path',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
 
 
 //        echo $search_string;
@@ -935,6 +943,8 @@ class Handler
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
                 }
@@ -945,6 +955,8 @@ class Handler
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
@@ -954,6 +966,8 @@ class Handler
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
@@ -963,6 +977,8 @@ class Handler
                     $temp['artistID'] = '';
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                 }
