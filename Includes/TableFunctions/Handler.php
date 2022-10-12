@@ -8,6 +8,9 @@ class Handler
     public $albumID;
     private $conn;
     private $version;
+    private $exe_status;
+
+    // track update info
 
     public function __construct($con)
     {
@@ -281,7 +284,6 @@ class Handler
             array_push($menuCategory, $recently_played);
 
 
-
             //get genres
             $top_home_genreIDs = array();
             $featured_genres = array();
@@ -391,7 +393,6 @@ class Handler
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredPlaylist
-
 
 
             //get featured Album
@@ -1620,8 +1621,8 @@ class Handler
         $itemRecords["artist"] = $song->getArtist()->getName();
         $itemRecords["artistID"] = $song->getArtistId();
         $itemRecords["genre"] = $song->getGenre()->getGenre();
-        $itemRecords["heading"] = "Mwonyaa Mix Station: ". $song->getTitle() ;
-        $itemRecords["subheading"] = "Selection of tracks based on ".$song->getTitle() . " by ".$song->getArtist()->getName();
+        $itemRecords["heading"] = "Mwonyaa Mix Station: " . $song->getTitle();
+        $itemRecords["subheading"] = "Selection of tracks based on " . $song->getTitle() . " by " . $song->getArtist()->getName();
         $itemRecords["updated"] = $date_now;
 
         // get products id from the same cat
@@ -1652,5 +1653,72 @@ class Handler
 
 
         return $itemRecords;
+    }
+
+
+    function updateTrackUserData($user_id, $liteRecentTrackList, $liteLikedTrackList, $update_date)
+    {
+
+
+
+
+        $user_id = htmlspecialchars(strip_tags($user_id));
+        $update_date = htmlspecialchars(strip_tags($update_date));
+
+
+
+
+//        $stmt_OrderDetail = $this->conn->prepare("INSERT INTO " . $order_detail_table . "(`order_id`, `product_id`, `price`, `quantity`, `shipping_cost`) VALUES(?,?,?,?,?)");
+//        $stmt_OrderDetail->bind_param("iiiii", $order_id, $menu_id, $amount, $no_of_serving, $shipping_cost);
+
+        foreach ($liteRecentTrackList as $i => $i_value) {
+            $artist = htmlspecialchars(strip_tags($i_value->artist));
+            $artistID = htmlspecialchars(strip_tags($i_value->artistID));
+            $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
+            $id = htmlspecialchars(strip_tags($i_value->id));
+            $path = htmlspecialchars(strip_tags($i_value->path));
+            $title = htmlspecialchars(strip_tags($i_value->title));
+            $totalplays = htmlspecialchars(strip_tags($i_value->totalplays));
+            $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
+            $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
+
+
+            echo $artist;
+
+//            if ($stmt_OrderDetail->execute()) {
+//                $this->exe_status = "success";
+//            } else {
+//                $this->exe_status = "failure";
+//            }
+        }
+
+
+        // LIKED SONGS
+
+        //        $stmt_OrderDetail = $this->conn->prepare("INSERT INTO " . $order_detail_table . "(`order_id`, `product_id`, `price`, `quantity`, `shipping_cost`) VALUES(?,?,?,?,?)");
+//        $stmt_OrderDetail->bind_param("iiiii", $order_id, $menu_id, $amount, $no_of_serving, $shipping_cost);
+
+        foreach ($liteLikedTrackList as $i => $i_value) {
+            $id = htmlspecialchars(strip_tags($i_value->id));
+            $trackID = htmlspecialchars(strip_tags($i_value->trackID));
+            $trackStatus = htmlspecialchars(strip_tags($i_value->trackStatus));
+
+
+
+            echo $trackID.", ";
+
+//            if ($stmt_OrderDetail->execute()) {
+//                $this->exe_status = "success";
+//            } else {
+//                $this->exe_status = "failure";
+//            }
+        }
+
+
+        if ($this->exe_status == "success") {
+            return true;
+        }
+
+        return false;
     }
 }
