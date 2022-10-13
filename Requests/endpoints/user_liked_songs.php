@@ -5,7 +5,6 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-    echo "pkss";
 
     $result = $handler->readUserLikedSongs();
     if($result){
