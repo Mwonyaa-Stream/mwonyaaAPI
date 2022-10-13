@@ -8,7 +8,6 @@ if (!empty($db)) {
     $result = $handler->readUserLikedSongs();
 
     if($result){
-        echo "john";
         http_response_code(200);
         echo json_encode($result);
     }else{
