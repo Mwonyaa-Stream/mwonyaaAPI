@@ -13,10 +13,10 @@ if (!empty($db)) {
     $data = json_decode(file_get_contents("php://input"));
 //
     if(!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)){
-//
-//        $current_Time_InSeconds = time();
-//        $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
-//
+
+        $current_Time_InSeconds = time();
+        $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
+
 //        $result = $handler->updateTrackUserData($data->user_id, $data->liteRecentTrackList, $data->liteLikedTrackList,$update_date);
 //        if($result){
 //            http_response_code(200);
