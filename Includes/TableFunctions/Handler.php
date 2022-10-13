@@ -551,9 +551,9 @@ class Handler
 //
 //            }
 
-            $slider_temps = array();
+//            $slider_temps = array();
 //            $slider_temps['Tracks'] = $allProducts;
-            array_push($itemRecords['UserLikedTracks'], $slider_temps);
+//            array_push($itemRecords['UserLikedTracks'], $slider_temps);
 
 
         }
