@@ -21,22 +21,24 @@ if (!empty($db)) {
         $current_Time_InSeconds = time();
         $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
 
-        if($handler->updateTrackUserData($data->user_id, $data->liteRecentTrackList, $data->liteLikedTrackList,$update_date)){
-            http_response_code(201);
-            $response['error'] = false;
-            $response['message'] = 'Update was successful.';
-            echo json_encode($response);
-
-        } else{
-            http_response_code(503);
-            $response['error'] = true;
-            $response['message'] = 'Update failed.';
-            echo json_encode($response);
+        $result = $handler->updateTrackUserData($data->user_id, $data->liteRecentTrackList, $data->liteLikedTrackList,$update_date);
+        if($result){
+            http_response_code(200);
+            echo json_encode($result);
+        }else{
+            http_response_code(404);
+            echo json_encode(
+                array("error" => true),
+                array("message" => "Update failed."),
+                array("trackIds" => []),
+            );
         }
     }else{
         http_response_code(400);
         $response['error'] = true;
         $response['message'] = 'Update failed. Data is incomplete.';
+        $response['trackIds'] = [];
+
         echo json_encode($response);
     }
 }
