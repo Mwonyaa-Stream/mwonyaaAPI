@@ -5,7 +5,6 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-
     $result = $handler->readUserLikedSongs();
     if($result){
         http_response_code(200);
