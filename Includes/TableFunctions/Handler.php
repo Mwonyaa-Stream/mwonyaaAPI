@@ -1660,16 +1660,11 @@ class Handler
     {
 
 
-
-
         $user_id = htmlspecialchars(strip_tags($user_id));
         $update_date = htmlspecialchars(strip_tags($update_date));
 
+        $updateIDs = array();
 
-
-
-//        $stmt_OrderDetail = $this->conn->prepare("INSERT INTO " . $order_detail_table . "(`order_id`, `product_id`, `price`, `quantity`, `shipping_cost`) VALUES(?,?,?,?,?)");
-//        $stmt_OrderDetail->bind_param("iiiii", $order_id, $menu_id, $amount, $no_of_serving, $shipping_cost);
 
         foreach ($liteRecentTrackList as $i => $i_value) {
             $artist = htmlspecialchars(strip_tags($i_value->artist));
@@ -1682,41 +1677,66 @@ class Handler
             $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
             $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
 
+            $user_sql = "UPDATE users set songsplayed = songsplayed + $trackUserPlays WHERE id ='$user_id'";
+            mysqli_query($this->conn,$user_sql);
+            $song_sql = "UPDATE songs SET plays = plays + $trackUserPlays, weekplays = weekplays + $trackUserPlays, lastplayed='$trackLastPlayed'  WHERE id='$id'";
+            mysqli_query($this->conn, $song_sql);
 
-            echo $artist;
+            //user favourites
+            $fav_sql = "SELECT * FROM frequency where  userid='$user_id' AND songid='$id'";
+            $sql = mysqli_query($this->conn, $fav_sql);
 
-//            if ($stmt_OrderDetail->execute()) {
-//                $this->exe_status = "success";
-//            } else {
-//                $this->exe_status = "failure";
-//            }
+
+            if (mysqli_num_rows($sql) > 0) {
+                // echo "song and user Id Already Exists";
+                $stmt_OrderDetail = $this->conn->prepare("UPDATE frequency SET playsmonth = playsmonth + ?, plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
+                $stmt_OrderDetail->bind_param("iisssi", $trackUserPlays, $trackUserPlays, $update_date,$trackLastPlayed, $user_id, $id);
+
+            } else {
+                $stmt_OrderDetail = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,playsmonth,lastPlayed) VALUES (?,?,?,?,?)");
+                $stmt_OrderDetail->bind_param("isiis", $id, $user_id, $trackUserPlays,$trackUserPlays,$trackLastPlayed);
+
+            }
+
+
+            if ($stmt_OrderDetail->execute()) {
+                $this->exe_status = "success";
+                array_push($updateIDs, $id);
+            } else {
+                $this->exe_status = "failure";
+            }
         }
 
 
         // LIKED SONGS
-
-        //        $stmt_OrderDetail = $this->conn->prepare("INSERT INTO " . $order_detail_table . "(`order_id`, `product_id`, `price`, `quantity`, `shipping_cost`) VALUES(?,?,?,?,?)");
-//        $stmt_OrderDetail->bind_param("iiiii", $order_id, $menu_id, $amount, $no_of_serving, $shipping_cost);
-
         foreach ($liteLikedTrackList as $i => $i_value) {
             $id = htmlspecialchars(strip_tags($i_value->id));
             $trackID = htmlspecialchars(strip_tags($i_value->trackID));
             $trackStatus = htmlspecialchars(strip_tags($i_value->trackStatus));
 
 
+            $checkifsongexits = mysqli_query($this->conn, "SELECT songId FROM likedsongs WHERE songId = '$trackID' AND userID ='$user_id'");
+            $songrow = mysqli_num_rows($checkifsongexits);
 
-            echo $trackID.", ";
 
-//            if ($stmt_OrderDetail->execute()) {
-//                $this->exe_status = "success";
-//            } else {
-//                $this->exe_status = "failure";
-//            }
+
+            if ($songrow === 0) {
+                mysqli_query($this->conn, "INSERT INTO likedsongs (`songId`,`userID`,`dateUpdated`) VALUES('$trackID','$user_id','$update_date')");
+            } else {
+                $sql_update = "UPDATE `likedsongs` SET `songId`='$trackID',`userID`='$user_id',`dateUpdated`='$update_date' WHERE songId = '$trackID' AND userID ='$user_id'";
+                mysqli_query($this->conn, $sql_update);
+            }
+
+
+
+
         }
 
 
         if ($this->exe_status == "success") {
+            echo json_encode($updateIDs);
             return true;
+
         }
 
         return false;

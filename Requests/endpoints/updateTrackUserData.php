@@ -24,19 +24,19 @@ if (!empty($db)) {
         if($handler->updateTrackUserData($data->user_id, $data->liteRecentTrackList, $data->liteLikedTrackList,$update_date)){
             http_response_code(201);
             $response['error'] = false;
-            $response['message'] = 'Order was created.';
+            $response['message'] = 'Update was successful.';
             echo json_encode($response);
 
         } else{
             http_response_code(503);
             $response['error'] = true;
-            $response['message'] = 'Unable to create Order.';
+            $response['message'] = 'Update failed.';
             echo json_encode($response);
         }
     }else{
         http_response_code(400);
         $response['error'] = true;
-        $response['message'] = 'Unable to create item. Data is incomplete.';
+        $response['message'] = 'Update failed. Data is incomplete.';
         echo json_encode($response);
     }
 }
