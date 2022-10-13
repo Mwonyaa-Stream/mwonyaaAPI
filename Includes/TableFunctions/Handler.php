@@ -9,6 +9,10 @@ class Handler
     private $conn;
     private $version;
     private $exe_status;
+    public $user_id;
+    public $liteRecentTrackList;
+    public $liteLikedTrackList;
+    public $update_date;
 
     // track update info
 
@@ -1656,19 +1660,18 @@ class Handler
     }
 
 
-    function updateTrackUserData($user_id, $liteRecentTrackList, $liteLikedTrackList, $update_date)
+    function updateTrackUserData()
     {
 
 
-        $user_id = htmlspecialchars(strip_tags($user_id));
-        $update_date = htmlspecialchars(strip_tags($update_date));
+        $user_id = htmlspecialchars(strip_tags($this->user_id));
+        $update_date = htmlspecialchars(strip_tags($this->update_date));
 
         $itemRecords = array();
         $updateIDs = array();
 
 
-
-        foreach ($liteRecentTrackList as $i => $i_value) {
+        foreach ($this->liteRecentTrackList as $i => $i_value) {
             $artist = htmlspecialchars(strip_tags($i_value->artist));
             $artistID = htmlspecialchars(strip_tags($i_value->artistID));
             $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
@@ -1710,7 +1713,7 @@ class Handler
 
 
         // LIKED SONGS
-        foreach ($liteLikedTrackList as $i => $i_value) {
+        foreach ($this->liteLikedTrackList as $i => $i_value) {
             $id = htmlspecialchars(strip_tags($i_value->id));
             $trackID = htmlspecialchars(strip_tags($i_value->trackID));
             $trackStatus = htmlspecialchars(strip_tags($i_value->trackStatus));

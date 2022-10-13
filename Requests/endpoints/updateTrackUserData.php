@@ -16,8 +16,12 @@ if (!empty($db)) {
 
         $current_Time_InSeconds = time();
         $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
+        $handler->user_id = $data->user_id;
+        $handler->update_date = $update_date;
+        $handler->liteRecentTrackList = $data->liteRecentTrackList;
+        $handler->liteLikedTrackList = $data->liteLikedTrackList;
 
-        $result = $handler->updateTrackUserData($data->user_id, $data->liteRecentTrackList, $data->liteLikedTrackList,$update_date);
+        $result = $handler->updateTrackUserData();
         if($result){
             http_response_code(200);
             echo json_encode($result);
