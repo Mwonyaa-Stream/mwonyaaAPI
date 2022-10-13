@@ -6,7 +6,7 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
     $handler = new Handler($db);
     $result = $handler->readUserLikedSongs();
-    echo "pks";
+    echo "pkss";
     if($result){
         http_response_code(200);
         echo json_encode($result);
