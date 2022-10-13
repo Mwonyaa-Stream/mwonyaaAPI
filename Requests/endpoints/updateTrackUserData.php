@@ -19,11 +19,14 @@ if (!empty($db)) {
         $handler->update_date = $update_date;
         $handler->liteRecentTrackList = $data->liteRecentTrackList;
         $handler->liteLikedTrackList = $data->liteLikedTrackList;
-        $update_user_data = $handler->updateTrackUserData();
-        if($update_user_data){
+        if($handler->updateTrackUserData()){
             echo "me me";
             http_response_code(200);
-            echo json_encode($update_user_data);
+            $response['error'] = false;
+            $response['message'] = 'Updated Successfully';
+            $response['trackIds'] = [];
+
+            echo json_encode($response);
         }else{
             http_response_code(404);
             echo json_encode(
