@@ -12,7 +12,7 @@ if (!empty($db)) {
     }else{
         http_response_code(404);
         echo json_encode(
-            array("message" => "No item found.")
+            array("message" => "Still New? Try our playlists to get what you might like")
         );
     }
 
