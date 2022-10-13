@@ -1663,6 +1663,7 @@ class Handler
     function updateTrackUserData()
     {
 
+        echo "inside";
         $user_id = htmlspecialchars(strip_tags($this->user_id));
         $update_date = htmlspecialchars(strip_tags($this->update_date));
 

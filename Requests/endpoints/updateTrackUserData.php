@@ -20,7 +20,6 @@ if (!empty($db)) {
         $handler->liteRecentTrackList = $data->liteRecentTrackList;
         $handler->liteLikedTrackList = $data->liteLikedTrackList;
         if($handler->updateTrackUserData()){
-            echo "me me";
             http_response_code(200);
             $response['error'] = false;
             $response['message'] = 'Updated Successfully';
