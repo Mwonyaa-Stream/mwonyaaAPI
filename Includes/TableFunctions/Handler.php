@@ -488,7 +488,7 @@ class Handler
 
     function readUserLikedSongs()
     {
-//        $itemRecords = array();
+        $itemRecords = "array()";
 
 
 //        $userID = htmlspecialchars(strip_tags($_GET["userID"]));
@@ -557,7 +557,7 @@ class Handler
 //
 //        }
 
-//        return $itemRecords;
+        return $itemRecords;
     }
 
 
