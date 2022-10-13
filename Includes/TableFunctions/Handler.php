@@ -646,7 +646,7 @@ class Handler
         }
 
 
-        return $itemRecords;
+//        return $itemRecords;
     }
 
     public function searchHomePage()
