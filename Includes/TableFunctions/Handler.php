@@ -1666,7 +1666,6 @@ class Handler
         $itemRecords = array();
         $updateIDs = array();
 
-        echo "love";
 
 
         foreach ($liteRecentTrackList as $i => $i_value) {
