@@ -15,7 +15,7 @@ class LikedSong
         $this->con = $con;
         $this->userID = $userID;
 
-        $query = mysqli_query($this->con, "SELECT * FROM likedsongs WHERE userID='$this->userID' ORDER BY `dateUpdated` DESC");
+        $query = mysqli_query($this->con, "SELECT * FROM likedsongs WHERE userID='$this->userID' ORDER BY `dateUpdated` DESC Limit 1");
 
         if (mysqli_num_rows($query) == 0) {
 
