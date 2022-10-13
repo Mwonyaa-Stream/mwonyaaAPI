@@ -12,7 +12,7 @@ if (!empty($db)) {
     $handler = new Handler($db);
     $data = json_decode(file_get_contents("php://input"));
 //
-//    if(!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)){
+    if(!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)){
 //
 //        $current_Time_InSeconds = time();
 //        $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
@@ -29,14 +29,14 @@ if (!empty($db)) {
 //                array("trackIds" => []),
 //            );
 //        }
-//    }else{
-//        http_response_code(400);
-//        $response['error'] = true;
-//        $response['message'] = 'Update failed. Data is incomplete.';
-//        $response['trackIds'] = [];
-//
-//        echo json_encode($response);
-//    }
+    }else{
+        http_response_code(400);
+        $response['error'] = true;
+        $response['message'] = 'Update failed. Data is incomplete.';
+        $response['trackIds'] = [];
+
+        echo json_encode($response);
+    }
 }
 
 ?>
