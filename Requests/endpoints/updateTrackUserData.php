@@ -19,19 +19,19 @@ if (!empty($db)) {
         $handler->update_date = $update_date;
         $handler->liteRecentTrackList = $data->liteRecentTrackList;
         $handler->liteLikedTrackList = $data->liteLikedTrackList;
-        $result = $handler->updateTrackUserData();
-//        if($result){
-//            http_response_code(200);
-//            echo json_encode($result);
-//        }else{
-//            http_response_code(404);
-//            echo json_encode(
-//                array("error" => true),
-//                array("message" => "Update failed."),
-//                array("trackIds" => []),
-//            );
-//        }
-        echo "me me";
+        $update_user_data = $handler->updateTrackUserData();
+        if($update_user_data){
+            echo "me me";
+            http_response_code(200);
+            echo json_encode($update_user_data);
+        }else{
+            http_response_code(404);
+            echo json_encode(
+                array("error" => true),
+                array("message" => "Update failed."),
+                array("trackIds" => []),
+            );
+        }
     }else{
         http_response_code(400);
         $response['error'] = true;
