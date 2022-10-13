@@ -9,8 +9,8 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
     echo "love";
 
-//    $handler = new Handler($db);
-//    $data = json_decode(file_get_contents("php://input"));
+    $handler = new Handler($db);
+    $data = json_decode(file_get_contents("php://input"));
 //
 //    if(!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)){
 //
