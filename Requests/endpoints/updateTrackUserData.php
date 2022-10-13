@@ -7,12 +7,11 @@ include_once 'includedFiles.php';
 
 
 if (!empty($db)) {
-    echo "love";
 
-    $handler = new Handler($db);
     $data = json_decode(file_get_contents("php://input"));
 //
     if(!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)){
+        $handler = new Handler($db);
 
         $current_Time_InSeconds = time();
         $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds );
@@ -20,19 +19,19 @@ if (!empty($db)) {
         $handler->update_date = $update_date;
         $handler->liteRecentTrackList = $data->liteRecentTrackList;
         $handler->liteLikedTrackList = $data->liteLikedTrackList;
-
         $result = $handler->updateTrackUserData();
-        if($result){
-            http_response_code(200);
-            echo json_encode($result);
-        }else{
-            http_response_code(404);
-            echo json_encode(
-                array("error" => true),
-                array("message" => "Update failed."),
-                array("trackIds" => []),
-            );
-        }
+//        if($result){
+//            http_response_code(200);
+//            echo json_encode($result);
+//        }else{
+//            http_response_code(404);
+//            echo json_encode(
+//                array("error" => true),
+//                array("message" => "Update failed."),
+//                array("trackIds" => []),
+//            );
+//        }
+        echo "me me";
     }else{
         http_response_code(400);
         $response['error'] = true;
