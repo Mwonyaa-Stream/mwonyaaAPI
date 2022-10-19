@@ -1606,7 +1606,7 @@ class Handler
     }
 
 
-    function getSongRadio()
+    function getSongRadio(): array
     {
 
         $songID = (isset($_GET['songID']) && $_GET['songID']) ? htmlspecialchars(strip_tags($_GET["songID"])) : '200';
@@ -1754,10 +1754,11 @@ class Handler
         return $itemRecords;
     }
 
-    public function getItemRecommendation()
+    public function  generateRecommendationMatrix(): array
     {
+
         $user_id = "mw603382d49906aPka";
-        $songid = "131";
+        $songid = "95";
         $itemRecords = array();
 
         // Get all the user's rating pairs
@@ -1776,31 +1777,139 @@ class Handler
             $pair_sql = "SELECT itemID1 from dev where itemID1 = '$songid' AND itemID2 = '$other_itemID'";
 
 //            echo  $pair_sql;
-            if(mysqli_num_rows(mysqli_query($this->conn, $pair_sql)) > 0){
+            if (mysqli_num_rows(mysqli_query($this->conn, $pair_sql)) > 0) {
 
                 // update
                 $sql = "UPDATE dev SET count = count + 1, sum=sum+$rating_difference WHERE itemID1='$songid' AND itemID2='$other_itemID'";
                 mysqli_query($this->conn, $sql);
 
                 // we only want to update if the items are different
-                if($songid != $other_itemID){
+                if ($songid != $other_itemID) {
                     $sql = "UPDATE dev SET count = count + 1 , sum=sum-$rating_difference WHERE itemID1='$other_itemID' AND itemID2='$songid'";
                     mysqli_query($this->conn, $sql);
                 }
 
-            } else{
+            } else {
                 // we want to insert two rows into the dev table
-                $sql  = "INSERT INTO dev values ($songid, $other_itemID, 1 , $rating_difference)";
+                $sql = "INSERT INTO dev values ($songid, $other_itemID, 1 , $rating_difference)";
                 // we only want to insert if the items are different
                 mysqli_query($this->conn, $sql);
 
-                if($songid != $other_itemID){
+                if ($songid != $other_itemID) {
                     $sql = "INSERT INTO dev values ($other_itemID, $songid, 1 , -$rating_difference)";
                     mysqli_query($this->conn, $sql);
                 }
             }
         }
+
+        $itemRecords['success'] = true;
         return $itemRecords;
 
+    }
+
+
+    function getpredictions(){
+        $user_id = "mw603382d49906aPka";
+        $songid = "95";
+        $itemRecords = array();
+
+
+
+        $itemRecords['non_personalized_predict_all'] = $this->non_personalized_predict_all($songid);
+        $itemRecords['personalized_predict_all'] = $this->predict_all($user_id);
+        $itemRecords['personalized_predict_best_all'] =  $this->predict_best_all($user_id,10);
+        return $itemRecords;
+    }
+
+
+    //get what a user might like
+    function predictTrack($userID, $itemID)
+    {
+        $denom = 0.0; //denominator
+        $numer = 0.0; // numerator
+        $k = $itemID;
+        $sql = "Select r.songid, r.plays from frequency r where r.userid='$userID' AND r.songid <> '$itemID'";
+        $db_result = mysqli_query($this->conn, $sql);
+        while ($row = mysqli_fetch_array($db_result)) {
+            $j = $row['songid'];
+            $ratingValue = $row['plays'];
+
+            //get the number of times k and j have both been rated by the same user
+            $sql2 = "Select d.count, d.sum from dev d where itemID1='$k' AND itemID2='$j'";
+            $count_result = mysqli_query($this->conn, $sql2);
+            // skip the calculation if it isn't found
+            if (mysqli_num_rows($count_result) > 0) {
+                $data = mysqli_fetch_assoc($count_result);
+                $count = floatval($data['count']);
+                $sum = floatval($data['sum']);
+
+                // calculate average
+                $average = $sum / $count;
+                // increment denominator by count
+                $denom += $count;
+                // increment the numerator
+                $numer += $count * ($average + $ratingValue);
+
+//                echo $numer."=" .$denom."=";
+            }
+
+        }
+        if ($denom == 0) {
+            return 0;
+        } else {
+            return ($numer / $denom);
+        }
+    }
+
+    //  non_personalized_predict_all
+    function non_personalized_predict_all($songid)
+    {
+        $song_ids_array = array();
+        //Non personalized recommendations
+        $sql2 = "Select itemID2 as song_id, (sum / count) AS average from dev where count > 2 and itemID1 = '$songid' order by (sum / count) desc limit 10";
+        $result = mysqli_query($this->conn, $sql2);
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_array($result)) {
+                $id = $row['song_id'];
+                array_push($song_ids_array, $id);
+            }
+        }
+        return $song_ids_array;
+
+
+    }
+
+
+//    Personalized Prediction Option A
+    function predict_all($userID)
+    {
+        $song_ids_array = array();
+        $sql2 = "Select d.itemID1 as song_id, sum(d.count) as denom, sum(d.sum + d.count*r.plays) as numer from songs i, frequency r, dev d where  r.userid='$userID' AND d.itemID1<>i.id AND d.itemID2=i.id group by d.itemID1 limit 10";
+        $result = mysqli_query($this->conn, $sql2);
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_array($result)) {
+                $id = $row['song_id'];
+                array_push($song_ids_array, $id);
+            }
+        }
+        return $song_ids_array;
+
+
+    }
+
+    //  Personalized  Prediction Option B
+    function predict_best_all($userID, $n)
+    {
+        $song_ids_array = array();
+        //Rank and select the best
+        $sql2 = "Select d.itemID1 as song_id, sum(d.sum + d.count*r.plays)/sum(d.count) as avgrat from songs i, frequency r, dev d where  r.userid='$userID' AND d.itemID1<>i.id AND d.itemID2=i.id group by d.itemID1 order by avgrat desc  limit $n";
+        $result = mysqli_query($this->conn, $sql2);
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_array($result)) {
+                $id = $row['song_id'];
+                array_push($song_ids_array, $id);
+            }
+        }
+        return $song_ids_array;
     }
 }

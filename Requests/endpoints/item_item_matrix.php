@@ -5,7 +5,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-    $result = $handler->getpredictions();
+    $result = $handler->generateRecommendationMatrix();
 
     if($result){
         http_response_code(200);
