@@ -1660,7 +1660,7 @@ class Handler
     }
 
 
-    function updateTrackUserData()
+    function updateTrackUserData(): array
     {
 
         $user_id = htmlspecialchars(strip_tags($this->user_id));
@@ -1757,8 +1757,9 @@ class Handler
     public function generateRecommendationMatrix(): array
     {
 
-        $user_id = "mw603382d49906aPka";
-        $songid = "95";
+        $songid = (isset($_GET['songID']) && $_GET['songID']) ? htmlspecialchars(strip_tags($_GET["songID"])) : '0';
+        $user_id = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'mw603382d49906aPka';
+
         $itemRecords = array();
 
         // Get all the user's rating pairs
@@ -1810,7 +1811,8 @@ class Handler
 
     function non_personalized_predict_all(): array
     {
-        $songid = "95";
+        $songid = (isset($_GET['songID']) && $_GET['songID']) ? htmlspecialchars(strip_tags($_GET["songID"])) : '0';
+
         $itemRecords = array();
         $menuCategory = array();
         foreach ($this->non_personalized($songid) as $row) {
@@ -1829,19 +1831,19 @@ class Handler
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
 
-
             array_push($menuCategory, $temp);
         }
 
 
+        $itemRecords['songid'] = $songid;
         $itemRecords['non_personalized_predict_all'] = $menuCategory;
         return $itemRecords;
     }
 
     function personalized_predict_all(): array
     {
-        $user_id = "mw603382d49906aPka";
-        $songid = "95";
+        $user_id = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'mw603382d49906aPka';
+
         $itemRecords = array();
         $menuCategory = array();
         foreach ($this->predict_all($user_id) as $row) {
@@ -1863,15 +1865,15 @@ class Handler
 
             array_push($menuCategory, $temp);
         }
-
+        $itemRecords['user_i'] = $user_id;
         $itemRecords['personalized_predict_all'] =$menuCategory;
         return $itemRecords;
     }
 
     function personalized_predict_best_all(): array
     {
-        $user_id = "mw603382d49906aPka";
-        $songid = "95";
+        $user_id = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'mw603382d49906aPka';
+
         $itemRecords = array();
         $menuCategory = array();
         foreach ($this->predict_best_all($user_id, 10) as $row) {
@@ -1894,6 +1896,7 @@ class Handler
             array_push($menuCategory, $temp);
         }
 
+        $itemRecords['user_i'] = $user_id;
         $itemRecords['personalized_predict_best_all'] = $menuCategory;
         return $itemRecords;
     }
