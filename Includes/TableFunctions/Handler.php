@@ -23,7 +23,7 @@ class Handler
     }
 
 
-    function readArtistProfile()
+    function readArtistProfile(): array
     {
 
         $itemRecords = array();
@@ -230,7 +230,7 @@ class Handler
     }
 
 
-    function allCombined()
+    function allCombined(): array
     {
 
         $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
@@ -486,7 +486,7 @@ class Handler
     }
 
 
-    function readUserLikedSongs()
+    function readUserLikedSongs(): array
     {
         $itemRecords = array();
 
@@ -561,7 +561,7 @@ class Handler
 
 
     //get selected Album details and similar product
-    function readSelectedAlbum()
+    function readSelectedAlbum(): array
     {
 
         $itemRecords = array();
@@ -647,7 +647,7 @@ class Handler
         return $itemRecords;
     }
 
-    public function searchHomePage()
+    public function searchHomePage(): array
     {
 
 
@@ -752,7 +752,7 @@ class Handler
     }
 
 
-    function searchNormal()
+    function searchNormal(): array
     {
         $page = htmlspecialchars(strip_tags($_GET["page"]));
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
@@ -1013,7 +1013,7 @@ class Handler
     }
 
 
-    function readSelectedGenre()
+    function readSelectedGenre(): array
     {
 
         $genreID = htmlspecialchars(strip_tags($_GET["genreID"]));
@@ -1068,7 +1068,7 @@ class Handler
         return $itemRecords;
     }
 
-    function readSelectedPlaylist()
+    function readSelectedPlaylist(): array
     {
 
         $itemRecords = array();
@@ -1147,7 +1147,7 @@ class Handler
         return $itemRecords;
     }
 
-    function readSong()
+    function readSong(): array
     {
 
         $itemRecords = array();
@@ -1220,7 +1220,7 @@ class Handler
     }
 
 
-    function podcastHome()
+    function podcastHome(): array
     {
 
         $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
@@ -1384,7 +1384,7 @@ class Handler
     }
 
 
-    function EventsHome()
+    function EventsHome(): array
     {
 
         $event_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
@@ -1520,7 +1520,7 @@ class Handler
     }
 
 
-    function SelectedEvents()
+    function SelectedEvents(): array
     {
 
         $event_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
