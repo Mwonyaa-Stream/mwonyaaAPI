@@ -1903,8 +1903,11 @@ class Handler
 
 
     //get what a user might like
-    function predictTrack($userID, $itemID)
+    function predictTrack()
     {
+        $itemID = (isset($_GET['songID']) && $_GET['songID']) ? htmlspecialchars(strip_tags($_GET["songID"])) : '0';
+        $userID = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'mw603382d49906aPka';
+
         $denom = 0.0; //denominator
         $numer = 0.0; // numerator
         $k = $itemID;
