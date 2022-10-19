@@ -1754,7 +1754,7 @@ class Handler
         return $itemRecords;
     }
 
-    public function  generateRecommendationMatrix(): array
+    public function generateRecommendationMatrix(): array
     {
 
         $user_id = "mw603382d49906aPka";
@@ -1808,16 +1808,93 @@ class Handler
     }
 
 
-    function getpredictions(){
+    function non_personalized_predict_all(): array
+    {
+        $songid = "95";
+        $itemRecords = array();
+        $menuCategory = array();
+        foreach ($this->non_personalized($songid) as $row) {
+            $song = new Song($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+            array_push($menuCategory, $temp);
+        }
+
+
+        $itemRecords['non_personalized_predict_all'] = $menuCategory;
+        return $itemRecords;
+    }
+
+    function personalized_predict_all(): array
+    {
         $user_id = "mw603382d49906aPka";
         $songid = "95";
         $itemRecords = array();
+        $menuCategory = array();
+        foreach ($this->predict_all($user_id) as $row) {
+            $song = new Song($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
 
 
+            array_push($menuCategory, $temp);
+        }
 
-        $itemRecords['non_personalized_predict_all'] = $this->non_personalized_predict_all($songid);
-        $itemRecords['personalized_predict_all'] = $this->predict_all($user_id);
-        $itemRecords['personalized_predict_best_all'] =  $this->predict_best_all($user_id,10);
+        $itemRecords['personalized_predict_all'] =$menuCategory;
+        return $itemRecords;
+    }
+
+    function personalized_predict_best_all(): array
+    {
+        $user_id = "mw603382d49906aPka";
+        $songid = "95";
+        $itemRecords = array();
+        $menuCategory = array();
+        foreach ($this->predict_best_all($user_id, 10) as $row) {
+            $song = new Song($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+            array_push($menuCategory, $temp);
+        }
+
+        $itemRecords['personalized_predict_best_all'] = $menuCategory;
         return $itemRecords;
     }
 
@@ -1862,7 +1939,7 @@ class Handler
     }
 
     //  non_personalized_predict_all
-    function non_personalized_predict_all($songid)
+    function non_personalized($songid): array
     {
         $song_ids_array = array();
         //Non personalized recommendations
@@ -1881,7 +1958,7 @@ class Handler
 
 
 //    Personalized Prediction Option A
-    function predict_all($userID)
+    function predict_all($userID): array
     {
         $song_ids_array = array();
         $sql2 = "Select d.itemID1 as song_id, sum(d.count) as denom, sum(d.sum + d.count*r.plays) as numer from songs i, frequency r, dev d where  r.userid='$userID' AND d.itemID1<>i.id AND d.itemID2=i.id group by d.itemID1 limit 10";
@@ -1898,7 +1975,7 @@ class Handler
     }
 
     //  Personalized  Prediction Option B
-    function predict_best_all($userID, $n)
+    function predict_best_all($userID, $n): array
     {
         $song_ids_array = array();
         //Rank and select the best

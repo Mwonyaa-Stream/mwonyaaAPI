@@ -5,7 +5,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-    $result = $handler->getpredictions();
+    $result = $handler->non_personalized_predict_all();
 
     if($result){
         http_response_code(200);
