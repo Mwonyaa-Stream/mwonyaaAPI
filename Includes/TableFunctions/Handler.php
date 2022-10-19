@@ -1753,4 +1753,54 @@ class Handler
         }
         return $itemRecords;
     }
+
+    public function getItemRecommendation()
+    {
+        $user_id = "mw603382d49906aPka";
+        $songid = "131";
+        $itemRecords = array();
+
+        // Get all the user's rating pairs
+        // song_id is set to that of the item that was just played
+        $sql = "SELECT DISTINCT r.songid, r2.plays - r.plays as rating_difference from frequency r, frequency r2 WHERE r.userid ='$user_id' AND r2.songid ='$songid' ANd r2.userid = '$user_id'";
+
+        $db_result = mysqli_query($this->conn, $sql);
+        $num_rows = mysqli_num_rows($db_result);
+        // for every one of the user's rating pairs, update the dev table
+        while ($row = mysqli_fetch_array($db_result)) {
+            $other_itemID = $row['songid'];
+            $rating_difference = $row['rating_difference'];
+
+            // if the pair ($songid, $other_itemid) is already in the dev table
+            // then we want to update 2 rows
+            $pair_sql = "SELECT itemID1 from dev where itemID1 = '$songid' AND itemID2 = '$other_itemID'";
+
+//            echo  $pair_sql;
+            if(mysqli_num_rows(mysqli_query($this->conn, $pair_sql)) > 0){
+
+                // update
+                $sql = "UPDATE dev SET count = count + 1, sum=sum+$rating_difference WHERE itemID1='$songid' AND itemID2='$other_itemID'";
+                mysqli_query($this->conn, $sql);
+
+                // we only want to update if the items are different
+                if($songid != $other_itemID){
+                    $sql = "UPDATE dev SET count = count + 1 , sum=sum-$rating_difference WHERE itemID1='$other_itemID' AND itemID2='$songid'";
+                    mysqli_query($this->conn, $sql);
+                }
+
+            } else{
+                // we want to insert two rows into the dev table
+                $sql  = "INSERT INTO dev values ($songid, $other_itemID, 1 , $rating_difference)";
+                // we only want to insert if the items are different
+                mysqli_query($this->conn, $sql);
+
+                if($songid != $other_itemID){
+                    $sql = "INSERT INTO dev values ($other_itemID, $songid, 1 , -$rating_difference)";
+                    mysqli_query($this->conn, $sql);
+                }
+            }
+        }
+        return $itemRecords;
+
+    }
 }
