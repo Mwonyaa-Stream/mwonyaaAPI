@@ -14,13 +14,13 @@ if (isset($_GET['apicall'])) {
         case 'signup':
 
             //checking the parameters required are available or not
-            if (isTheseParametersAvailable(array('full_name', 'username', 'email', 'user_phone', 'password'))) {
+            if (isTheseParametersAvailable(array('username', 'firstName', 'lastName', 'email', 'password'))) {
 
                 //getting the values
-                $full_name = $_POST['full_name'];
                 $username = $_POST['username'];
+                $firstName = $_POST['firstName'];
+                $lastName = $_POST['lastName'];
                 $email = $_POST['email'];
-                $user_phone = $_POST['user_phone'];
                 $password = md5($_POST['password']);
 
 
@@ -41,7 +41,7 @@ if (isset($_GET['apicall'])) {
 
                     //if user is new creating an insert query
                     $stmt = $db->prepare("INSERT INTO users (`username`, `firstName`, `lastName`, `email`, `password`) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->bind_param("sssss", $username, $full_name, $email, $user_phone, $password);
+                    $stmt->bind_param("sssss", $username, $firstName, $lastName, $email, $password);
 
                     //if the user is successfully added to the database
                     if ($stmt->execute()) {
