@@ -41,7 +41,7 @@ class Account
 
                     return false;
                 }
-              
+
             }
         } catch (\Throwable $th) {
             $feedback['error'] = $th->getMessage();

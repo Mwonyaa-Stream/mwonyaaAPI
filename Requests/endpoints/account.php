@@ -1,16 +1,12 @@
 <?php
 //getting the database connection
-include_once '../../Includes/config/Database.php';
-
-$database = new Database();
-$conn = $database->getConnection();
-
+include_once 'includedFiles.php';
 //an array to display response
 $response = array();
 
-//if it is an api call 
-//that means a get parameter named api call is set in the URL 
-//and with this parameter we are concluding that it is an api call 
+//if it is an api call
+//that means a get parameter named api call is set in the URL
+//and with this parameter we are concluding that it is an api call
 if (isset($_GET['apicall'])) {
 
     switch ($_GET['apicall']) {
@@ -18,19 +14,20 @@ if (isset($_GET['apicall'])) {
         case 'signup':
 
             //checking the parameters required are available or not
-            if (isTheseParametersAvailable(array('full_name', 'email', 'user_phone', 'password'))) {
+            if (isTheseParametersAvailable(array('full_name', 'username', 'email', 'user_phone', 'password'))) {
 
                 //getting the values
                 $full_name = $_POST['full_name'];
+                $username = $_POST['username'];
                 $email = $_POST['email'];
                 $user_phone = $_POST['user_phone'];
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                $verification_code = "mobile_" . rand(100000, 999999);
+                $password = md5($_POST['password']);
+
 
                 //checking if the user is already exist with this username or email
                 //as the email and username should be unique for every user
-                $stmt = $conn->prepare("SELECT id FROM users WHERE phone = ? OR email = ?");
-                $stmt->bind_param("ss", $user_phone, $email);
+                $stmt = $db->prepare("SELECT id FROM users WHERE username = ? OR Email = ?");
+                $stmt->bind_param("ss", $username, $email);
                 $stmt->execute();
                 $stmt->store_result();
 
@@ -38,31 +35,37 @@ if (isset($_GET['apicall'])) {
                 //if the user already exist in the database
                 if ($stmt->num_rows > 0) {
                     $response['error'] = true;
-                    $response['message'] = 'User already exist, try another email';
+                    $response['message'] = 'User already registered';
                     $stmt->close();
                 } else {
 
                     //if user is new creating an insert query
-                    $stmt = $conn->prepare("INSERT INTO users (name, email,password, phone,verification_code) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->bind_param("sssss", $full_name, $email, $password, $user_phone, $verification_code);
+                    $stmt = $db->prepare("INSERT INTO users (`username`, `firstName`, `lastName`, `email`, `password`) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssss", $username, $full_name, $email, $user_phone, $password);
 
                     //if the user is successfully added to the database
                     if ($stmt->execute()) {
 
                         //fetching the user back
-                        $stmt = $conn->prepare("SELECT id, name, email, phone FROM users WHERE phone = ? OR email = ?");
-                        $stmt->bind_param("ss", $user_phone, $email);
+                        $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE username = ? AND password = ?");
+                        $stmt->bind_param("ss", $username, $password);
                         $stmt->execute();
-                        $stmt->bind_result($customer_id, $customer_full_name, $customer_email, $customer_phone_number);
+                        $stmt->bind_result($id, $username, $firstName, $lastName, $email, $password, $signUpDate, $profilePic, $status, $mwRole);
 
                         $stmt->fetch();
 
 
                         $user = array(
-                            'id' => $customer_id,
-                            'fullname' => $customer_full_name,
-                            'email' => $customer_email,
-                            'phone' => $customer_phone_number,
+                            'id' => $id,
+                            'username' => $username,
+                            'firstName' => $firstName,
+                            'lastName' => $lastName,
+                            'email' => $email,
+                            'password' => $password,
+                            'signUpDate' => $signUpDate,
+                            'profilePic' => $profilePic,
+                            'status' => $status,
+                            'mwRole' => $mwRole,
                         );
 
 
@@ -87,66 +90,56 @@ if (isset($_GET['apicall'])) {
             if (isTheseParametersAvailable(array('username', 'password'))) {
                 //getting values
                 $username = $_POST['username'];
-                $password = $_POST['password'];
+                $password = md5($_POST['password']);
 
-
-                $sql = "select * from users where email = '".$username."' OR phone = '".$username."' ";
-                $rs = mysqli_query($conn,$sql);
-                $numRows = mysqli_num_rows($rs);
-
-                if($numRows  == 1){
-                    $row = mysqli_fetch_assoc($rs);
-                    if(password_verify($password,$row['password'])){
-                        $check_email = Is_email($username);
-
-                        if ($check_email) {
-                            // email & password combination
-                            $stmt = $conn->prepare("SELECT id, name, email, phone FROM users WHERE email = ? ");
-                        } else {
-                            // username & password combination
-                            $stmt = $conn->prepare("SELECT id, name, email, phone FROM users WHERE phone = ? ");
-                        }
-
-                        //creating the query
-                        $stmt->bind_param("s", $username);
-
-                        $stmt->execute();
-
-                        $stmt->store_result();
-
-                        //if the user exist with given credentials
-                        if ($stmt->num_rows > 0) {
-
-                            $stmt->bind_result($customer_id, $customer_full_name, $customer_email, $customer_phone_number);
-                            $stmt->fetch();
-
-                            $user = array(
-                                'id' => $customer_id,
-                                'fullname' => $customer_full_name,
-                                'email' => $customer_email,
-                                'phone' => $customer_phone_number,
-                            );
-
-                            $response['error'] = false;
-                            $response['message'] = 'Login successfull';
-                            $response['user'] = $user;
-                        } else {
-                            //if the user not found
-                            $response['error'] = true;
-                            $response['message'] = 'Your Credentials are invalid!';
-                        }
-                    }
-                    else{
-                        $response['error'] = true;
-                        $response['message'] = 'Wrong Password';
-                    }
+                $check_email = Is_email($username);
+                if ($check_email) {
+                    // email & password combination
+                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic` , `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                } else {
+                    // username & password combination
+                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE username = ? AND password = ?");
                 }
-                else{
+
+                //creating the query
+                $stmt->bind_param("ss", $username, $password);
+
+                $stmt->execute();
+
+                $stmt->store_result();
+
+                //if the user exist with given credentials
+                if ($stmt->num_rows > 0) {
+
+                    $stmt->bind_result($id, $username, $firstName, $lastName, $email, $password, $signUpDate, $profilePic, $status, $mwRole);
+                    $stmt->fetch();
+
+                    $user = array(
+                        'id' => $id,
+                        'username' => $username,
+                        'firstName' => $firstName,
+                        'lastName' => $lastName,
+                        'email' => $email,
+                        'password' => $password,
+                        'signUpDate' => $signUpDate,
+                        'profilePic' => $profilePic,
+                        'status' => $status,
+                        'mwRole' => $mwRole,
+                    );
+
+                    $response['error'] = false;
+                    $response['message'] = 'Login successfull';
+                    $response['user'] = $user;
+                } else {
+                    //if the user not found
                     $response['error'] = true;
-                    $response['message'] = 'No User Found';
+                    $response['message'] = 'Invalid username or password';
                 }
-
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'required parameters are not available';
             }
+
             break;
 
         default:
