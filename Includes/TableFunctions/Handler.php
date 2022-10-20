@@ -1866,7 +1866,7 @@ class Handler
             array_push($menuCategory, $temp);
         }
         $itemRecords['user_i'] = $user_id;
-        $itemRecords['personalized_predict_all'] =$menuCategory;
+        $itemRecords['personalized_predict_all'] = $menuCategory;
         return $itemRecords;
     }
 
@@ -1994,5 +1994,38 @@ class Handler
             }
         }
         return $song_ids_array;
+    }
+
+    public  function loginHandler(): array
+    {
+        $feedback = [];
+
+        try {
+            //login button was pressed
+            $username = htmlspecialchars(strip_tags($_GET["loginUsername"]));
+            $password = htmlspecialchars(strip_tags($_GET["loginPassword"]));
+
+            $account = new Account($this->conn);
+            $result = $account->login($username, $password);
+
+
+            try {
+                if ($result) {
+                    if ($result == true) {
+                        $usernameFromemail = $account->getEmailtousername($username);
+                        $feedback['success'] = $usernameFromemail;
+
+                    }
+                }
+            } catch (\Throwable $th) {
+                $feedback['error'] = $this->getMessage();
+            }
+        } catch (\Throwable $th) {
+            $feedback['success'] = false;
+            $feedback['error'] = "Error With Login Button";
+            $feedback['error'] = $th->getMessage();
+        }
+
+        return $feedback;
     }
 }

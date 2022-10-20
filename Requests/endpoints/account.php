@@ -14,20 +14,23 @@ if (isset($_GET['apicall'])) {
         case 'signup':
 
             //checking the parameters required are available or not
-            if (isTheseParametersAvailable(array('username', 'firstName', 'lastName', 'email', 'password'))) {
+            if (isTheseParametersAvailable(array('username', 'full_name', 'email', 'phone', 'password'))) {
 
                 //getting the values
                 $username = $_POST['username'];
-                $firstName = $_POST['firstName'];
-                $lastName = $_POST['lastName'];
+                $full_name = $_POST['full_name'];
                 $email = $_POST['email'];
+                $phone = $_POST['phone'];
                 $password = md5($_POST['password']);
-
-
+                $profilePic = "assets/images/profile-pics/user.png";
+                $first_three_letters = substr($username, 0, 3);
+                $id = "mw" . uniqid() . $first_three_letters;
+                $date = date('Y-m-d');
+                $user_regStatus = "registered";
                 //checking if the user is already exist with this username or email
                 //as the email and username should be unique for every user
-                $stmt = $db->prepare("SELECT id FROM users WHERE username = ? OR Email = ?");
-                $stmt->bind_param("ss", $username, $email);
+                $stmt = $db->prepare("SELECT id FROM users WHERE username = ? OR Email = ? OR phone = ?");
+                $stmt->bind_param("sss", $username, $email, $phone);
                 $stmt->execute();
                 $stmt->store_result();
 
@@ -40,17 +43,17 @@ if (isset($_GET['apicall'])) {
                 } else {
 
                     //if user is new creating an insert query
-                    $stmt = $db->prepare("INSERT INTO users (`username`, `firstName`, `lastName`, `email`, `password`) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->bind_param("sssss", $username, $firstName, $lastName, $email, $password);
+                    $stmt = $db->prepare("INSERT INTO users (`id`,`username`,`firstName`,`email`,`phone`,`Password`,`signUpDate`,`profilePic`,`status`) VALUES (?, ?, ?, ?,?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssssssss", $id, $username, $full_name, $email,$phone, $password, $date, $profilePic, $user_regStatus);
 
                     //if the user is successfully added to the database
                     if ($stmt->execute()) {
 
                         //fetching the user back
-                        $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE username = ? AND password = ?");
-                        $stmt->bind_param("ss", $username, $password);
+                        $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                        $stmt->bind_param("ss", $email, $password);
                         $stmt->execute();
-                        $stmt->bind_result($id, $username, $firstName, $lastName, $email, $password, $signUpDate, $profilePic, $status, $mwRole);
+                        $stmt->bind_result($id, $username, $full_name, $email,$phone, $password, $signUpDate, $profilePic, $status, $mwRole);
 
                         $stmt->fetch();
 
@@ -58,9 +61,9 @@ if (isset($_GET['apicall'])) {
                         $user = array(
                             'id' => $id,
                             'username' => $username,
-                            'firstName' => $firstName,
-                            'lastName' => $lastName,
+                            'full_name' => $full_name,
                             'email' => $email,
+                            'phone' => $phone,
                             'password' => $password,
                             'signUpDate' => $signUpDate,
                             'profilePic' => $profilePic,
@@ -95,14 +98,17 @@ if (isset($_GET['apicall'])) {
                 $check_email = Is_email($username);
                 if ($check_email) {
                     // email & password combination
-                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic` , `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`, `password`, `signUpDate`, `profilePic` , `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                    $stmt->bind_param("ss", $username, $password);
+
                 } else {
                     // username & password combination
-                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `lastName`, `email`, `password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE username = ? AND password = ?");
+                    $stmt = $db->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`, `password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE (username = ? OR phone = ?) AND password = ?");
+                    $stmt->bind_param("sss", $username,$username, $password);
+
                 }
 
                 //creating the query
-                $stmt->bind_param("ss", $username, $password);
 
                 $stmt->execute();
 
@@ -111,15 +117,15 @@ if (isset($_GET['apicall'])) {
                 //if the user exist with given credentials
                 if ($stmt->num_rows > 0) {
 
-                    $stmt->bind_result($id, $username, $firstName, $lastName, $email, $password, $signUpDate, $profilePic, $status, $mwRole);
+                    $stmt->bind_result($id, $username, $full_name, $email, $phone, $password, $signUpDate, $profilePic, $status, $mwRole);
                     $stmt->fetch();
 
                     $user = array(
                         'id' => $id,
                         'username' => $username,
-                        'firstName' => $firstName,
-                        'lastName' => $lastName,
+                        'full_name' => $full_name,
                         'email' => $email,
+                        'phone' => $phone,
                         'password' => $password,
                         'signUpDate' => $signUpDate,
                         'profilePic' => $profilePic,

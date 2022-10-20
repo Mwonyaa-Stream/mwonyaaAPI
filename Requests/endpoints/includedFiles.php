@@ -14,6 +14,8 @@ require "../../Includes/TableClasses/ArtistEvents.php";
 require "../../Includes/TableClasses/PlaylistSlider.php";
 require "../../Includes/TableClasses/SearchSlider.php";
 require "../../Includes/TableClasses/Events.php";
+require "../../Includes/TableClasses/Constants.php";
+require "../../Includes/TableClasses/Account.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
 
