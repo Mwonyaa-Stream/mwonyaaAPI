@@ -103,7 +103,7 @@ class Handler
             $query = mysqli_query($this->conn, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID='$artistID' LIMIT 1");
             $query_mysqliData = mysqli_fetch_array($query);
             $ar_id = $query_mysqliData['id'];
-            $ar_title = $query_mysqliData['tile']. " - out now";
+            $ar_title = $query_mysqliData['tile'];
             $ar_artistID = $query_mysqliData['artistID'];
             $ar_CoverArt = $query_mysqliData['CoverArt'];
             $ar_songID = $query_mysqliData['songID'];
@@ -112,13 +112,13 @@ class Handler
             $ar_Artist = new Artist($this->conn, $ar_artistID);
             $ar_Song = new Song($this->conn, $ar_songID);
 
-            if ($ar_id->getId() != null) {
+            if ($ar_id != null) {
                 $temp = array();
                 $temp['id'] = $ar_id;
                 $temp['type'] = "Playlist";
                 $temp['out_now'] = $ar_title . " - out now";
                 $temp['coverimage'] = $ar_CoverArt;
-                $temp['song_title'] = $ar_Artist->getArtist()->getName() . " - " . $ar_Artist->getSong()->getTitle();
+                $temp['song_title'] = $ar_Artist->getName() . " - " . $ar_Song->getAlbum()->getTitle();
                 $temp['song_cover'] = $ar_Song->getAlbum()->getArtworkPath();
                 array_push($ArtistPick, $temp);
             } else {
