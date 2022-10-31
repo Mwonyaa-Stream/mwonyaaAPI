@@ -1278,6 +1278,7 @@ class Handler
             $podcast_temps = array();
             $podcast_temps['heading'] = "Podcast";
             $podcast_temps['subheading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
+            $podcast_temps['image_pick'] = "Podcast";
             $podcast_temps['tracks'] = $home_genre_tracks;
             array_push($menuCategory, $podcast_temps);
             // end get_Slider_banner
@@ -1304,7 +1305,7 @@ class Handler
             }
 
             $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Featured Artists";
+            $feat_Cat_temps['heading'] = "Podcasters";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
