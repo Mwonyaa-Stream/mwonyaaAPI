@@ -100,7 +100,7 @@ class Handler
             // Artist Pick - Top playlist created by the Artist
             $ArtistPick = array();
 
-            $query = mysqli_query($this->con, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID='$artistID'");
+            $query = mysqli_query($this->con, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID='$artistID' LIMIT 1");
             $query_mysqliData = mysqli_fetch_array($query);
             $ar_id = $query_mysqliData['id'];
             $ar_title = $query_mysqliData['tile']. " - out now";
