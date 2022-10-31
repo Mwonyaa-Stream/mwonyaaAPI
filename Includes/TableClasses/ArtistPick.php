@@ -13,15 +13,14 @@ class ArtistPick
     private $mysqliData;
 
 
-    public function __construct($con, $id_artistID)
+    public function __construct($con, $id)
     {
         $this->con = $con;
-        $this->artistID = $id_artistID;
+        $this->id = $id;
 
         //select using artist ID
 
-        $query = mysqli_query($this->con, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID='$this->artistID'");
-
+        $query = mysqli_query($this->con, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  id='$this->id'");
 
         if (mysqli_num_rows($query) == 0) {
             $this->id = null;
@@ -102,6 +101,18 @@ class ArtistPick
     public function getDateCreated()
     {
         return $this->date_created;
+    }
+
+    public function getSongIds()
+    {
+        $query = mysqli_query($this->con, "SELECT DISTINCT songID FROM artistpicksongs WHERE artistPickID='$this->id' ORDER BY track_order ASC");
+        $array = array();
+
+        while ($row = mysqli_fetch_array($query)) {
+            array_push($array, $row['songID']);
+        }
+
+        return $array;
     }
 
 

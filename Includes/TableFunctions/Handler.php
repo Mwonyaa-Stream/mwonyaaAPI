@@ -1147,6 +1147,86 @@ class Handler
         return $itemRecords;
     }
 
+
+    function readSelectedArtistPick(): array
+    {
+
+        $itemRecords = array();
+
+        $playlistID = htmlspecialchars(strip_tags($_GET["playlistID"]));
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
+
+        if ($playlistID) {
+            $page = floatval($page);
+            $no_of_records_per_page = 50;
+            $offset = ($this->pageNO - 1) * $no_of_records_per_page;
+
+            $sql = "SELECT COUNT(id) as count FROM artistpicksongs WHERE artistPickID = '" . $playlistID . "'  limit 1";
+            $result = mysqli_query($this->conn, $sql);
+            $data = mysqli_fetch_assoc($result);
+            $total_rows = floatval($data['count']);
+            $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+            $itemRecords["page"] = $page;
+            $itemRecords["Playlists"] = array();
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+            $playlist = new ArtistPick($this->conn, $playlistID);
+
+
+            if ($page == 1) {
+
+                if ($playlist) {
+                    $temp = array();
+                    $temp['id'] = $playlist->getId();
+                    $temp['name'] = $playlist->getTitle();
+                    $temp['owner'] = $playlist->getArtist()->getName();
+                    $temp['cover'] = $playlist->getCoverArt();
+                    $temp['description'] = "Collection of Tracks Handpicked by the artist";
+                    $temp['status'] = "2";
+                    $temp['total'] = $total_rows;
+                    array_push($itemRecords["Playlists"], $temp);
+
+                }
+
+            }
+
+
+            // get products id from the same cat
+            $same_cat_IDs = $playlist->getSongIds($offset, $no_of_records_per_page);
+            $allProducts = array();
+
+            foreach ($same_cat_IDs as $row) {
+                $song = new Song($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+                array_push($allProducts, $temp);
+            }
+
+            $slider_temps = array();
+            $slider_temps['Tracks'] = $allProducts;
+            array_push($itemRecords['Playlists'], $slider_temps);
+
+
+        }
+
+
+        return $itemRecords;
+    }
+
     function readSong(): array
     {
 
