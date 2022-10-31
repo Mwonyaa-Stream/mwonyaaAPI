@@ -1278,7 +1278,7 @@ class Handler
             $podcast_temps = array();
             $podcast_temps['heading'] = "Podcast";
             $podcast_temps['subheading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
-            $podcast_temps['image_pick'] = "Podcast";
+            $podcast_temps['image_pick'] = "https://www.mwonyaa.com/assets/images/createdplaylist/podcastpodcast_mw603382d49906aPka_playlist_20221031091020_04294.jpg";
             $podcast_temps['tracks'] = $home_genre_tracks;
             array_push($menuCategory, $podcast_temps);
             // end get_Slider_banner
