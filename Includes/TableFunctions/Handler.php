@@ -768,7 +768,7 @@ class Handler
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
         $noticeString = "
-        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,dateAdded FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 7 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,datecreated FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,datecreated FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,dateCreated FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) ORDER BY `dateAdded` DESC
+        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 7 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) ORDER BY `dateAdded` DESC
         ";
 
         // run the query in the db and search through each of the records returned
@@ -800,6 +800,14 @@ class Handler
 
             foreach ($notice_result as $row) {
                 $temp = array();
+                $name = "Track";
+                if($row['tag'] == "music"){
+                    $name = "Song";
+                }if($row['tag'] == "podcast"){
+                    $name = "Episode";
+                }if($row['tag'] == "dj"){
+                    $name = "Mix tape";
+                }
 
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
@@ -811,7 +819,9 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['description'] = $song->getArtist()->getName(). " added a new ".$name." '".$row['title']. "'. give it a listen!";
                     $temp['type'] = $row['type'];
+                    $temp['tag'] = $row['tag'];
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -823,7 +833,10 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['description'] = $album->getArtist()->getName()." created '".$row['title'] ."' a ".$row['tag']. " collection";
                     $temp['type'] = $row['type'];
+                    $temp['tag'] = $row['tag'];
+
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
@@ -834,7 +847,10 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['description'] = $row['title']. " has joined Mwonya. Enjoy great content and so much more from ".$row['title'];
                     $temp['type'] = $row['type'];
+                    $temp['tag'] = $row['tag'];
+
                 }
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
@@ -846,7 +862,10 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['description'] = $user->getFirstname(). " created a new playlist '".$row['title']. "'. Stream it now on demand";
                     $temp['type'] = $row['type'];
+                    $temp['tag'] = $row['tag'];
+
                 }
 
                 array_push($menuCategory, $temp);
