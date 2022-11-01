@@ -19,7 +19,7 @@ class Handler
     public function __construct($con)
     {
         $this->conn = $con;
-        $this->version = 1;
+        $this->version = 4;
     }
 
 
