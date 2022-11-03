@@ -801,11 +801,13 @@ class Handler
             foreach ($notice_result as $row) {
                 $temp = array();
                 $name = "Track";
-                if($row['tag'] == "music"){
+                if ($row['tag'] == "music") {
                     $name = "Song";
-                }if($row['tag'] == "podcast"){
+                }
+                if ($row['tag'] == "podcast") {
                     $name = "Episode";
-                }if($row['tag'] == "dj"){
+                }
+                if ($row['tag'] == "dj") {
                     $name = "Mix tape";
                 }
 
@@ -819,7 +821,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                    $temp['description'] = $song->getArtist()->getName(). " added a new ".$name." '".$row['title']. "'. give it a listen!";
+                    $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                 }
@@ -833,7 +835,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $album->getArtist()->getName()." created '".$row['title'] ."' a ".$row['tag']. " collection";
+                    $temp['description'] = $album->getArtist()->getName() . " created '" . $row['title'] . "' a " . $row['tag'] . " collection";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
 
@@ -847,7 +849,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $row['title']. " has joined Mwonya. Enjoy great content and so much more from ".$row['title'];
+                    $temp['description'] = $row['title'] . " has joined Mwonya. Enjoy great content and so much more from " . $row['title'];
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
 
@@ -862,7 +864,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $user->getFirstname(). " created a new playlist '".$row['title']. "'. Stream it now on demand";
+                    $temp['description'] = $user->getFirstname() . " created a new playlist '" . $row['title'] . "'. Stream it now on demand";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
 
@@ -2214,7 +2216,7 @@ class Handler
         return $song_ids_array;
     }
 
-    public  function loginHandler(): array
+    public function loginHandler(): array
     {
         $feedback = [];
 
@@ -2246,4 +2248,52 @@ class Handler
 
         return $feedback;
     }
+
+
+    // generate daily trend
+    function dailyTrend(): array
+    {
+
+        $itemRecords = array();
+        // get products id from the same cat
+        $dailyTrendsIDs = array();
+        $dailyTrendsTracks = array();
+        $itemRecords["Playlists"] = array();
+
+
+        $sql = "SELECT songid,sum(plays) as totalplays from frequency WHERE lastPlayed > DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY songid ORDER BY totalplays DESC limit 50";
+        $other_events_Query_result = mysqli_query($this->conn, $sql);
+        while ($row = mysqli_fetch_array($other_events_Query_result)) {
+            array_push($dailyTrendsIDs, $row['songid']);
+        }
+
+
+        foreach ($dailyTrendsIDs as $id) {
+            $song = new Song($this->conn, $id);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+            array_push($dailyTrendsTracks, $temp);
+        }
+
+        $slider_temps = array();
+        $slider_temps['Tracks'] = $dailyTrendsTracks;
+        array_push($itemRecords['Playlists'], $slider_temps);
+
+
+        return $itemRecords;
+    }
+
 }
