@@ -331,7 +331,7 @@ class Handler
             $featuredartists = array();
             $featuredCategory = array();
 
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' ORDER BY overalplays DESC LIMIT 8";
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' AND featured = 1 ORDER BY RAND () LIMIT 10";
             $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
             while ($row = mysqli_fetch_array($feat_cat_id_result)) {
                 array_push($featuredartists, $row);
