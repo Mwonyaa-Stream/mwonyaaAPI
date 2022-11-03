@@ -2264,12 +2264,12 @@ class Handler
         $sql = "SELECT songid,sum(plays) as totalplays from frequency WHERE lastPlayed > DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY songid ORDER BY totalplays DESC limit 50";
         $other_events_Query_result = mysqli_query($this->conn, $sql);
         while ($row = mysqli_fetch_array($other_events_Query_result)) {
-            array_push($dailyTrendsIDs, $row['songid']);
+            array_push($dailyTrendsIDs, $row);
         }
 
 
         foreach ($dailyTrendsIDs as $id) {
-            $song = new Song($this->conn, $id);
+            $song = new Song($this->conn, $id['songid']);
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
@@ -2282,7 +2282,7 @@ class Handler
             $temp['duration'] = $song->getDuration();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['weeklyplays'] = $id['totalplays'];
 
 
             array_push($dailyTrendsTracks, $temp);
