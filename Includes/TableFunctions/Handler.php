@@ -899,6 +899,152 @@ class Handler
         $perform_query = true;
         // create the base variables for building the search query
 
+
+//        echo $search_string;
+        $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+           UNION
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+           UNION
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+           UNION
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $this->conn->real_escape_string($search_query) . "%' )";
+
+
+//        echo $search_string;
+
+
+        // run the query in the db and search through each of the records returned
+        $query = mysqli_query($this->conn, $search_string);
+        $result_count = mysqli_num_rows($query);
+
+        $page = floatval($page);
+        $no_of_records_per_page = 10;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+
+        $total_rows = floatval(number_format($result_count));
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+        $itemRecords = array();
+
+        // echo Update Search Table;
+        $sh_result = mysqli_query($this->conn, "SELECT * FROM `searches` WHERE `query`='" . $search_query . "' LIMIT 1;");
+        $sh_data = mysqli_fetch_assoc($sh_result);
+        if ($sh_data != null) {
+            $sh_id = floatval($sh_data['id']);
+            $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = '$sh_id'");
+            $shq_data = mysqli_fetch_assoc($countQuery);
+            $shq_count = floatval($shq_data['count']);
+            $shq_count += 1;
+            mysqli_query($this->conn, "UPDATE `searches` SET `count`= '$shq_count' WHERE id = '$sh_id'");
+
+        } else {
+            //insert data
+            mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $search_query . "',1)");
+        }
+
+
+        // check if the search query returned any results
+        if ($result_count > 0) {
+
+            $categoryids = array();
+            $menuCategory = array();
+
+
+            $category_stmt = $search_string . " ORDER BY `title` ASC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+
+            $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
+
+            while ($row = mysqli_fetch_array($menu_type_id_result)) {
+                array_push($categoryids, $row);
+            }
+
+            foreach ($categoryids as $row) {
+                $temp = array();
+
+                if ($row['type'] == "song") {
+                    $temp['id'] = $row['id'];
+                    $song = new Song($this->conn, $row['id']);
+                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
+                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "album") {
+                    $temp['id'] = $row['id'];
+                    $album = new Album($this->conn, $row['id']);
+                    $temp['artist'] = $album->getArtist()->getName();
+                    $temp['artistID'] = $row['artist'];
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "artist") {
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] = $row['title'];
+                    $temp['artistID'] = '';
+                    $temp['title'] = '';
+                    $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+                if ($row['type'] == "playlist") {
+                    $temp['id'] = $row['id'];
+                    $temp['artist'] = '';
+                    $temp['artistID'] = '';
+                    $temp['title'] = $row['title'];
+                    $temp['path'] = $row['path'];
+                    $temp['plays'] = $row['plays'];
+                    $temp['weekplays'] = $row['weekplays'];
+                    $temp['artworkPath'] = $row['artworkPath'];
+                    $temp['type'] = $row['type'];
+                }
+
+                array_push($menuCategory, $temp);
+            }
+
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["search_results"] = $menuCategory;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+
+
+        } else {
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["search_results"] = [];
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        }
+
+
+        return $itemRecords;
+    }
+
+    function searchAdvance(): array
+    {
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
+        $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
+        $search_algorithm = "normal";
+        $perform_query = true;
+        // create the base variables for building the search query
+
         if (strlen($search_query) > 100 || strlen($search_query) < 3) {
             $perform_query = false;
         }
