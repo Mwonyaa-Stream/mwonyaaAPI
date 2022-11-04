@@ -2486,7 +2486,7 @@ class Handler
     {
         $itemRecords = array();
         $itemRecords["version"] = "meco";
-        $itemRecords["update"] = true;
+        $itemRecords["update"] = false;
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
     }
