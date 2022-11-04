@@ -2482,4 +2482,13 @@ class Handler
         return $itemRecords;
     }
 
+    public function Versioning()
+    {
+        $itemRecords = array();
+        $itemRecords["version"] = "meco";
+        $itemRecords["update"] = true;
+        $itemRecords["message"] = "We have new updates for you";
+        return $itemRecords;
+    }
+
 }
