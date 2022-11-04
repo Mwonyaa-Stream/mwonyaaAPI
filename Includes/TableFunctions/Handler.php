@@ -901,13 +901,13 @@ class Handler
 
 
 //        echo $search_string;
-        $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+        $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query. "%' ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $this->conn->real_escape_string($search_query) . "%' )";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query. "%' )";
 
 
 //        echo $search_string;
