@@ -387,7 +387,7 @@ class Handler
             $featured_playlist = array();
             $featuredPlaylist = array();
 
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 8";
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
             $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
             while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
                 array_push($featured_playlist, $row);
