@@ -2071,76 +2071,81 @@ class Handler
         $updateIDs = array();
 
 
-        foreach ($this->liteRecentTrackList as $i => $i_value) {
-            $artist = htmlspecialchars(strip_tags($i_value->artist));
-            $artistID = htmlspecialchars(strip_tags($i_value->artistID));
-            $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
-            $id = htmlspecialchars(strip_tags($i_value->id));
-            $path = htmlspecialchars(strip_tags($i_value->path));
-            $title = htmlspecialchars(strip_tags($i_value->title));
-            $totalplays = htmlspecialchars(strip_tags($i_value->totalplays));
-            $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
-            $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
+        if($this->liteRecentTrackList != null){
+            foreach ($this->liteRecentTrackList as $i => $i_value) {
+                $artist = htmlspecialchars(strip_tags($i_value->artist));
+                $artistID = htmlspecialchars(strip_tags($i_value->artistID));
+                $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
+                $id = htmlspecialchars(strip_tags($i_value->id));
+                $path = htmlspecialchars(strip_tags($i_value->path));
+                $title = htmlspecialchars(strip_tags($i_value->title));
+                $totalplays = htmlspecialchars(strip_tags($i_value->totalplays));
+                $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
+                $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
 
-            $user_sql = "UPDATE users set songsplayed = songsplayed + $trackUserPlays WHERE id ='$user_id'";
-            mysqli_query($this->conn, $user_sql);
-            $song_sql = "UPDATE songs SET plays = plays + $trackUserPlays, weekplays = weekplays + $trackUserPlays, lastplayed='$trackLastPlayed'  WHERE id='$id'";
-            mysqli_query($this->conn, $song_sql);
+                $user_sql = "UPDATE users set songsplayed = songsplayed + $trackUserPlays WHERE id ='$user_id'";
+                mysqli_query($this->conn, $user_sql);
+                $song_sql = "UPDATE songs SET plays = plays + $trackUserPlays, weekplays = weekplays + $trackUserPlays, lastplayed='$trackLastPlayed'  WHERE id='$id'";
+                mysqli_query($this->conn, $song_sql);
 
-            //user favourites
-            $fav_sql = "SELECT * FROM frequency where  userid='$user_id' AND songid='$id'";
-            $sql = mysqli_query($this->conn, $fav_sql);
+                //user favourites
+                $fav_sql = "SELECT * FROM frequency where  userid='$user_id' AND songid='$id'";
+                $sql = mysqli_query($this->conn, $fav_sql);
 
 
-            if (mysqli_num_rows($sql) > 0) {
-                // echo "song and user Id Already Exists";
-                $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET playsmonth = playsmonth + ?, plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
-                $stmt_RecentPlays->bind_param("iisssi", $trackUserPlays, $trackUserPlays, $update_date, $trackLastPlayed, $user_id, $id);
+                if (mysqli_num_rows($sql) > 0) {
+                    // echo "song and user Id Already Exists";
+                    $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET playsmonth = playsmonth + ?, plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
+                    $stmt_RecentPlays->bind_param("iisssi", $trackUserPlays, $trackUserPlays, $update_date, $trackLastPlayed, $user_id, $id);
 
-            } else {
-                $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,playsmonth,lastPlayed) VALUES (?,?,?,?,?)");
-                $stmt_RecentPlays->bind_param("isiis", $id, $user_id, $trackUserPlays, $trackUserPlays, $trackLastPlayed);
+                } else {
+                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,playsmonth,lastPlayed) VALUES (?,?,?,?,?)");
+                    $stmt_RecentPlays->bind_param("isiis", $id, $user_id, $trackUserPlays, $trackUserPlays, $trackLastPlayed);
 
-            }
+                }
 
-            if ($stmt_RecentPlays->execute()) {
-                $this->exe_status = "success";
-                array_push($updateIDs, $id);
-            } else {
-                $this->exe_status = "failure";
+                if ($stmt_RecentPlays->execute()) {
+                    $this->exe_status = "success";
+                    array_push($updateIDs, $id);
+                } else {
+                    $this->exe_status = "failure";
+                }
             }
         }
 
 
-        // LIKED SONGS
-        foreach ($this->liteLikedTrackList as $i => $i_value) {
-            $id = htmlspecialchars(strip_tags($i_value->id));
-            $trackID = htmlspecialchars(strip_tags($i_value->trackID));
-            $trackStatus = htmlspecialchars(strip_tags($i_value->trackStatus));
+        if($this->liteLikedTrackList !=  null){
+            // LIKED SONGS
+            foreach ($this->liteLikedTrackList as $i => $i_value) {
+                $id = htmlspecialchars(strip_tags($i_value->id));
+                $trackID = htmlspecialchars(strip_tags($i_value->trackID));
+                $trackStatus = htmlspecialchars(strip_tags($i_value->trackStatus));
 
 
-            $check = mysqli_query($this->conn, "SELECT songId FROM likedsongs WHERE songId = '$trackID' AND userID ='$user_id'");
-            if (mysqli_num_rows($check) > 0) {
-                // echo "song and user Id Already Exists";
-                $stmt_LikedSongs = $this->conn->prepare("UPDATE likedsongs SET songId = ?, userID = ?, dateUpdated = ? WHERE songId= ? AND userID= ?");
-                $stmt_LikedSongs->bind_param("issis", $trackID, $user_id, $update_date, $trackID, $user_id);
+                $check = mysqli_query($this->conn, "SELECT songId FROM likedsongs WHERE songId = '$trackID' AND userID ='$user_id'");
+                if (mysqli_num_rows($check) > 0) {
+                    // echo "song and user Id Already Exists";
+                    $stmt_LikedSongs = $this->conn->prepare("UPDATE likedsongs SET songId = ?, userID = ?, dateUpdated = ? WHERE songId= ? AND userID= ?");
+                    $stmt_LikedSongs->bind_param("issis", $trackID, $user_id, $update_date, $trackID, $user_id);
 
-            } else {
+                } else {
 
-                $stmt_LikedSongs = $this->conn->prepare("INSERT INTO likedsongs(`songId`,`userID`,`dateUpdated`) VALUES (?,?,?)");
-                $stmt_LikedSongs->bind_param("iss", $trackID, $user_id, $update_date);
+                    $stmt_LikedSongs = $this->conn->prepare("INSERT INTO likedsongs(`songId`,`userID`,`dateUpdated`) VALUES (?,?,?)");
+                    $stmt_LikedSongs->bind_param("iss", $trackID, $user_id, $update_date);
+
+                }
+
+                if ($stmt_LikedSongs->execute()) {
+                    $this->exe_status = "success";
+                    array_push($updateIDs, $trackID);
+                } else {
+                    $this->exe_status = "failure";
+                }
+
 
             }
-
-            if ($stmt_LikedSongs->execute()) {
-                $this->exe_status = "success";
-                array_push($updateIDs, $trackID);
-            } else {
-                $this->exe_status = "failure";
-            }
-
-
         }
+
 
         if ($this->exe_status == "success") {
             $itemRecords['error'] = false;

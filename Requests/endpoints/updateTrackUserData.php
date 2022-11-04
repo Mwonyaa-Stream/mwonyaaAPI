@@ -17,15 +17,15 @@ if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
 //
-    if (!empty($data->user_id) && !empty($data->liteRecentTrackList) && !empty($data->liteLikedTrackList)) {
+    if (!empty($data->user_id)) {
         $handler = new Handler($db);
 
         $current_Time_InSeconds = time();
         $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds);
         $handler->user_id = $data->user_id;
         $handler->update_date = $update_date;
-        $handler->liteRecentTrackList = $data->liteRecentTrackList;
-        $handler->liteLikedTrackList = $data->liteLikedTrackList;
+        $handler->liteRecentTrackList = (isset($data->liteRecentTrackList)) ? $data->liteRecentTrackList : null;
+        $handler->liteLikedTrackList =(isset($data->liteLikedTrackList)) ? $data->liteLikedTrackList : null;
         $result = $handler->updateTrackUserData();
         if ($result) {
             http_response_code(200);
