@@ -898,9 +898,6 @@ class Handler
         $search_algorithm = "normal";
         $perform_query = true;
         // create the base variables for building the search query
-        if (preg_match('/[^A-Za-z0-9]/', $search_query)) {
-            $perform_query = false;
-        }
 
         if (strlen($search_query) > 100 || strlen($search_query) < 3) {
             $perform_query = false;
@@ -913,13 +910,13 @@ class Handler
         if ($perform_query == true) {
 
 //        echo $search_string;
-            $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
+            $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" .$this->conn->real_escape_string($search_query)  . "%' ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query . "%' ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $this->conn->real_escape_string($search_query) . "%' ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query . "%' )";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $this->conn->real_escape_string($search_query) . "%' )";
 
 
 //        echo $search_string;
@@ -1069,13 +1066,13 @@ class Handler
 
 //        echo $search_string;
         $search_string = "
-            (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+            (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE) ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE)) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE)) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $search_query . "' IN NATURAL LANGUAGE MODE))";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE))";
 
 
 //        echo $search_string;
