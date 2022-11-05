@@ -398,7 +398,8 @@ class Handler
                 $temp = array();
                 $temp['id'] = $row['id'];
                 $temp['name'] = $row['name'];
-                $temp['owner'] = $row['owner'];
+//                $temp['owner'] = $row['owner'];
+                $temp['owner'] = "Mwonya Playlist";
                 $temp['coverurl'] = $row['coverurl'];
                 array_push($featuredPlaylist, $temp);
             }
@@ -2486,7 +2487,7 @@ class Handler
     {
         $itemRecords = array();
         $itemRecords["version"] = "meco";
-        $itemRecords["update"] = false;
+        $itemRecords["update"] = true;
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
     }
