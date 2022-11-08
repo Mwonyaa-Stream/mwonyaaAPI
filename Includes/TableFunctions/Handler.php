@@ -2493,8 +2493,8 @@ class Handler
     public function Versioning()
     {
         $itemRecords = array();
-        $itemRecords["version"] = "7";
-        $itemRecords["update"] = false;
+        $itemRecords["version"] = "7"; // build number should match
+        $itemRecords["update"] = false; // update dialog dismissable
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
     }
