@@ -2493,7 +2493,7 @@ class Handler
     public function Versioning()
     {
         $itemRecords = array();
-        $itemRecords["version"] = "meco";
+        $itemRecords["version"] = "7";
         $itemRecords["update"] = false;
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
