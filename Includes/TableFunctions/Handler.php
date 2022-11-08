@@ -897,72 +897,81 @@ class Handler
         $page = htmlspecialchars(strip_tags($_GET["page"]));
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "normal";
-        $perform_query = true;
         // create the base variables for building the search query
-
-
-//        echo $search_string;
-        $search_string = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE'%" . $search_query . "%' ) 
-           UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE'%" . $search_query . "%' ) 
-           UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE'%" . $search_query. "%' ) 
-           UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE'%" . $search_query. "%' )";
-
-
-//        echo $search_string;
-
-
-        // run the query in the db and search through each of the records returned
-        $query = mysqli_query($this->conn, $search_string);
-        $result_count = mysqli_num_rows($query);
 
         $page = floatval($page);
         $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
 
+        $itemRecords = array();
 
-        $total_rows = floatval(number_format($result_count));
+        $perform_query = true;
+        // create the base variables for building the search query
+
+        if (strlen($search_query) > 100 || strlen($search_query) < 3) {
+            $perform_query = false;
+        }
+
+        if (empty($search_query)) {
+            $perform_query = false;
+        }
+
+        if ($perform_query == true) {
+            // echo Update Search Table;
+            $sh_result = mysqli_query($this->conn, "SELECT * FROM `searches` WHERE `query`='" . $this->conn->real_escape_string($search_query) . "' LIMIT 1;");
+            $sh_data = mysqli_fetch_assoc($sh_result);
+            if ($sh_data != null) {
+                $sh_id = floatval($sh_data['id']);
+                $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = '$sh_id'");
+                $shq_data = mysqli_fetch_assoc($countQuery);
+                $shq_count = floatval($shq_data['count']);
+                $shq_count += 1;
+                mysqli_query($this->conn, "UPDATE `searches` SET `count`= '$shq_count' WHERE id = '$sh_id'");
+
+            } else {
+                //insert data
+                mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $this->conn->real_escape_string($search_query) . "',1)");
+            }
+
+        }
+        $search = "%{$search_query}%";
+
+        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE ? ) 
+           UNION
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE ? ) 
+           UNION
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE ? ) 
+           UNION
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE ? )"; // SQL with parameters
+        $stmt = $this->conn->prepare($search_query_top);
+        $stmt->bind_param("ssss", $search, $search, $search, $search);
+        $stmt->execute();
+        $result = $stmt->get_result(); // get the mysqli result
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        $total_results_got = count($data);
+        $total_rows = floatval(number_format($total_results_got));
         $total_pages = ceil($total_rows / $no_of_records_per_page);
 
 
-        $itemRecords = array();
-
-        // echo Update Search Table;
-        $sh_result = mysqli_query($this->conn, "SELECT * FROM `searches` WHERE `query`='" . $search_query . "' LIMIT 1;");
-        $sh_data = mysqli_fetch_assoc($sh_result);
-        if ($sh_data != null) {
-            $sh_id = floatval($sh_data['id']);
-            $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = '$sh_id'");
-            $shq_data = mysqli_fetch_assoc($countQuery);
-            $shq_count = floatval($shq_data['count']);
-            $shq_count += 1;
-            mysqli_query($this->conn, "UPDATE `searches` SET `count`= '$shq_count' WHERE id = '$sh_id'");
-
-        } else {
-            //insert data
-            mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $search_query . "',1)");
-        }
-
-
         // check if the search query returned any results
-        if ($result_count > 0) {
 
-            $categoryids = array();
-            $menuCategory = array();
+        $menuCategory = array();
 
 
-            $category_stmt = $search_string . " ORDER BY `title` ASC LIMIT " . $offset . "," . $no_of_records_per_page . "";
+        $search_query_sql = $search_query_top . " ORDER BY `title` ASC LIMIT ?,?";
+        $stmt = $this->conn->prepare($search_query_sql);
+        $stmt->bind_param("ssssii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
+        $stmt->execute();
+        $result = $stmt->get_result(); // get the mysqli result
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        $total_results_got = count($data);
 
 
-            $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
+        if ($total_results_got > 0) {
 
-            while ($row = mysqli_fetch_array($menu_type_id_result)) {
-                array_push($categoryids, $row);
-            }
-
-            foreach ($categoryids as $row) {
+            foreach ($data as $row) {
                 $temp = array();
 
                 if ($row['type'] == "song") {
@@ -1020,8 +1029,6 @@ class Handler
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
-            $itemRecords["total_pages"] = $total_pages;
-            $itemRecords["total_results"] = $total_rows;
 
 
         } else {
@@ -1030,9 +1037,9 @@ class Handler
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = [];
-            $itemRecords["total_pages"] = $total_pages;
-            $itemRecords["total_results"] = $total_rows;
         }
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_rows;
 
 
         return $itemRecords;
@@ -2072,7 +2079,7 @@ class Handler
         $updateIDs = array();
 
 
-        if($this->liteRecentTrackList != null){
+        if ($this->liteRecentTrackList != null) {
             foreach ($this->liteRecentTrackList as $i => $i_value) {
                 $artist = htmlspecialchars(strip_tags($i_value->artist));
                 $artistID = htmlspecialchars(strip_tags($i_value->artistID));
@@ -2115,7 +2122,7 @@ class Handler
         }
 
 
-        if($this->liteLikedTrackList !=  null){
+        if ($this->liteLikedTrackList != null) {
             // LIKED SONGS
             foreach ($this->liteLikedTrackList as $i => $i_value) {
                 $id = htmlspecialchars(strip_tags($i_value->id));
