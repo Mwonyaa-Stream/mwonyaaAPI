@@ -1626,7 +1626,7 @@ class Handler
         }
         return $itemRecords;
     }
-    function trackShare(): array
+    function singleTrack(): array
     {
 
         $itemRecords = array();

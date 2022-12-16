@@ -5,7 +5,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db);
-    $result = $handler->trackShare();
+    $result = $handler->singleTrack();
 
     if($result){
         http_response_code(200);
