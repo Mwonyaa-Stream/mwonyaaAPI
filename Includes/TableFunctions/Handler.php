@@ -1629,7 +1629,8 @@ class Handler
     function singleTrack(): array
     {
 
-        $itemRecords = array();
+        $trackInfo = array();
+
 
         $songID = htmlspecialchars(strip_tags($_GET["trackID"]));
 
@@ -1637,26 +1638,22 @@ class Handler
 
             // Song
             $song = new Song($this->conn, $songID);
-            $temp = array();
-            $temp['id'] = $song->getId();
-            $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
-            $temp['artistID'] = $song->getArtistId();
-            $temp['album'] = $song->getAlbum()->getTitle();
-            $temp['albumID'] = $song->getAlbumId();
-            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-            $temp['genre'] = $song->getGenre()->getGenre();
-            $temp['genreID'] = $song->getGenre()->getGenreid();
-            $temp['duration'] = $song->getDuration();
-            $temp['path'] = $song->getPath();
-            $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
-
-            array_push($itemRecords, $temp);
-
+            $trackInfo['id'] = $song->getId();
+            $trackInfo['title'] = $song->getTitle();
+            $trackInfo['artist'] = $song->getArtist()->getName();
+            $trackInfo['artistID'] = $song->getArtistId();
+            $trackInfo['album'] = $song->getAlbum()->getTitle();
+            $trackInfo['albumID'] = $song->getAlbumId();
+            $trackInfo['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $trackInfo['genre'] = $song->getGenre()->getGenre();
+            $trackInfo['genreID'] = $song->getGenre()->getGenreid();
+            $trackInfo['duration'] = $song->getDuration();
+            $trackInfo['path'] = $song->getPath();
+            $trackInfo['totalplays'] = $song->getPlays();
+            $trackInfo['weeklyplays'] = $song->getWeeklyplays();
 
         }
-        return $itemRecords;
+        return $trackInfo;
     }
 
     function podcastHome(): array
