@@ -1635,8 +1635,6 @@ class Handler
 
         if ($songID) {
 
-            $itemRecords["Song"] = array();
-
             // Song
             $song = new Song($this->conn, $songID);
             $temp = array();
@@ -1654,10 +1652,7 @@ class Handler
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
 
-            array_push($itemRecords['Song'], $temp);
-
-            $itemRecords["total_pages"] = 1;
-            $itemRecords["total_results"] = 1;
+            array_push($itemRecords, $temp);
 
 
         }
