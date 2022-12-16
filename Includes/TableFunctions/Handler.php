@@ -1626,7 +1626,43 @@ class Handler
         }
         return $itemRecords;
     }
+    function trackShare(): array
+    {
 
+        $itemRecords = array();
+
+        $songID = htmlspecialchars(strip_tags($_GET["trackID"]));
+
+        if ($songID) {
+
+            $itemRecords["Song"] = array();
+
+            // Song
+            $song = new Song($this->conn, $songID);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['albumID'] = $song->getAlbumId();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+            array_push($itemRecords['Song'], $temp);
+
+            $itemRecords["total_pages"] = 1;
+            $itemRecords["total_results"] = 1;
+
+
+        }
+        return $itemRecords;
+    }
 
     function podcastHome(): array
     {
