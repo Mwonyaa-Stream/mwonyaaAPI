@@ -207,7 +207,7 @@ class Artist
 
     public function getLatestRelease()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad' ORDER BY datecreated DESC LIMIT 1");
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 1");
         $row = mysqli_fetch_array($query);
         $id = $row['id'];
         return new Album($this->con, $id);
