@@ -239,7 +239,7 @@ class Artist
 
     public function getArtistAlbums()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM albums where artist='$this->id' and tag != 'ad' LIMIT 8");
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
