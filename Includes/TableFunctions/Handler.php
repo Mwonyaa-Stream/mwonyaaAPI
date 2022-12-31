@@ -294,7 +294,8 @@ class Handler
 
             // recently played array
             $recently_played = array();
-            $recently_played['heading'] = "Recently Played";
+//            $recently_played['heading'] = "Recently Played";
+            $recently_played['heading'] = "🎆 Happy 2023 🎉🥳";
             $recently_played['subheading'] = "Tracks Last Listened to";
             array_push($menuCategory, $recently_played);
 
@@ -355,7 +356,7 @@ class Handler
             $featured_albums = array();
             $featuredAlbums = array();
 
-            $featured_album_Query = "SELECT id FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) ORDER BY `albums`.`datecreated` DESC LIMIT  8";
+            $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
             $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
             while ($row = mysqli_fetch_array($featured_album_Query_result)) {
                 array_push($featured_albums, $row['id']);
@@ -1712,7 +1713,8 @@ class Handler
 
 
             $podcast_temps = array();
-            $podcast_temps['heading'] = "Podcast";
+//            $podcast_temps['heading'] = "Podcast";
+            $podcast_temps['heading'] = "🎆🎉 VIVA 2023 💯🎁";
             $podcast_temps['subheading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
             $podcast_temps['image_pick'] = "https://www.mwonyaa.com/assets/images/createdplaylist/podcastpodcast_mw603382d49906aPka_playlist_20221031091020_04294.jpg";
             $podcast_temps['tracks'] = $home_genre_tracks;
