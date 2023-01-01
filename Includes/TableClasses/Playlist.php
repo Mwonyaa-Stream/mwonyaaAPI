@@ -35,7 +35,7 @@ class Playlist
             $this->coverurl = $data['coverurl'];
             $this->status = $data['status'];
             $this->featuredplaylist = $data['featuredplaylist'];
-        } else{
+        } else {
             http_response_code(200);
             echo json_encode(
                 array("message" => "No Item Found")
@@ -117,8 +117,6 @@ class Playlist
     }
 
 
-
-
     public function getNumberOfSongs()
     {
         $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM playlistsongs WHERE playlistId='$this->id'");
@@ -127,11 +125,22 @@ class Playlist
 
     public function getSongIds()
     {
-        $query = mysqli_query($this->con, "SELECT DISTINCT songId FROM playlistsongs WHERE playlistId='$this->id' ORDER BY playlistOrder ASC");
         $array = array();
+        $query = mysqli_query($this->con, "SELECT DISTINCT songId as id FROM playlistsongs WHERE playlistId='$this->id' ORDER BY playlistOrder ASC");
+
+        if ($this->id === "mwPL_query_base_rap_genre") {
+            $query = mysqli_query($this->con, "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre =1 GROUP BY f.songid  ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40");
+        }
+        if ($this->id === "mwPL_query_base_trending") {
+            $query = mysqli_query($this->con, "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid  ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40");
+
+        }
+        if ($this->id === "mwPL_query_base_2022_review") {
+            $query = mysqli_query($this->con, "SELECT f.songid as id, s.title, s.genre, s.tag,g.name, SUM(f.playsmonth) as total_plays FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY total_plays DESC , f.lastPlayed DESC LIMIT 20");
+        }
 
         while ($row = mysqli_fetch_array($query)) {
-            array_push($array, $row['songId']);
+            array_push($array, $row['id']);
         }
 
         return $array;
