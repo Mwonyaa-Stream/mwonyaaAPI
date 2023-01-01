@@ -151,6 +151,7 @@ class Playlist
         }
         if (!empty($query)) {
             $stmt = mysqli_prepare($this->con, $query);
+            mysqli_stmt_bind_param($stmt, "s", $this->id);
             if ($stmt && mysqli_stmt_execute($stmt)) {
                 $result = mysqli_stmt_get_result($stmt);
                 $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
