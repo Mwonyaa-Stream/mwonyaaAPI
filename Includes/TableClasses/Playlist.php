@@ -127,15 +127,6 @@ class Playlist
     {
         $array = array();
         $query = "SELECT DISTINCT songId as id FROM playlistsongs WHERE playlistId=? ORDER BY playlistOrder ASC";
-        $stmt = mysqli_prepare($this->con, $query);
-        mysqli_stmt_bind_param($stmt, "s", $this->id);
-        if ($stmt && mysqli_stmt_execute($stmt)) {
-            $result = mysqli_stmt_get_result($stmt);
-            $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-            mysqli_stmt_close($stmt);
-        } else {
-            // handle the error
-        }
 
         switch ($this->id) {
             case "mwPL_query_base_rap_genre":
