@@ -125,34 +125,53 @@ class Playlist
 
     public function getSongIds()
     {
-        $array = array();
+        // Initialize an empty array to hold the song IDs
+        $songIds = [];
+
+        // Set the default query to select song IDs based on the playlist ID
         $query = "SELECT DISTINCT songId as id FROM playlistsongs WHERE playlistId=? ORDER BY playlistOrder ASC";
 
+        // Check if the playlist ID is one of the predefined queries
         switch ($this->id) {
             case "mwPL_query_base_rap_genre":
-                $query = "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre = 1 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
+                // Set the query to select song IDs based on the rap genre
+                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre = 1 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
                 break;
             case "mwPL_query_base_trending":
-                $query = "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
+                // Set the query to select song IDs based on the trending songs
+                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
                 break;
             case "mwPL_query_base_2022_review":
-                $query = "SELECT f.songid as id, s.title, s.genre, s.tag, g.name, SUM(f.playsmonth) as total_plays FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY total_plays DESC, f.lastPlayed DESC LIMIT 20";
+                // Set the query to select song IDs based on the 2022 review
+                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY total_plays DESC, f.lastPlayed DESC LIMIT 20";
                 break;
-            default:
-        }
-        if (!empty($query)) {
-            $stmt = mysqli_prepare($this->con, $query);
-            mysqli_stmt_bind_param($stmt, "s", $this->id);
-            if ($stmt && mysqli_stmt_execute($stmt)) {
-                $result = mysqli_stmt_get_result($stmt);
-                $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                mysqli_stmt_close($stmt);
-            } else {
-                // handle the error
-            }
         }
 
-        return array_column($array, 'id');
+        // Prepare the statement
+        $stmt = mysqli_prepare($this->con, $query);
+
+        // Bind the parameter to the prepared statement
+        mysqli_stmt_bind_param($stmt, "s", $this->id);
+
+        // Use exception handling to handle any errors that may occur during execution
+        try {
+            // Execute the prepared statement
+            mysqli_stmt_execute($stmt);
+
+            // Get the result set
+            $result = mysqli_stmt_get_result($stmt);
+
+            // Retrieve all rows from the result set as an associative array
+            $songIds = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+        } catch (Exception $e) {
+            // Handle the error
+        }
+
+        // Return the array of song IDs
+        return array_column($songIds, 'id');
     }
 
 
