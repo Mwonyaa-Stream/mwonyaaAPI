@@ -134,17 +134,15 @@ class Playlist
         // Check if the playlist ID is one of the predefined queries
         switch ($this->id) {
             case "mwPL_query_base_rap_genre":
-                // Set the query to select song IDs based on the rap genre
-                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre = 1 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
+                $query = "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre = 1 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
                 break;
             case "mwPL_query_base_trending":
-                // Set the query to select song IDs based on the trending songs
-                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
+                $query = "SELECT f.songid as id, s.title, s.genre, g.name, ( SELECT COUNT(DISTINCT f2.userid) FROM frequency f2 WHERE f2.songid = f.songid AND f2.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() ) as user_count FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY user_count DESC, f.lastPlayed DESC LIMIT 40";
                 break;
             case "mwPL_query_base_2022_review":
-                // Set the query to select song IDs based on the 2022 review
-                $query = "SELECT f.songid as id FROM frequency f JOIN songs s ON f.songid = s.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY total_plays DESC, f.lastPlayed DESC LIMIT 20";
+                $query = "SELECT f.songid as id, s.title, s.genre, s.tag, g.name, SUM(f.playsmonth) as total_plays FROM frequency f JOIN songs s ON f.songid = s.id JOIN genres g on s.genre = g.id WHERE f.lastPlayed BETWEEN DATE_SUB(NOW(), INTERVAL 2 WEEK) AND NOW() AND s.tag = 'music' AND s.genre != 3 GROUP BY f.songid ORDER BY total_plays DESC, f.lastPlayed DESC LIMIT 20";
                 break;
+            default:
         }
 
         // Prepare the statement
