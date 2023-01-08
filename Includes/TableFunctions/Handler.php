@@ -246,18 +246,17 @@ class Handler
 
         $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
-        $page = floatval($home_page);
+        $page = $home_page;
         $no_of_records_per_page = 10;
         $offset = ($page - 1) * $no_of_records_per_page;
 
-        $sql = "SELECT DISTINCT(genre) as count FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT 1";
+        $sql = "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = 'music'";
         $result = mysqli_query($this->conn, $sql);
         $data = mysqli_fetch_assoc($result);
-        $total_rows = floatval($data['count']);
+        $total_rows = floatval($data['total_genres']);
         $total_pages = ceil($total_rows / $no_of_records_per_page);
 
 
-        $category_ids = array();
         $menuCategory = array();
         $itemRecords = array();
 
@@ -265,25 +264,29 @@ class Handler
         if ($page == 1) {
 
             // get_Slider_banner
-            $slider_id = array();
             $sliders = array();
 
+            // Set up the prepared statement
+            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY date_created DESC LIMIT 8;";
+            $stmt = mysqli_prepare($this->conn, $slider_query);
 
-            $slider_query = "SELECT id FROM playlist_sliders WHERE status=1 ORDER BY date_created DESC LIMIT 8";
-            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
-            while ($row = mysqli_fetch_array($slider_query_id_result)) {
-                array_push($slider_id, $row['id']);
-            }
+            // Execute the query
+            mysqli_stmt_execute($stmt);
 
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
 
-            foreach ($slider_id as $row) {
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $slider = new PlaylistSlider($this->conn, $row);
-                $temp['id'] = $slider->getId();
-                $temp['playlistID'] = $slider->getPlaylistID();
-                $temp['imagepath'] = $slider->getImagepath();
+                $temp['id'] = $id;
+                $temp['playlistID'] = $playlistID;
+                $temp['imagepath'] = $imagepath;
                 array_push($sliders, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             $slider_temps = array();
             $slider_temps['heading'] = "Discover";
@@ -300,23 +303,29 @@ class Handler
 
 
             //get genres
-            $top_home_genreIDs = array();
             $featured_genres = array();
-            $top_genre_stmt = "SELECT DISTINCT(genre) FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT 8;";
-            $top_genre_stmt_result = mysqli_query($this->conn, $top_genre_stmt);
+            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8;";
 
-            while ($row = mysqli_fetch_array($top_genre_stmt_result)) {
-                array_push($top_home_genreIDs, $row['genre']);
-            }
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
 
-            foreach ($top_home_genreIDs as $row) {
-                $genre = new Genre($this->conn, $row);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $genre, $name, $tag);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $genre->getGenreid();
-                $temp['name'] = $genre->getGenre();
-                $temp['tag'] = $genre->getTag();
+                $temp['id'] = $genre;
+                $temp['name'] = $name;
+                $temp['tag'] = $tag;
                 array_push($featured_genres, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             $feat_genres = array();
             $feat_genres['heading'] = "Featured genres";
@@ -327,30 +336,36 @@ class Handler
 
 
             //get Trending Artist
-
-            $featuredartists = array();
             $featuredCategory = array();
-
             $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
-            $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
-            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-                array_push($featuredartists, $row);
-            }
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
 
+            // Execute the query
+            mysqli_stmt_execute($stmt);
 
-            foreach ($featuredartists as $row) {
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['profilephoto'] = $row['profilephoto'];
-                $temp['name'] = $row['name'];
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
                 array_push($featuredCategory, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             $feat_Cat_temps = array();
             $feat_Cat_temps['heading'] = "Featured Artists";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
+
+
             //get latest Release 14 days
             $featured_albums = array();
             $featuredAlbums = array();
@@ -384,25 +399,31 @@ class Handler
 
 
             //get Featured Playlist
-            $featured_playlist = array();
             $featuredPlaylist = array();
 
             $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
-            $featured_playlist_Query_result = mysqli_query($this->conn, $featured_playlist_Query);
-            while ($row = mysqli_fetch_array($featured_playlist_Query_result)) {
-                array_push($featured_playlist, $row);
-            }
 
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
 
-            foreach ($featured_playlist as $row) {
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $name, $owner, $coverurl);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['name'] = $row['name'];
-//                $temp['owner'] = $row['owner'];
-                $temp['owner'] = "Mwonya Playlist";
-                $temp['coverurl'] = $row['coverurl'];
+                $temp['id'] = $id;
+                $temp['name'] = $name;
+                $temp['owner'] = $owner;
+                $temp['coverurl'] = $coverurl;
                 array_push($featuredPlaylist, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             $feat_playlist_temps = array();
             $feat_playlist_temps['heading'] = "Featured Playlists";
@@ -412,78 +433,97 @@ class Handler
 
 
             //get featured Album
-            $featured_albums = array();
-            $featuredAlbums = array();
+            $featured_Albums = array();
 
-            $featured_album_Query = "SELECT * FROM albums WHERE tag = \"music\" ORDER BY totalsongplays DESC LIMIT  8";
-            $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
-            while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-                array_push($featured_albums, $row);
-            }
+            $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
 
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $featured_album_Query);
 
-            foreach ($featured_albums as $row) {
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['title'] = $row['title'];
-                $temp['artworkPath'] = $row['artworkPath'];
-                $temp['tag'] = $row['tag'];
-                array_push($featuredAlbums, $temp);
+                $temp['id'] = $id;
+                $temp['title'] = $title;
+                $temp['artworkPath'] = $artworkPath;
+                $temp['tag'] = $tag;
+                array_push($featured_Albums, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             $feat_albums_temps = array();
             $feat_albums_temps['heading'] = "Featured Albums";
-            $feat_albums_temps['featuredAlbums'] = $featuredAlbums;
+            $feat_albums_temps['featuredAlbums'] = $featured_Albums;
             array_push($menuCategory, $feat_albums_temps);
             ///end featuredAlbums
 
 
             //get featured Dj mixes
             $featured_dj_mixes = array();
-            $featuredDJMIXES = array();
 
-            $featured_mixes_Query = "SELECT * FROM albums WHERE tag = \"dj\" ORDER BY datecreated DESC LIMIT 8";
-            $featured_mixes_Query_result = mysqli_query($this->conn, $featured_mixes_Query);
-            while ($row = mysqli_fetch_array($featured_mixes_Query_result)) {
-                array_push($featured_dj_mixes, $row);
-            }
+            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE tag = \"dj\" GROUP BY artist  ORDER BY datecreated DESC LIMIT 8";
 
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $featured_album_Query);
 
-            foreach ($featured_dj_mixes as $row) {
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['title'] = $row['title'];
-                $temp['artworkPath'] = $row['artworkPath'];
-                $temp['tag'] = $row['tag'];
-                array_push($featuredDJMIXES, $temp);
+                $temp['id'] = $id;
+                $temp['title'] = $title;
+                $temp['artworkPath'] = $artworkPath;
+                $temp['tag'] = $tag;
+                array_push($featured_dj_mixes, $temp);
             }
 
-            $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "Featured Mixes";
-            $feat_albums_temps['FeaturedDjMixes'] = $featuredDJMIXES;
-            array_push($menuCategory, $feat_albums_temps);
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_dj_temps = array();
+            $feat_dj_temps['heading'] = "DJs Vibuu++";
+            $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
+            array_push($menuCategory, $feat_dj_temps);
             ///end featuredAlbums
 
 
         }
 
 
-        //fetch other categories Begin
-        $home_genreIDs = array();
-        $genre_stmt = "SELECT DISTINCT(genre) FROM songs WHERE tag IN ('music') ORDER BY `songs`.`plays` DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
-        $genre_stmt_result = mysqli_query($this->conn, $genre_stmt);
+        // Use a prepared statement and a JOIN clause to get genre and song data in a single query
+        $stmt = $this->conn->prepare("SELECT g.id, g.name, g.tag, s.id as song_id, s.title, s.plays
+           FROM genres g
+           JOIN songs s ON s.genre = g.id
+           WHERE s.tag = 'music'
+           GROUP BY g.id
+           ORDER BY s.plays DESC
+           LIMIT ?, ?");
 
-        while ($row = mysqli_fetch_array($genre_stmt_result)) {
+        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            array_push($home_genreIDs, $row['genre']);
-        }
-
-        foreach ($home_genreIDs as $row) {
-            $genre = new Genre($this->conn, $row);
+        while ($row = $result->fetch_assoc()) {
+            $genre = new Genre($this->conn, $row['id']);
             $temp = array();
-            $temp['id'] = $genre->getGenreid();
-            $temp['name'] = $genre->getGenre();
-            $temp['tag'] = $genre->getTag();
+            $temp['id'] = $row['id'];
+            $temp['name'] = $row['name'];
+            $temp['tag'] = $row['tag'];
+
+            // Use a LIMIT clause in the inner query to get only the top 6 played songs for each genre
             $temp['Tracks'] = $genre->getGenre_Songs(6);
             array_push($menuCategory, $temp);
         }
@@ -1626,6 +1666,7 @@ class Handler
         }
         return $itemRecords;
     }
+
     function singleTrack(): array
     {
 

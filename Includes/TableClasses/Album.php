@@ -124,35 +124,38 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
         public function getTracks(){
-            $array = array();
             $allProducts = array();
-            // get products id from the same cat
-            $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
 
+            $all_tracks = "SELECT s.id,s.title, s.artist, ar.name, s.album, a.title, a.artworkPath, s.genre,g.name, s.duration,s.path, s.albumOrder, s.plays, s.weekplays, s.lastplayed, s.tag, s.dateAdded FROM songs s INNER JOIN albums a on s.album = a.id INNER JOIN artists ar on s.artist = ar.id INNER JOIN genres g on s.genre = g.id WHERE s.album='$this->id' ORDER BY s.albumOrder ASC";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->con, $all_tracks);
 
-            while($row = mysqli_fetch_array($query)){
-                array_push($array, $row['id']);
-            }
+            // Execute the query
+            mysqli_stmt_execute($stmt);
 
-            foreach ($array as $row) {
-                $song = new Song($this->con, $row);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $title, $artistID, $artistName, $albumID, $albumName, $albumArtwork, $trackGenreID, $trackGenreName, $duration, $path,$trackOrder,$trackPlays, $weeklyplays, $lastplayed,$tag, $dateAdded);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
-
-
+                $temp['id'] = $id;
+                $temp['title'] = $title;
+                $temp['artist'] = $artistName;
+                $temp['artistID'] = $artistID;
+                $temp['album'] = $albumName;
+                $temp['artworkPath'] = $albumArtwork;
+                $temp['genre'] = $trackGenreName;
+                $temp['genreID'] = $trackGenreID;
+                $temp['duration'] = $duration;
+                $temp['path'] = $path;
+                $temp['totalplays'] = $trackPlays;
+                $temp['weeklyplays'] = $weeklyplays;
                 array_push($allProducts, $temp);
             }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
 
             return $allProducts;
         }
