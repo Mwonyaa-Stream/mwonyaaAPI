@@ -711,7 +711,6 @@ class Handler
         $slider_id = array();
         $sliders = array();
 
-
         $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
         $slider_query_id_result = mysqli_query($this->conn, $slider_query);
         while ($row = mysqli_fetch_array($slider_query_id_result)) {
@@ -735,37 +734,40 @@ class Handler
         // end get_Slider_banner
 
 
-        //get genres
+
         //  popular search Begin
-        $bestsellingProductsID = array();
         $bestSellingProducts = array();
-        $category_stmts = "SELECT `id`, `query`, `count`, `created_at`, `updated_at` FROM `searches` ORDER BY count DESC LIMIT 30";
-        $menu_type_id_results = mysqli_query($this->conn, $category_stmts);
+        $top_artist = "SELECT artists.name, SUM(frequency.plays) as total_plays, artists.datecreated,artists.id FROM frequency INNER JOIN songs ON frequency.songid = songs.id INNER JOIN artists ON songs.artist = artists.id GROUP BY artists.name ORDER BY total_plays DESC LIMIT 40";
+        $stmt = mysqli_prepare($this->conn, $top_artist);
 
-        while ($row = mysqli_fetch_array($menu_type_id_results)) {
+        // Execute the query
+        mysqli_stmt_execute($stmt);
 
-            array_push($bestsellingProductsID, $row);
-        }
+        // Bind the result variables
+        mysqli_stmt_bind_result($stmt, $name, $total_plays, $datecreated,$id);
 
-        foreach ($bestsellingProductsID as $row) {
+        // Fetch the results
+        while (mysqli_stmt_fetch($stmt)) {
             $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['query'] = $row['query'];
-            $temp['count'] = $row['count'];
-            $temp['created_at'] = $row['created_at'];
-            $temp['updated_at'] = $row['updated_at'];
+            $temp['id'] = $id;
+            $temp['query'] = $name;
+            $temp['count'] = $total_plays;
+            $temp['created_at'] = $datecreated;
+            $temp['updated_at'] = $datecreated;
             array_push($bestSellingProducts, $temp);
         }
 
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
+
 
         $slider_temps = array();
-        $slider_temps['heading'] = "Popular Search";
+        $slider_temps['heading'] = "Popular on Mwonya";
         $slider_temps['popularSearch'] = $bestSellingProducts;
         array_push($menuCategory, $slider_temps);
 
         // end popular search  Fetch
 
-        // end genres
 
 
         //fetch other categories Begin
