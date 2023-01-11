@@ -244,17 +244,35 @@ class Handler
     function allCombined(): array
     {
 
-        $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+        // Set up the prepared statement to retrieve the number of genres
+        $tag_music  = "music";
+        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = ?");
 
-        $page = $home_page;
+        mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
+
+        mysqli_stmt_execute($genre_count_stmt);
+
+        mysqli_stmt_bind_result($genre_count_stmt, $total_genres);
+
+        mysqli_stmt_fetch($genre_count_stmt);
+
+        mysqli_stmt_close($genre_count_stmt);
+
+        // Calculate the total number of pages
         $no_of_records_per_page = 10;
+        $total_pages = ceil($total_genres / $no_of_records_per_page);
+
+        // Retrieve the "page" parameter from the GET request
+        $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+
+        // Validate the "page" parameter
+        if ($page < 1 || $page > $total_pages) {
+            $page = 1;
+        }
+
+        // Calculate the offset
         $offset = ($page - 1) * $no_of_records_per_page;
 
-        $sql = "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = 'music'";
-        $result = mysqli_query($this->conn, $sql);
-        $data = mysqli_fetch_assoc($result);
-        $total_rows = floatval($data['total_genres']);
-        $total_pages = ceil($total_rows / $no_of_records_per_page);
 
 
         $menuCategory = array();
@@ -485,7 +503,6 @@ class Handler
 
         }
 
-
         // Use a prepared statement and a JOIN clause to get genre and song data in a single query
         $stmt = $this->conn->prepare("SELECT g.id, g.name, g.tag, s.id as song_id, s.title, s.plays
            FROM genres g
@@ -515,7 +532,7 @@ class Handler
         $itemRecords["page"] = $page;
         $itemRecords["featured"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
-        $itemRecords["total_results"] = $total_rows;
+        $itemRecords["total_results"] = $total_genres;
 
         return $itemRecords;
     }
