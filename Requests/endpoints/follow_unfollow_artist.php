@@ -7,7 +7,7 @@ $conn = $db;
 $message = "success";
 
 if ($conn == null) {
-    echo json_encode(["status" => "error", "message" => "Error connecting to the database"]);
+    echo json_encode(["result" => "error", "message" => "Error connecting to the database"]);
     exit;
 }
 
@@ -18,7 +18,7 @@ if (isTheseParametersAvailable(array('userId', 'artistId', 'action'))) {
 
 // Validate the user ID and artist ID
     if (!preg_match('/^m[a-zA-Z0-9]+$/', $userId) || !preg_match('/^m[a-zA-Z0-9]+$/', $artistId)) {
-        echo json_encode(["status" => "error", "message" => "Invalid user ID or artist ID format"]);
+        echo json_encode(["result" => "error", "message" => "Invalid user ID or artist ID format"]);
         exit;
     }
 
@@ -31,7 +31,7 @@ if (isTheseParametersAvailable(array('userId', 'artistId', 'action'))) {
         $stmt->close();
         $count = $result->fetch_row()[0];
         if ($count > 0) {
-            echo json_encode(["status" => "error", "message" => "Artist already followed by user"]);
+            echo json_encode(["result" => "error", "message" => "Artist already followed by user"]);
             exit;
         } else {
             // Insert a new row into the artistfollowing table
@@ -48,16 +48,16 @@ if (isTheseParametersAvailable(array('userId', 'artistId', 'action'))) {
         $message = "Artist Unfollowed";
 
     } else {
-        echo json_encode(["status" => "error", "message" => "Invalid Action. Only 'follow' or 'unfollow' actions are allowed"]);
+        echo json_encode(["result" => "error", "message" => "Invalid Action. Only 'follow' or 'unfollow' actions are allowed"]);
         exit;
     }
 } else {
-    echo json_encode(["status" => "error", "message" => "Unset user ID or artist ID or Action"]);
+    echo json_encode(["result" => "error", "message" => "Unset user ID or artist ID or Action"]);
     exit;
 }
 
 // Return success message
-echo json_encode(["status" => "success", "message" => $message]);
+echo json_encode(["result" => "success", "message" => $message]);
 
 function isTheseParametersAvailable($params)
 {//traversing through all the parameters
