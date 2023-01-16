@@ -5,16 +5,16 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once 'includedFiles.php';
 $conn = $db;
 $message = "success";
-
+$data = json_decode(file_get_contents("php://input"));
 if ($conn == null) {
     echo json_encode(["result" => "error", "message" => "Error connecting to the database"]);
     exit;
 }
 
-if (isTheseParametersAvailable(array('userId', 'artistId', 'action'))) {
-    $userId = $_POST['userId'];
-    $artistId = $_POST['artistId'];
-    $action = $_POST['action'];
+if (isset($data->userId) && isset($data->artistId) && isset($data->action)) {
+    $userId = $data->userId;
+    $artistId = $data->artistId;
+    $action = $data->action;
 
 // Validate the user ID and artist ID
     if (!preg_match('/^m[a-zA-Z0-9]+$/', $userId) || !preg_match('/^m[a-zA-Z0-9]+$/', $artistId)) {
@@ -59,17 +59,6 @@ if (isTheseParametersAvailable(array('userId', 'artistId', 'action'))) {
 // Return success message
 echo json_encode(["result" => "success", "message" => $message]);
 
-function isTheseParametersAvailable($params)
-{//traversing through all the parameters
-    foreach ($params as $param) {
-//if the paramter is not available
-        if (!isset($_POST[$param])) {
-//return false
-            return false;
-        }
-    }
-//return true if every param is available
-    return true;
-}
+
 
 ?>
