@@ -95,6 +95,41 @@ class Genre
         return $home_genre_tracks;
     }
 
+    public function getGenreDJ_Songs($limit){
+
+        //fetch other categories Begin
+        $song_ids = array();
+        $home_genre_tracks = array();
+        $genre_song_stmt = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND  tag='dj' ORDER BY `songs`.`plays` DESC LIMIT $limit";
+        $genre_song_stmt_result = mysqli_query($this->con, $genre_song_stmt);
+
+        while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
+            array_push($song_ids, $row['id']);
+        }
+
+        foreach ($song_ids as $row) {
+            $song = new Song($this->con,$row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+
+
+            array_push($home_genre_tracks, $temp);
+        }
+
+        return $home_genre_tracks;
+    }
+
 
   
 

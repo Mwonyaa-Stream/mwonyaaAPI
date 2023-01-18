@@ -10,9 +10,11 @@
         private $albumId;
         private $genre;
         private $duration;
+        private $cover;
         private $path;
         private $plays;
         private $weekplays;
+        private $tag;
 
         public function __construct($con , $id) {
             $this->con = $con;
@@ -31,6 +33,8 @@
                 $this->path = null;
                 $this->plays = null;
                 $this->weekplays = null;
+                $this->tag = null;
+                $this->cover = null;
                 return false;
             }
 
@@ -45,6 +49,8 @@
                 $this->path = $this->mysqliData['path'];
                 $this->plays = $this->mysqliData['plays'];
                 $this->weekplays = $this->mysqliData['weekplays'];
+                $this->tag = $this->mysqliData['tag'];
+                $this->cover = $this->mysqliData['cover'];
 
                 return true;
             }
@@ -58,6 +64,24 @@
         public function getId(){
             return $this->id;
         }
+
+        /**
+         * @return mixed|null
+         */
+        public function getTag()
+        {
+            return $this->tag;
+        }
+
+        /**
+         * @return mixed|null
+         */
+        public function getCover()
+        {
+            return $this->cover;
+        }
+
+
 
         /**
          * @return mixed|null
