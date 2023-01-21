@@ -537,6 +537,157 @@ class Handler
         return $itemRecords;
     }
 
+
+
+    function UserLibrary(): array {
+        $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+        $total_pages = 1;
+
+        // Validate the "page" parameter
+        if ($page < 1 || $page > $total_pages) {
+            $page = 1;
+        }
+
+        $menuCategory = array();
+        $itemRecords = array();
+
+        $libraryUserID = "mw603382d49906aPka";
+
+
+        if ($page == 1) {
+
+
+            //get Featured Artist
+            $featuredCategory = array();
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY af.datefollowed DESC LIMIT 10";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Following";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+            ///
+
+            //get unfollowed artist based on followed artist genre
+            $featuredCategory = array();
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Unfollowed Artists";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end unfollowed
+
+
+            //get the latest album Release less than 14 days old
+            $featured_albums = array();
+            $featuredAlbums = array();
+            $featured_album_Query = "SELECT DISTINCT a.id as id FROM albums a JOIN songs s ON a.id = s.album JOIN artistfollowing af ON s.artist = af.artistid WHERE af.userid = '$libraryUserID' AND a.datecreated > DATE_SUB(NOW(), INTERVAL 2 WEEK) ORDER BY a.datecreated DESC";
+            $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+            while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+                array_push($featured_albums, $row['id']);
+            }
+
+            foreach ($featured_albums as $row) {
+                $al = new Album($this->conn, $row);
+                $temp = array();
+                $temp['id'] = $al->getId();
+                $temp['heading'] = "New Release From";
+                $temp['title'] = $al->getTitle();
+                $temp['artworkPath'] = $al->getArtworkPath();
+                $temp['tag'] = $al->getTag();
+                $temp['artistId'] = $al->getArtistId();
+                $temp['artist'] = $al->getArtist()->getName();
+                $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
+                $temp['Tracks'] = $al->getTracks();
+                array_push($featuredAlbums, $temp);
+            }
+
+            $feat_albums_temps = array();
+            $feat_albums_temps['heading'] = "Latest Release Albums";
+            $feat_albums_temps['HomeRelease'] = $featuredAlbums;
+            array_push($menuCategory, $feat_albums_temps);
+            ///end latest Release 14 days
+
+
+            //get Featured Playlist
+            $featuredPlaylist = array();
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $name, $owner, $coverurl);
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['name'] = $name;
+                $temp['owner'] = $owner;
+                $temp['coverurl'] = $coverurl;
+                array_push($featuredPlaylist, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_playlist_temps = array();
+            $feat_playlist_temps['heading'] = "Featured Playlists";
+            $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
+            array_push($menuCategory, $feat_playlist_temps);
+            ///end featuredPlaylist
+
+
+
+        }
+
+
+        $itemRecords["version"] = $this->version;
+        $itemRecords["page"] = $page;
+        $itemRecords["featured"] = $menuCategory;
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_pages;
+
+        return $itemRecords;
+    }
+
     function LiveShows(): array
     {
 
