@@ -541,6 +541,7 @@ class Handler
 
     function UserLibrary(): array {
         $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+        $libraryUserID = isset($_GET['id']) ? htmlspecialchars(strip_tags($_GET["id"])) : "mw603382d49906aPka";
         $total_pages = 1;
 
         // Validate the "page" parameter
@@ -550,8 +551,6 @@ class Handler
 
         $menuCategory = array();
         $itemRecords = array();
-
-        $libraryUserID = "mw603382d49906aPka";
 
 
         if ($page == 1) {
