@@ -15,6 +15,7 @@
         private $plays;
         private $weekplays;
         private $tag;
+        private $lyrics;
 
         public function __construct($con , $id) {
             $this->con = $con;
@@ -35,6 +36,7 @@
                 $this->weekplays = null;
                 $this->tag = null;
                 $this->cover = null;
+                $this->lyrics = null;
                 return false;
             }
 
@@ -51,6 +53,7 @@
                 $this->weekplays = $this->mysqliData['weekplays'];
                 $this->tag = $this->mysqliData['tag'];
                 $this->cover = $this->mysqliData['cover'];
+                $this->lyrics = $this->mysqliData['lyrics'];
 
                 return true;
             }
@@ -80,6 +83,16 @@
         {
             return $this->cover;
         }
+
+        /**
+         * @return mixed|null
+         */
+        public function getLyrics(): mixed
+        {
+            return $this->lyrics;
+        }
+
+
 
 
 

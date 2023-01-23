@@ -83,6 +83,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -860,6 +861,7 @@ class Handler
                     $temp['genre'] = $songLiked->getGenre()->getGenre();
                     $temp['genreID'] = $songLiked->getGenre()->getGenreid();
                     $temp['duration'] = $songLiked->getDuration();
+                    $temp['lyrics'] = $songLiked->getLyrics();
                     $temp['path'] = $songLiked->getPath();
                     $temp['totalplays'] = $songLiked->getPlays();
                     $temp['weeklyplays'] = $songLiked->getWeeklyplays();
@@ -947,6 +949,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -1078,7 +1081,7 @@ class Handler
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
         $noticeString = "
-        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 7 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) ORDER BY `dateAdded` DESC
+        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 7 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) ORDER BY `dateAdded` DESC
         ";
 
         // run the query in the db and search through each of the records returned
@@ -1134,6 +1137,7 @@ class Handler
                     $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['lyrics'] = $row['lyrics'];
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1148,6 +1152,8 @@ class Handler
                     $temp['description'] = $album->getArtist()->getName() . " created '" . $row['title'] . "' a " . $row['tag'] . " collection";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['lyrics'] = $row['lyrics'];
+
 
                 }
                 if ($row['type'] == "artist") {
@@ -1162,6 +1168,8 @@ class Handler
                     $temp['description'] = $row['title'] . " has joined Mwonya. Enjoy great content and so much more from " . $row['title'];
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['lyrics'] = $row['lyrics'];
+
 
                 }
                 if ($row['type'] == "playlist") {
@@ -1177,6 +1185,8 @@ class Handler
                     $temp['description'] = $user->getFirstname() . " created a new playlist '" . $row['title'] . "'. Stream it now on demand";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['lyrics'] = $row['lyrics'];
+
 
                 }
 
@@ -1245,13 +1255,13 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE title LIKE ? ) 
+        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics FROM songs WHERE title LIKE ? ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE name LIKE ? ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics' FROM artists  WHERE name LIKE ? ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE title LIKE ? ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics' FROM albums  WHERE title LIKE ? ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE name LIKE ? )"; // SQL with parameters
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics' FROM playlists WHERE name LIKE ? )"; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
         $stmt->bind_param("ssss", $search, $search, $search, $search);
         $stmt->execute();
@@ -1294,6 +1304,7 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1306,6 +1317,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
@@ -1317,6 +1330,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
@@ -1328,6 +1343,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
 
                 array_push($menuCategory, $temp);
@@ -1529,13 +1546,13 @@ class Handler
 
 //        echo $search_string;
         $search_string = "
-            (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type FROM songs WHERE MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
+            (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics FROM songs WHERE MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type FROM artists  WHERE MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics' FROM artists  WHERE MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE) ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type FROM albums  WHERE  MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE)) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics' FROM albums  WHERE  MATCH (title) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE)) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type FROM playlists WHERE  MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE))";
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics' FROM playlists WHERE  MATCH (name) AGAINST('" . $this->conn->real_escape_string($search_query) . "' IN NATURAL LANGUAGE MODE))";
 
 
 //        echo $search_string;
@@ -1589,6 +1606,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1601,6 +1620,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
@@ -1612,6 +1633,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
@@ -1623,6 +1646,8 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
+                    $temp['lyrics'] = $row['lyrics'];
+
                 }
 
                 array_push($menuCategory, $temp);
@@ -1765,6 +1790,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -1845,6 +1871,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -1891,6 +1918,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -1914,6 +1942,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -1958,6 +1987,7 @@ class Handler
             $trackInfo['genre'] = $song->getGenre()->getGenre();
             $trackInfo['genreID'] = $song->getGenre()->getGenreid();
             $trackInfo['duration'] = $song->getDuration();
+            $trackInfo['lyrics'] = $song->getLyrics();
             $trackInfo['path'] = $song->getPath();
             $trackInfo['totalplays'] = $song->getPlays();
             $trackInfo['weeklyplays'] = $song->getWeeklyplays();
@@ -2012,6 +2042,7 @@ class Handler
                 $temp['genre'] = $song->getGenre()->getGenre();
                 $temp['genreID'] = $song->getGenre()->getGenreid();
                 $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -2391,6 +2422,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -2579,6 +2611,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -2610,6 +2643,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -2640,6 +2674,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -2812,6 +2847,7 @@ class Handler
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $id['totalplays'];

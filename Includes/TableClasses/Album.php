@@ -126,7 +126,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         public function getTracks(){
             $allProducts = array();
 
-            $all_tracks = "SELECT s.id,s.title, s.artist, ar.name, s.album, a.title, a.artworkPath, s.genre,g.name, s.duration,s.path, s.albumOrder, s.plays, s.weekplays, s.lastplayed, s.tag, s.dateAdded FROM songs s INNER JOIN albums a on s.album = a.id INNER JOIN artists ar on s.artist = ar.id INNER JOIN genres g on s.genre = g.id WHERE s.album='$this->id' ORDER BY s.albumOrder ASC";
+            $all_tracks = "SELECT s.id,s.title, s.artist, ar.name, s.album, a.title,s.lyrics, a.artworkPath, s.genre,g.name, s.duration,s.path, s.albumOrder, s.plays, s.weekplays, s.lastplayed, s.tag, s.dateAdded FROM songs s INNER JOIN albums a on s.album = a.id INNER JOIN artists ar on s.artist = ar.id INNER JOIN genres g on s.genre = g.id WHERE s.album='$this->id' ORDER BY s.albumOrder ASC";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->con, $all_tracks);
 
@@ -134,7 +134,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             mysqli_stmt_execute($stmt);
 
             // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $title, $artistID, $artistName, $albumID, $albumName, $albumArtwork, $trackGenreID, $trackGenreName, $duration, $path,$trackOrder,$trackPlays, $weeklyplays, $lastplayed,$tag, $dateAdded);
+            mysqli_stmt_bind_result($stmt, $id, $title, $artistID, $artistName, $albumID, $albumName,$lyrics, $albumArtwork, $trackGenreID, $trackGenreName, $duration, $path,$trackOrder,$trackPlays, $weeklyplays, $lastplayed,$tag, $dateAdded);
 
             // Fetch the results
             while (mysqli_stmt_fetch($stmt)) {
@@ -148,6 +148,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $temp['genre'] = $trackGenreName;
                 $temp['genreID'] = $trackGenreID;
                 $temp['duration'] = $duration;
+                $temp['lyrics'] = $lyrics;
                 $temp['path'] = $path;
                 $temp['totalplays'] = $trackPlays;
                 $temp['weeklyplays'] = $weeklyplays;

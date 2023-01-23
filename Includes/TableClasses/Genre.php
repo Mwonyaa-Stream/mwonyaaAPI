@@ -84,6 +84,7 @@ class Genre
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
@@ -119,6 +120,7 @@ class Genre
             $temp['genre'] = $song->getGenre()->getGenre();
             $temp['genreID'] = $song->getGenre()->getGenreid();
             $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['weeklyplays'] = $song->getWeeklyplays();
