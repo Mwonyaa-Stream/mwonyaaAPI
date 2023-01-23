@@ -87,7 +87,7 @@
         /**
          * @return mixed|null
          */
-        public function getLyrics(): mixed
+        public function getLyrics()
         {
             return $this->lyrics;
         }
