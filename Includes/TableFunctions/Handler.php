@@ -1159,7 +1159,7 @@ class Handler
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] = $row['title'];
+                    $temp['artist'] = 'Welcome to Mwonya, '.$row['title'].'!';
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
