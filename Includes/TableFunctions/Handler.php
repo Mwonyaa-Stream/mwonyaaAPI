@@ -1150,7 +1150,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $album->getArtist()->getName() . " created '" . $row['title'] . "' a " . $row['tag'] . " collection";
+                    $temp['description'] = "New release alert! Discover the latest " . $row['tag'] . " from " . $album->getArtist()->getName() . " with their new '" . $row['title'] . "' collection now on our site";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1166,7 +1166,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $row['title'] . " has joined Mwonya. Enjoy great content and so much more from " . $row['title'];
+                    $temp['description'] = "Discover the fresh sound of " . $row['title'] . ", a new artist now available on Mwonya. Visit their profile and press play to listen now!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
