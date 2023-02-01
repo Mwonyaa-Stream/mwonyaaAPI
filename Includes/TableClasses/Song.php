@@ -20,8 +20,9 @@
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
+            $song_query_sql = "SELECT s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, SUM(CASE WHEN DATE_FORMAT(f.lastPlayed, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m') THEN 1 ELSE 0 END) AS playsmonth, SUM(CASE WHEN YEARWEEK(f.lastPlayed, 1) = YEARWEEK(NOW(), 1) THEN 1 ELSE 0 END) AS weekplays, s.tag, s.cover, s.lyrics FROM frequency f JOIN songs s ON f.songid = s.id WHERE s.id = '$this->id' GROUP BY s.title, s.artist";
 
-            $query = mysqli_query($this->con, "SELECT * FROM songs WHERE id='$this->id'");
+            $query = mysqli_query($this->con, $song_query_sql);
 
 
             if(mysqli_num_rows($query) == 0){
@@ -49,7 +50,9 @@
                 $this->genre = $this->mysqliData['genre'];
                 $this->duration = $this->mysqliData['duration'];
                 $this->path = $this->mysqliData['path'];
-                $this->plays = $this->mysqliData['plays'];
+                // get song plays in a month
+                $this->plays = $this->mysqliData['playsmonth'];
+                // get song plays in a week
                 $this->weekplays = $this->mysqliData['weekplays'];
                 $this->tag = $this->mysqliData['tag'];
                 $this->cover = $this->mysqliData['cover'];
