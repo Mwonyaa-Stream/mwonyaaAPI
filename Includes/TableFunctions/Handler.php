@@ -93,7 +93,7 @@ class Handler
 
 
             $popular_temps = array();
-            $popular_temps['heading'] = "Popular Tracks";
+            $popular_temps['heading'] = "Most Played";
             $popular_temps['Tracks'] = $popular;
             array_push($itemRecords["Artist"], $popular_temps);
 
