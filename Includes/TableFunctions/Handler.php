@@ -99,39 +99,43 @@ class Handler
 
 
             // Artist Pick - Top playlist created by the Artist
-            $ArtistPick = array();
+            $stmt = $this->conn->prepare("SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID=? LIMIT 1");
+            $stmt->bind_param("s", $artistID);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            $query = mysqli_query($this->conn, "SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID='$artistID' LIMIT 1");
-            $query_mysqliData = mysqli_fetch_array($query);
-            $ar_id = $query_mysqliData['id'];
-            $ar_title = $query_mysqliData['tile'];
-            $ar_artistID = $query_mysqliData['artistID'];
-            $ar_CoverArt = $query_mysqliData['CoverArt'];
-            $ar_songID = $query_mysqliData['songID'];
-            $ar_date_created = $query_mysqliData['date_created'];
+            $ArtistPick = [];
 
-            $ar_Artist = new Artist($this->conn, $ar_artistID);
-            $ar_Song = new Song($this->conn, $ar_songID);
+            if ($row = $result->fetch_assoc()) {
+                $ar_id = $row['id'];
+                $ar_title = $row['tile'];
+                $ar_artistID = $row['artistID'];
+                $ar_CoverArt = $row['CoverArt'];
+                $ar_songID = $row['songID'];
+                $ar_date_created = $row['date_created'];
+                $ar_Artist = new Artist($this->conn, $ar_artistID);
+                $ar_Song = new Song($this->conn, $ar_songID);
 
-            if ($ar_id != null) {
-                $temp = array();
-                $temp['id'] = $ar_id;
-                $temp['type'] = "Playlist";
-                $temp['out_now'] = $ar_title . " - out now";
-                $temp['coverimage'] = $ar_CoverArt;
-                $temp['song_title'] = $ar_Artist->getName() . " - " . $ar_Song->getAlbum()->getTitle();
-                $temp['song_cover'] = $ar_Song->getAlbum()->getArtworkPath();
+                $temp = [
+                    'id' => $ar_id,
+                    'type' => "Playlist",
+                    'out_now' => $ar_title . " - out now",
+                    'coverimage' => $ar_CoverArt,
+                    'song_title' => $artist_instance->getName() . " - " . $ar_Song->getAlbum()->getTitle(),
+                    'song_cover' => $ar_Song->getAlbum()->getArtworkPath(),
+                ];
                 array_push($ArtistPick, $temp);
             } else {
                 // latest release
                 $arry = $artist_instance->getLatestRelease();
-                $temp = array();
-                $temp['id'] = $arry->getId();
-                $temp['type'] = "Album";
-                $temp['out_now'] = $arry->getTitle() . " - out now";;
-                $temp['coverimage'] = $arry->getArtworkPath();
-                $temp['song_title'] = $arry->getArtist()->getName() . " - " . $arry->getTitle();
-                $temp['song_cover'] = $arry->getArtworkPath();
+                $temp = [
+                    'id' => $arry->getId(),
+                    'type' => "Album",
+                    'out_now' => $arry->getTitle() . " - out now",
+                    'coverimage' => $arry->getArtworkPath(),
+                    'song_title' => $arry->getArtist()->getName() . " - " . $arry->getTitle(),
+                    'song_cover' => $arry->getArtworkPath(),
+                ];
                 array_push($ArtistPick, $temp);
             }
 
@@ -246,7 +250,7 @@ class Handler
     {
 
         // Set up the prepared statement to retrieve the number of genres
-        $tag_music  = "music";
+        $tag_music = "music";
         $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = ?");
 
         mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
@@ -273,7 +277,6 @@ class Handler
 
         // Calculate the offset
         $offset = ($page - 1) * $no_of_records_per_page;
-
 
 
         $menuCategory = array();
@@ -539,8 +542,8 @@ class Handler
     }
 
 
-
-    function UserLibrary(): array {
+    function UserLibrary(): array
+    {
         $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
         $libraryUserID = isset($_GET['id']) ? htmlspecialchars(strip_tags($_GET["id"])) : "mw603382d49906aPka";
         $total_pages = 1;
@@ -675,7 +678,6 @@ class Handler
             ///end featuredPlaylist
 
 
-
         }
 
 
@@ -692,7 +694,7 @@ class Handler
     {
 
         // Set up the prepared statement to retrieve the number of genres
-        $tag_music  = "dj";
+        $tag_music = "dj";
         $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = ?");
 
         mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
@@ -721,7 +723,6 @@ class Handler
         $offset = ($page - 1) * $no_of_records_per_page;
 
 
-
         $menuCategory = array();
         $itemRecords = array();
 
@@ -739,7 +740,7 @@ class Handler
             }
 
             foreach ($song_ids as $row) {
-                $song = new Song($this->conn,$row);
+                $song = new Song($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -767,7 +768,6 @@ class Handler
             $feat_albums_temps['coverImage'] = "https://restream.io/blog/content/images/2020/10/broadcast-interviews-and-qas-online-tw-fb.png";
             $feat_albums_temps['liveshows'] = $home_genre_tracks;
             array_push($menuCategory, $feat_albums_temps);
-
 
 
         }
@@ -1004,7 +1004,6 @@ class Handler
         // end get_Slider_banner
 
 
-
         //  popular search Begin
         $bestSellingProducts = array();
         $top_artist = "SELECT artists.name, SUM(frequency.plays) as total_plays, artists.datecreated,artists.id FROM frequency INNER JOIN songs ON frequency.songid = songs.id INNER JOIN artists ON songs.artist = artists.id GROUP BY artists.name ORDER BY total_plays DESC LIMIT 40";
@@ -1014,7 +1013,7 @@ class Handler
         mysqli_stmt_execute($stmt);
 
         // Bind the result variables
-        mysqli_stmt_bind_result($stmt, $name, $total_plays, $datecreated,$id);
+        mysqli_stmt_bind_result($stmt, $name, $total_plays, $datecreated, $id);
 
         // Fetch the results
         while (mysqli_stmt_fetch($stmt)) {
@@ -1037,7 +1036,6 @@ class Handler
         array_push($menuCategory, $slider_temps);
 
         // end popular search  Fetch
-
 
 
         //fetch other categories Begin
@@ -1135,7 +1133,7 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
 //                    $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
-                    $temp['description'] = "New music alert! '".$row['title']."' by ".$song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
+                    $temp['description'] = "New music alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1159,7 +1157,7 @@ class Handler
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] = 'Welcome to Mwonya, '.$row['title'].'!';
+                    $temp['artist'] = 'Welcome to Mwonya, ' . $row['title'] . '!';
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];

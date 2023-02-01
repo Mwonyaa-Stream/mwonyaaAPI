@@ -26,7 +26,7 @@
 
 
             if(mysqli_num_rows($query) == 0){
-                $this->id = "me";
+                $this->id = null;
                 $this->title = null;
                 $this->artistId = null;
                 $this->albumId = null;
@@ -138,9 +138,11 @@
         }
 
         public function getPlays(){
+            // get plays in a month
             return $this->plays;
         }
         public function getWeeklyplays(){
+            // get plays in a week
             return $this->weekplays;
         }
 
