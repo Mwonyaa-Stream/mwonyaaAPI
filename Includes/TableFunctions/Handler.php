@@ -1951,7 +1951,7 @@ class Handler
             }
 
             $slider_temps = array();
-            $slider_temps['Related Songs'] = "Related Songs";
+            $slider_temps['Related Songs'] = "Recommended";
             $slider_temps['Tracks'] = $all_Related_Songs;
             array_push($itemRecords['Song'], $slider_temps);
 
