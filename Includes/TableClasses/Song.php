@@ -38,7 +38,7 @@
                 $this->tag = null;
                 $this->cover = null;
                 $this->lyrics = null;
-                exit();
+                return false;
             }
 
             else {
