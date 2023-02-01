@@ -26,7 +26,7 @@
 
 
             if(mysqli_num_rows($query) == 0){
-                $this->id = null;
+                $this->id = "me";
                 $this->title = null;
                 $this->artistId = null;
                 $this->albumId = null;
@@ -38,6 +38,7 @@
                 $this->tag = null;
                 $this->cover = null;
                 $this->lyrics = null;
+                exit();
             }
 
             else {
