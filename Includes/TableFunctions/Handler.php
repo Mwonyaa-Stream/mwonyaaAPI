@@ -2437,6 +2437,100 @@ class Handler
         return $itemRecords;
     }
 
+    function saveAuthUser($data): array
+    {
+
+        //getting the values
+//      $m_id = password_hash($data->id, PASSWORD_DEFAULT);
+        $m_id = "mw".$data->id;
+        $m_username = $data->username;
+        $m_full_name = $data->full_name;
+        $m_email = $data->email;
+        $m_phone = $data->phone;
+        $m_password = md5($data->id);
+        $m_signUpDate = date('Y-m-d H:i:s', time());
+        $m_profilePic = $data->profilePic;
+        $m_status = "registered";
+        $m_mwRole = "mwuser";
+        $m_accountOrigin = "googleAuth";
+
+        //checking if the user is already exist with this username or email
+        //as the email and username should be unique for every user
+        $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE password = ? AND (email = ? OR id = ?)");
+        $stmt->bind_param("sss", $m_password, $m_email, $m_id);
+        $stmt->execute();
+        $stmt->bind_result($m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_mwRole);
+        $stmt->store_result();
+        $stmt->fetch();
+        $response = array();
+
+        //if the user already exist in the database
+        if ($stmt->num_rows > 0) {
+            $response['id'] = $m_id;
+            $response['username'] = $m_username;
+            $response['full_name'] = $m_full_name;
+            $response['email'] = $m_email;
+            $response['phone'] = $m_phone;
+            $response['password'] = $m_password;
+            $response['signUpDate'] = $m_signUpDate;
+            $response['profilePic'] = $m_profilePic;
+            $response['status'] = $m_status;
+            $response['mwRole'] = $m_mwRole;
+            $response['error'] = false;
+            $response['message'] = 'User already registered, Here are details';
+            $stmt->close();
+        } else {
+
+            //if user is new creating an insert query
+            $stmt = $this->conn->prepare("INSERT INTO users (`id`,`username`,`firstName`,`email`,`phone`,`Password`,`signUpDate`,`profilePic`,`status`,`accountOrigin`) VALUES (?, ?, ?, ?,?, ?, ?, ?, ?,?)");
+            $stmt->bind_param("ssssssssss", $m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_accountOrigin);
+
+            //if the user is successfully added to the database
+            if ($stmt->execute()) {
+
+                //fetching the user back
+                $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                $stmt->bind_param("ss", $m_email, $m_password);
+                $stmt->execute();
+                $stmt->bind_result($m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_mwRole);
+                $stmt->store_result();
+                $stmt->fetch();
+
+                //if the user already exist in the database
+                if ($stmt->num_rows > 0) {
+                    $response['id'] = $m_id;
+                    $response['username'] = $m_username;
+                    $response['full_name'] = $m_full_name;
+                    $response['email'] = $m_email;
+                    $response['phone'] = $m_phone;
+                    $response['password'] = $m_password;
+                    $response['signUpDate'] = $m_signUpDate;
+                    $response['profilePic'] = $m_profilePic;
+                    $response['status'] = $m_status;
+                    $response['mwRole'] = $m_mwRole;
+                    $response['error'] = false;
+                    $response['message'] = 'Registration Complete';
+                    $stmt->close();
+                } else {
+                    $response['id'] = null;
+                    $response['username'] = null;
+                    $response['full_name'] = null;
+                    $response['email'] = null;
+                    $response['phone'] = null;
+                    $response['password'] = null;
+                    $response['signUpDate'] = null;
+                    $response['profilePic'] = null;
+                    $response['status'] = null;
+                    $response['mwRole'] = null;
+                    $response['error'] = true;
+                    $response['message'] = 'User Registration Failed';
+                }
+            }
+        }
+
+        return $response;
+    }
+
 
     function updateTrackUserData(): array
     {
