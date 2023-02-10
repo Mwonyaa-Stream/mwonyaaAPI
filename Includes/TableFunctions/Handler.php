@@ -694,22 +694,22 @@ class Handler
     {
 
         // Set up the prepared statement to retrieve the number of genres
-        $tag_music = "dj";
-        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = ?");
+        $tag_music = "live";
+        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT id) as total_live_shows FROM songs WHERE tag != 'ad' AND tag = ?");
 
         mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
 
         mysqli_stmt_execute($genre_count_stmt);
 
-        mysqli_stmt_bind_result($genre_count_stmt, $total_genres);
+        mysqli_stmt_bind_result($genre_count_stmt, $total_live_shows);
 
         mysqli_stmt_fetch($genre_count_stmt);
 
         mysqli_stmt_close($genre_count_stmt);
 
         // Calculate the total number of pages
-        $no_of_records_per_page = 10;
-        $total_pages = ceil($total_genres / $no_of_records_per_page);
+        $no_of_records_per_page = 15;
+        $total_pages = ceil($total_live_shows / $no_of_records_per_page);
 
         // Retrieve the "page" parameter from the GET request
         $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
@@ -732,7 +732,7 @@ class Handler
             //get live
             $song_ids = array();
             $home_genre_tracks = array();
-            $genre_song_stmt = "SELECT id FROM songs  WHERE  tag != 'ad' AND tag = 'live' ORDER BY `songs`.`plays` DESC LIMIT 8";
+            $genre_song_stmt = "SELECT id FROM songs  WHERE  tag != 'ad' AND tag = 'live' ORDER BY `songs`.`plays` DESC LIMIT 4";
             $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
 
             while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
@@ -763,8 +763,8 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "Live Sessions";
-            $feat_albums_temps['description'] = "Get your groove on";
+            $feat_albums_temps['heading'] = "Listen Live Now";
+            $feat_albums_temps['description'] = "Never miss a moment of the live audio action with Mwonya. Whether you're a music/Radio fan, talk show enthusiast, or simply looking for something new, you can now stream live audio events in real-time.";
             $feat_albums_temps['coverImage'] = "https://restream.io/blog/content/images/2020/10/broadcast-interviews-and-qas-online-tw-fb.png";
             $feat_albums_temps['liveshows'] = $home_genre_tracks;
             array_push($menuCategory, $feat_albums_temps);
@@ -773,27 +773,31 @@ class Handler
         }
 
         // Use a prepared statement and a JOIN clause to get genre and song data in a single query
-        $stmt = $this->conn->prepare("SELECT g.id, g.name, g.tag, s.id as song_id, s.title, s.plays
-           FROM genres g
-           JOIN songs s ON s.genre = g.id
-           WHERE s.tag = 'dj'
-           GROUP BY g.id
-           ORDER BY s.plays DESC
-           LIMIT ?, ?");
+        $stmt = $this->conn->prepare("SELECT id FROM songs  WHERE  tag != 'ad' AND tag = 'live' ORDER BY title ASC  LIMIT ?, ?");
 
         $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result();
 
         while ($row = $result->fetch_assoc()) {
-            $genre = new Genre($this->conn, $row['id']);
+            $song = new Song($this->conn, $row['id']);
             $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['name'] = $row['name'];
-            $temp['tag'] = $row['tag'];
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['description'] = $song->getAlbum()->getDescription();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['cover'] = $song->getCover();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['tag'] = $song->getTag();
 
-            // Use a LIMIT clause in the inner query to get only the top 6 played songs for each genre
-            $temp['Tracks'] = $genre->getGenreDJ_Songs(6);
             array_push($menuCategory, $temp);
         }
 
@@ -801,7 +805,7 @@ class Handler
         $itemRecords["page"] = $page;
         $itemRecords["livepage"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
-        $itemRecords["total_results"] = $total_genres;
+        $itemRecords["total_results"] = $total_live_shows;
 
         return $itemRecords;
     }
