@@ -847,8 +847,8 @@ class Handler
 
                 if ($user) {
                     $temp = array();
-                    $temp['title'] = "Liked Tracks";
-                    $temp['subtitle'] = "Tracks Liked by you";
+                    $temp['title'] = "Your Favourites";
+                    $temp['subtitle'] = "Featuring all tracks liked by you.";
                     $temp['userid'] = $user->getId();
                     $temp['user_name'] = $user->getFirstname();
                     $temp['user_profile'] = $user->getProfilePic();
@@ -1127,13 +1127,13 @@ class Handler
                 $temp = array();
                 $name = "Track";
                 if ($row['tag'] == "music") {
-                    $name = "Song";
+                    $name = "music";
                 }
                 if ($row['tag'] == "podcast") {
-                    $name = "Episode";
+                    $name = "episode";
                 }
                 if ($row['tag'] == "dj") {
-                    $name = "Mix tape";
+                    $name = "mix tape";
                 }
 
                 if ($row['type'] == "song") {
@@ -1147,7 +1147,7 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
 //                    $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
-                    $temp['description'] = "New music alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
+                    $temp['description'] = "New ".$name." alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1171,14 +1171,14 @@ class Handler
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] = 'Welcome to Mwonya, ' . $row['title'] . '!';
+                    $temp['artist'] = $row['title'] . ' has joined Mwonya!';
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = "Discover the fresh sound of " . $row['title'] . ", a new artist now available on Mwonya. Visit their profile and press play to listen now!";
+                    $temp['description'] = "Welcome " . $row['title'] . ", a new artist now available on Mwonya. Visit their profile to learn more and discover their content!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
