@@ -5,34 +5,37 @@ include_once '../endpoints/includedFiles.php';
 if (!empty($db)) {
     $handler = new Filter($db);
     $recommendations = $handler->getRecommendations("mw603382d49906aPka");
-
+    $filter_result = array();
     // Output the recommended songs
     foreach ($recommendations as $recommendedSong) {
         $query = "SELECT title, artist, album, genre, duration, cover, path, lyrics, tag, dateAdded FROM songs WHERE id = $recommendedSong";
         $result = mysqli_query($db, $query);
-        $row = mysqli_fetch_assoc($result);
-        echo "Title: " . $row['title'] . "<br>";
-        echo "Artist: " . $row['artist'] . "<br>";
-        echo "Album: " . $row['album'] . "<br>";
-        echo "Genre: " . $row['genre'] . "<br>";
-        echo "Duration: " . $row['duration'] . "<br>";
-        echo "Cover: " . $row['cover'] . "<br>";
-        echo "Path: " . $row['path'] . "<br>";
-        echo "Lyrics: " . $row['lyrics'] . "<br>";
-        echo "Tag: " . $row['tag'] . "<br>";
-        echo "Date Added: " . $row['dateAdded'] . "<br><br>";
+        $row = mysqli_fetch_array($result);
+
+        $temp = array();
+        $temp['Title'] = $row['title'];
+        $temp['Artist'] = $row['artist'];
+        $temp['Album'] = $row['album'];
+        $temp['Genre'] = $row['genre'];
+        $temp['Duration'] = $row['duration'];
+        $temp['Cover'] = $row['cover'];
+        $temp['Path'] = $row['path'];
+        $temp['Tag'] = $row['tag'];
+        $temp['Date Added'] = $row['dateAdded'];
+        array_push($filter_result, $temp);
+
     }
 
-    if($result){
+
+    if($filter_result){
         http_response_code(200);
-        echo json_encode($result);
+        echo json_encode($filter_result);
     }else{
         http_response_code(404);
         echo json_encode(
-            array("message" => "No item found.")
+            array("message" => "No songs found")
         );
     }
-
 }
 
 

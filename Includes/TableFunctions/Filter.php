@@ -20,8 +20,8 @@ class Filter
     function cosineSimilarity($user1, $user2): float|int
     {
         // Get the song IDs listened to by each user
-        $query1 = "SELECT songid FROM frequency WHERE userid = $user1";
-        $query2 = "SELECT songid FROM frequency WHERE userid = $user2";
+        $query1 = "SELECT songid FROM frequency WHERE userid = '$user1'";
+        $query2 = "SELECT songid FROM frequency WHERE userid = '$user2'";
         $result1 = mysqli_query($this->conn, $query1);
         $result2 = mysqli_query($this->conn, $query2);
         $songs1 = array();
@@ -81,7 +81,7 @@ class Filter
     function getTopSongs($user): array
     {
         // Get the top songs listened to by the user
-        $query = "SELECT songid, COUNT(*) as count FROM frequency WHERE userid = $user GROUP BY songid ORDER BY count DESC";
+        $query = "SELECT songid, COUNT(*) as count FROM frequency WHERE userid = '$user' GROUP BY songid ORDER BY count DESC";
         $result = mysqli_query($this->conn, $query);
         $songs = array();
         while ($row = mysqli_fetch_assoc($result)) {
@@ -115,8 +115,9 @@ class Filter
 
         // Get the top songs listened to by the most similar users
         $recommendations = array();
+        $minListenCount = ceil(0.2 * $maxSongs); // Recommend songs that have been listened to 80% or more of the maximum listen count
         foreach ($allSongs as $song => $count) {
-            if ($count == $maxSongs) {
+            if ($count >= $minListenCount) {
                 array_push($recommendations, $song);
             }
         }
