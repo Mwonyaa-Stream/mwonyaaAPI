@@ -2980,4 +2980,33 @@ class Handler
         return $itemRecords;
     }
 
+    public function LibraryBanners(): array
+    {
+
+        // get_Slider_banner
+        $sliders = array();
+        // Set up the prepared statement
+        $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY date_created DESC LIMIT 8;";
+        $stmt = mysqli_prepare($this->conn, $slider_query);
+        // Execute the query
+        mysqli_stmt_execute($stmt);
+        // Bind the result variables
+        mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+        // Fetch the results
+        while (mysqli_stmt_fetch($stmt)) {
+            $temp = array();
+            $temp['id'] = $id;
+            $temp['playlistID'] = $playlistID;
+            $temp['imagepath'] = $imagepath;
+            array_push($sliders, $temp);
+        }
+
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
+
+
+        return $sliders;
+    }
+
+
 }
