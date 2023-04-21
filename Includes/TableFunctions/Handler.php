@@ -570,63 +570,6 @@ class Handler
         if ($page == 1) {
 
 
-            //get Featured Artist
-            $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY af.datefollowed DESC LIMIT 10";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
-
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['profilephoto'] = $profilephoto;
-                $temp['name'] = $name;
-                array_push($featuredCategory, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Artists You Follow";
-            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
-            array_push($menuCategory, $feat_Cat_temps);
-            ///end featuredArtist
-            ///
-
-            //get unfollowed artist based on followed artist genre
-            $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
-
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['profilephoto'] = $profilephoto;
-                $temp['name'] = $name;
-                array_push($featuredCategory, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Recommended Artist For You";
-            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
-            array_push($menuCategory, $feat_Cat_temps);
-            ///end unfollowed
-
 
             //get the latest album Release less than 14 days old
             $featured_albums = array();
@@ -657,6 +600,34 @@ class Handler
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
+            ///
+            //get unfollowed artist based on followed artist genre
+            $featuredCategory = array();
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Recommended Artist For You";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end unfollowed
 
 
             //get Featured Playlist
@@ -686,6 +657,36 @@ class Handler
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredPlaylist
+            ///
+            ///
+            //get Featured Artist
+            $featuredCategory = array();
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY af.datefollowed DESC LIMIT 10";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Artists You Follow";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+            ///
 
 
         }
