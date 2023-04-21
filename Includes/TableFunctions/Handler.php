@@ -653,7 +653,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_playlist_temps = array();
-            $feat_playlist_temps['heading'] = "Featured Playlists";
+            $feat_playlist_temps['heading'] = "Recommended Playlists for you";
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredPlaylist
