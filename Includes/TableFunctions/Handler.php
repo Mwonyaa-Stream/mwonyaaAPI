@@ -400,10 +400,10 @@ class Handler
                 $al = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $al->getId();
-                $temp['heading'] = "New Release From";
+                $temp['heading'] = "New Release For You";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getTag();
+                $temp['tag'] = $al->getDatecreated().'-'.$al->getTag();
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
