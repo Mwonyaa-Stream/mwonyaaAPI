@@ -17,7 +17,7 @@ class Filter
     }
 
     // Function to calculate cosine similarity between two users
-    function cosineSimilarity($user1, $user2)
+    function cosineSimilarity($user1, $user2): float
     {
         // Get the song IDs listened to by each user
         $query1 = "SELECT songid FROM frequency WHERE userid = '$user1'";
