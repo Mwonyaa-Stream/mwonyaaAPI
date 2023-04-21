@@ -596,7 +596,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "New Releases From Artists You Follow";
+            $feat_albums_temps['heading'] = "New Releases From Artists You Follow.";
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
@@ -624,7 +624,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Discover new Artists to listen and follow";
+            $feat_Cat_temps['heading'] = "Discover new Artists to listen and follow.";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end unfollowed
@@ -653,7 +653,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_playlist_temps = array();
-            $feat_playlist_temps['heading'] = "Recommended Playlists for you";
+            $feat_playlist_temps['heading'] = "Mwonya Playlists Recommended Just For You.";
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredPlaylist
