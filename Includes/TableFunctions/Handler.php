@@ -682,7 +682,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Artists You Follow";
+            $feat_Cat_temps['heading'] = "Artists Followed by You.";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
