@@ -400,10 +400,10 @@ class Handler
                 $al = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $al->getId();
-                $temp['heading'] = "New Release For You";
+                $temp['heading'] = "New Release From";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getDatecreated().'-'.$al->getTag();
+                $temp['tag'] = $al->getDatecreated().' - '.$al->getTag();
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
@@ -641,10 +641,10 @@ class Handler
                 $al = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $al->getId();
-                $temp['heading'] = "New Release From";
+                $temp['heading'] = "New Release For You";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getTag();
+                $temp['tag'] = $al->getDatecreated().' - '.$al->getTag();;
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
@@ -653,7 +653,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "New Releases For you";
+            $feat_albums_temps['heading'] = "New Releases From Artists You Follow";
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
