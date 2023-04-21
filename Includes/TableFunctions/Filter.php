@@ -92,7 +92,7 @@ class Filter
     }
 
 // Function to get the recommended songs for a user
-    function getRecommendations($user)
+    function getRecommendations($user): array
     {
         // Get the most similar users
         $similarUsers = $this->getSimilarUsers($user);

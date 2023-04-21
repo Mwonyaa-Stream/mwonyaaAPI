@@ -412,7 +412,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "Latest Release Albums";
+            $feat_albums_temps['heading'] = "New Release on Mwonya";
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
@@ -653,7 +653,7 @@ class Handler
             }
 
             $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "Latest Release Albums";
+            $feat_albums_temps['heading'] = "New Releases For you";
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
@@ -693,7 +693,7 @@ class Handler
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
-        $itemRecords["featured"] = $menuCategory;
+        $itemRecords["Library"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
         $itemRecords["total_results"] = $total_pages;
 
