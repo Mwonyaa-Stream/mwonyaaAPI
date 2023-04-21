@@ -622,7 +622,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Recommended Artist to Follow & Listen to";
+            $feat_Cat_temps['heading'] = "Recommended Artist For You";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end unfollowed
