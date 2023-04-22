@@ -19,7 +19,7 @@ class Handler
     public function __construct($con)
     {
         $this->conn = $con;
-        $this->version = 5; // VersionCode
+        $this->version = 9; // VersionCode
     }
 
 
@@ -2732,7 +2732,7 @@ class Handler
     public function Versioning()
     {
         $itemRecords = array();
-        $itemRecords["version"] = "8"; // build number should match
+        $itemRecords["version"] = "9"; // build number should match
         $itemRecords["update"] = true; // update dialog dismissable
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
