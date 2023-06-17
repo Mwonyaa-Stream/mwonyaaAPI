@@ -18,7 +18,7 @@ require "../../Includes/TableClasses/Constants.php";
 require "../../Includes/TableClasses/Account.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
-include_once '../../Includes/TableFunctions/Filter.php';
+include_once '../../Includes/TableFunctions/FilterGateway.php';
 
 $database = new Database();
 $db = $database->getConnection();
