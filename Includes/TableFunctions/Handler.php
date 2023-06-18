@@ -308,13 +308,7 @@ class Handler
             array_push($menuCategory, $recently_played);
 
 
-            $image_temp = array();
-            $image_temp['ad_title'] = "Vote is on";
-            $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Time to vote";
-            $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
-            $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-            array_push($menuCategory, $image_temp);
+
 
             // Trending Now
             $featured_trending = array();
@@ -358,7 +352,13 @@ class Handler
             $feat_trend['Tracks'] = $tracks_trending;
             array_push($menuCategory, $feat_trend);
 
-
+            $image_temp = array();
+            $image_temp['ad_title'] = "Vote is on";
+            $image_temp['type'] = "image_ad";
+            $image_temp['ad_description'] = "Time to vote";
+            $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+            $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+            array_push($menuCategory, $image_temp);
 
             //get genres
             $featured_genres = array();
