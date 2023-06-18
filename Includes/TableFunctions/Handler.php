@@ -308,6 +308,15 @@ class Handler
             array_push($menuCategory, $recently_played);
 
 
+            $image_temp = array();
+            $image_temp['ad_title'] = "Vote is on";
+            $image_temp['type'] = "image_ad";
+            $image_temp['ad_description'] = "Time to vote";
+            $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+            $image_temp['ad_image'] = "http://urbanflow256.com/home/images/rectangleimage.png";
+            array_push($menuCategory, $image_temp);
+
+
             //get genres
             $featured_genres = array();
             $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
@@ -368,12 +377,11 @@ class Handler
             ///
             ///
             $text_temp = array();
-            $text_temp['id'] = "1";
-            $text_temp['title'] = "Vote is on";
+            $text_temp['ad_title'] = "Mwonya Artist Program";
             $text_temp['type'] = "text_ad";
-            $text_temp['description'] = "Time to vote";
-            $text_temp['link'] = "http://urbanflow256.com/home/index.html";
-            $text_temp['artworkPath'] = "http://urbanflow256.com/home/images/rectangleimage.png";
+            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+            $text_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+            $text_temp['ad_image'] = "http://urbanflow256.com/home/images/rectangleimage.png";
             array_push($menuCategory, $text_temp);
 
 
