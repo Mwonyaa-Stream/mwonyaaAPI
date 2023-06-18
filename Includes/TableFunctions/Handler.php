@@ -498,6 +498,15 @@ class Handler
             array_push($menuCategory, $feat_dj_temps);
             ///end featuredAlbums
 
+            ///
+            $temp = array();
+            $temp['id'] = "1";
+            $temp['title'] = "Vote is on";
+            $temp['type'] = "text_ad";
+            $temp['description'] = "Time to vote";
+            $temp['link'] = "http://urbanflow256.com/home/index.html";
+            $temp['artworkPath'] = "http://urbanflow256.com/home/images/rectangleimage.png";
+            array_push($menuCategory, $temp);
 
         }
 
