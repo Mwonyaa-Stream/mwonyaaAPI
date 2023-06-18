@@ -517,9 +517,9 @@ class Handler
            WHERE s.tag = 'music'
            GROUP BY g.id
            ORDER BY s.plays DESC
-           LIMIT 2");
+           LIMIT ?, ?");
 
-//        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
+        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result();
 
