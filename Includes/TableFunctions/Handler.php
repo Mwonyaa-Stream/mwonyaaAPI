@@ -316,6 +316,49 @@ class Handler
             $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
             array_push($menuCategory, $image_temp);
 
+            // Trending Now
+            $featured_trending = array();
+            $tracks_trending = array();
+            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+               array_push($featured_trending, $song_id);
+            }
+            foreach ($featured_trending as $track) {
+                $song = new Song($this->conn,$track);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+                array_push($tracks_trending, $temp);
+
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+            $feat_trend = array();
+            $feat_trend['heading'] = "Trending Now";
+            $feat_trend['type'] = "trend";
+            $feat_trend['Tracks'] = $tracks_trending;
+            array_push($menuCategory, $feat_trend);
+
+
 
             //get genres
             $featured_genres = array();
