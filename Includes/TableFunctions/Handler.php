@@ -255,6 +255,7 @@ class Handler
 
         // Retrieve the "page" parameter from the GET request
         $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+        $userID = isset($_GET['userID']) ? intval(htmlspecialchars(strip_tags($_GET["userID"]))) : null;
 
         // Validate the "page" parameter
         if ($page < 1 || $page > $total_pages) {
@@ -324,6 +325,8 @@ class Handler
             while (mysqli_stmt_fetch($stmt)) {
                array_push($featured_trending, $song_id);
             }
+            mysqli_stmt_close($stmt);
+
             foreach ($featured_trending as $track) {
                 $song = new Song($this->conn,$track);
                 $temp = array();
@@ -345,7 +348,6 @@ class Handler
             }
 
             // Close the prepared statement
-            mysqli_stmt_close($stmt);
             $feat_trend = array();
             $feat_trend['heading'] = "Trending Now";
             $feat_trend['type'] = "trend";
@@ -359,6 +361,65 @@ class Handler
             $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
             $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
             array_push($menuCategory, $image_temp);
+
+
+            // Recommended
+            $recommendedSongs = array();
+
+            // Query to fetch recommended songs for the given user ID
+            $recommendation_table_Query = "SELECT `id`, `user_id`, `recommended_songs`, `created_at` FROM `recommendations` WHERE `user_id` =  '$userID'";
+            $table_data = mysqli_query($this->conn, $recommendation_table_Query);
+
+            while ($row = mysqli_fetch_array($table_data)) {
+                $songs = explode(',', $row['recommended_songs']);
+                $recommendedSongs = array_merge($recommendedSongs, $songs);
+            }
+
+            // Pagination
+            $itemsPerPage = 10; // Number of items to display per page
+            $totalItems = count($recommendedSongs); // Total number of recommended songs
+
+
+            // Shuffle the array for the first page
+            shuffle($recommendedSongs);
+
+            // Calculate the starting and ending indexes for the current page
+            $startIndex = ($page - 1) * $itemsPerPage;
+            $endIndex = min($startIndex + $itemsPerPage - 1, $totalItems - 1);
+
+            // Get the recommended songs for the current page
+            $songsForPage = array_slice($recommendedSongs, $startIndex, $endIndex - $startIndex + 1);
+
+            //trackList
+            $R_trackListArray = array();
+
+
+            foreach ($songsForPage as $track) {
+                $song = new Song($this->conn,$track);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['weeklyplays'] = $song->getWeeklyplays();
+                array_push($R_trackListArray, $temp);
+
+            }
+
+            // Close the prepared statement
+            $feat_recommended = array();
+            $feat_recommended['heading'] = "Recommended";
+            $feat_recommended['type'] = "trend";
+            $feat_recommended['Tracks'] = $R_trackListArray;
+            array_push($menuCategory, $feat_recommended);
 
             //get genres
             $featured_genres = array();
