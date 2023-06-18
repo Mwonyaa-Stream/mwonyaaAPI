@@ -294,6 +294,7 @@ class Handler
 
             $slider_temps = array();
             $slider_temps['heading'] = "Discover";
+            $slider_temps['type'] = "slider";
             $slider_temps['featured_sliderBanners'] = $sliders;
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
@@ -302,6 +303,7 @@ class Handler
             // recently played array
             $recently_played = array();
             $recently_played['heading'] = "Recently Played";
+            $recently_played['type'] = "recently";
             $recently_played['subheading'] = "Tracks Last Listened to";
             array_push($menuCategory, $recently_played);
 
@@ -328,6 +330,7 @@ class Handler
             mysqli_stmt_close($stmt);
             $feat_genres = array();
             $feat_genres['heading'] = "Featured genres";
+            $feat_genres['type'] = "genre";
             $feat_genres['featuredGenres'] = $featured_genres;
             array_push($menuCategory, $feat_genres);
 
@@ -358,6 +361,7 @@ class Handler
 
             $feat_Cat_temps = array();
             $feat_Cat_temps['heading'] = "Featured Artists";
+            $feat_Cat_temps['type'] = "artist";
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
@@ -389,6 +393,7 @@ class Handler
 
             $feat_albums_temps = array();
             $feat_albums_temps['heading'] = "New Release on Mwonya";
+            $feat_albums_temps['type'] = "newRelease";
             $feat_albums_temps['HomeRelease'] = $featuredAlbums;
             array_push($menuCategory, $feat_albums_temps);
             ///end latest Release 14 days
@@ -418,6 +423,7 @@ class Handler
 
             $feat_playlist_temps = array();
             $feat_playlist_temps['heading'] = "Featured Playlists";
+            $feat_playlist_temps['type'] = "playlist";
             $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
             array_push($menuCategory, $feat_playlist_temps);
             ///end featuredPlaylist
@@ -452,6 +458,7 @@ class Handler
 
             $feat_albums_temps = array();
             $feat_albums_temps['heading'] = "Featured Albums";
+            $feat_albums_temps['type'] = "albums";
             $feat_albums_temps['featuredAlbums'] = $featured_Albums;
             array_push($menuCategory, $feat_albums_temps);
             ///end featuredAlbums
@@ -486,6 +493,7 @@ class Handler
 
             $feat_dj_temps = array();
             $feat_dj_temps['heading'] = "DJs Vibuu++";
+            $feat_dj_temps['type'] = "djs";
             $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
             array_push($menuCategory, $feat_dj_temps);
             ///end featuredAlbums
@@ -500,9 +508,9 @@ class Handler
            WHERE s.tag = 'music'
            GROUP BY g.id
            ORDER BY s.plays DESC
-           LIMIT ?, ?");
+           LIMIT 2");
 
-        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
+//        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -511,6 +519,7 @@ class Handler
             $temp = array();
             $temp['id'] = $row['id'];
             $temp['name'] = $row['name'];
+            $temp['type'] = "directSongs";
             $temp['tag'] = $row['tag'];
 
             // Use a LIMIT clause in the inner query to get only the top 6 played songs for each genre
