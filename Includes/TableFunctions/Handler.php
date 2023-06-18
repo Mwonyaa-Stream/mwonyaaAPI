@@ -255,7 +255,8 @@ class Handler
 
         // Retrieve the "page" parameter from the GET request
         $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
-        $userID = isset($_GET['userID']) ? intval(htmlspecialchars(strip_tags($_GET["userID"]))) : null;
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : null;
+
 
         // Validate the "page" parameter
         if ($page < 1 || $page > $total_pages) {
