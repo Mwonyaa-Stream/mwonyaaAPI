@@ -339,8 +339,8 @@ class Handler
 
             // Close the prepared statement
             $feat_weekly = array();
-            $feat_weekly['heading'] = "Mwonya Weekly Top 10";
-            $feat_weekly['subheading'] = "Akeine still takes the number 1 spot this week and we have new comers on the chart.";
+            $feat_weekly['heading'] = "Mwonya Top 10";
+            $feat_weekly['subheading'] = "THE WEEK’S MOST POPULAR CURRENT SONGS ACROSS ALL GENRES, RANKED BY STREAMING ACTIVITY FROM DIGITAL MUSIC SOURCES TRACKED BY LUMINATE, RADIO AIRPLAY AUDIENCE IMPRESSIONS AS MEASURED BY LUMINATE AND SALES DATA AS COMPILED BY LUMINATE.";
             $feat_weekly['type'] = "timely";
             $feat_weekly['Tracks'] = $tracks_weekly;
             array_push($menuCategory, $feat_weekly);
