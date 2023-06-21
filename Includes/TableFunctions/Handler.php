@@ -333,6 +333,9 @@ class Handler
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['position'] = "02";
+                $temp['trend'] = true;
+
                 array_push($tracks_weekly, $temp);
 
             }
