@@ -326,7 +326,7 @@ class Handler
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
                 $temp['position'] = $row['rank'];
-                $temp['trend'] = ($row['rank'] % 3 === 0 ) ? true : false;
+                $temp['trend'] = ($row['rank'] % 3 === 0 ) ? false : true;
 
                 array_push($tracks_weekly, $temp);
             }
