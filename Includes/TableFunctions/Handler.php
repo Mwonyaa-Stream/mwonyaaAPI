@@ -340,7 +340,7 @@ class Handler
             // Close the prepared statement
             $feat_weekly = array();
             $feat_weekly['heading'] = "Mwonya Weekly Top 10";
-            $feat_weekly['subheading'] = "Featuring all the major chart hits";
+            $feat_weekly['subheading'] = "Akeine still takes the number 1 spot this week and we have new comers on the chart.";
             $feat_weekly['type'] = "timely";
             $feat_weekly['Tracks'] = $tracks_weekly;
             array_push($menuCategory, $feat_weekly);
