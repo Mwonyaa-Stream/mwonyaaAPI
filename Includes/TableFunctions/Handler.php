@@ -305,15 +305,12 @@ class Handler
             $featured_weekly = array();
             $tracks_weekly= array();
             $weekly_now_sql = "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank DESC LIMIT 10";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $weekly_now_sql);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $wk_id,$wk_song_id, $wk_rank, $wk_weeks_on_chart, $wk_last_week_rank, $wk_peak_rank, $wk_entry_date);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $song = new Song($this->conn,$wk_song_id);
+            $stmt = $this->conn->prepare($weekly_now_sql);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $song = new Song($this->conn,$row['song_id']);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -328,12 +325,12 @@ class Handler
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
-                $temp['position'] = $wk_rank;
+                $temp['position'] = $row['rank'];
                 $temp['trend'] = true;
 
                 array_push($tracks_weekly, $temp);
             }
-//            mysqli_stmt_close($stmt);
+            mysqli_stmt_close($stmt);
 
 
             // Close the prepared statement
