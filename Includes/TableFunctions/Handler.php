@@ -333,7 +333,7 @@ class Handler
 
                 array_push($tracks_weekly, $temp);
             }
-            mysqli_stmt_close($stmt);
+//            mysqli_stmt_close($stmt);
 
 
             // Close the prepared statement
