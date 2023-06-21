@@ -304,7 +304,7 @@ class Handler
             // weekly Now
             $featured_weekly = array();
             $tracks_weekly= array();
-            $weekly_now_sql = "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank DESC LIMIT 10";
+            $weekly_now_sql = "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10";
             $stmt = $this->conn->prepare($weekly_now_sql);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -326,7 +326,7 @@ class Handler
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
                 $temp['position'] = $row['rank'];
-                $temp['trend'] = true;
+                $temp['trend'] = ($row['rank'] % 3 === 0 ) ? true : false;
 
                 array_push($tracks_weekly, $temp);
             }
