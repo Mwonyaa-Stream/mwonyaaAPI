@@ -1378,58 +1378,64 @@ class Handler
 
     public function UserPlaylistSelection(): array
     {
-        $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
-        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : null;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET['userID'])) : null;
 
-        $user_playlist_sql = " SELECT p.`id` AS playlist_id, p.name, COUNT(ps.`songId`) AS total_songs, p.coverurl FROM `playlists` p LEFT JOIN `playlistsongs` ps ON p.`id` = ps.`playlistId` WHERE p.`ownerID` = '$userID' GROUP BY p.`id` ORDER BY p.`dateCreated` DESC";
+        $query = "SELECT p.`id` AS playlist_id, p.name, COUNT(ps.`songId`) AS total_songs, p.coverurl 
+              FROM `playlists` p 
+              LEFT JOIN `playlistsongs` ps ON p.`id` = ps.`playlistId` 
+              WHERE p.`ownerID` = ? 
+              GROUP BY p.`id` 
+              ORDER BY p.`dateCreated` DESC";
 
-        // run the query in the db and search through each of the records returned
-        $query = mysqli_query($this->conn, $user_playlist_sql);
-        $result_count = mysqli_num_rows($query);
-        $page = floatval($page);
-        $no_of_records_per_page = 30;
+        // Prepare the statement
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "s", $userID);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $total_rows = mysqli_num_rows($result);
+        $no_of_records_per_page = 5;
         $offset = ($page - 1) * $no_of_records_per_page;
-        $total_rows = floatval(number_format($result_count));
         $total_pages = ceil($total_rows / $no_of_records_per_page);
 
-        $UserPlaylist_Parent = array();
+        // Validate requested page
+        if ($page > $total_pages && $total_pages > 0) {
+            $page = $total_pages;
+            $offset = ($page - 1) * $no_of_records_per_page;
+        }
 
+        $UserPlaylist_Parent = [
+            'page' => $page,
+            'version' => 1,
+            'user_playlist' => [],
+            'total_pages' => $total_pages,
+            'total_results' => $total_rows
+        ];
 
-        // check if the search query returned any results
-        if ($result_count > 0) {
-
-            $UserPlaylist = array();
-
-            $user_playlist_stmt = $user_playlist_sql . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
-
-            $user_playlist_stmt_result = mysqli_query($this->conn, $user_playlist_stmt);
+        // Fetch the paginated results
+        if ($total_rows > 0) {
+            $user_playlist_stmt = $query . " LIMIT ?, ?";
+            $stmt = mysqli_prepare($this->conn, $user_playlist_stmt);
+            mysqli_stmt_bind_param($stmt, "sii",$userID, $offset, $no_of_records_per_page);
+            mysqli_stmt_execute($stmt);
+            $user_playlist_stmt_result = mysqli_stmt_get_result($stmt);
 
             while ($row = mysqli_fetch_array($user_playlist_stmt_result)) {
-                $temp = array();
-                $temp['id'] = $row['playlist_id'];
-                $temp['name'] = $row['name'];
-                $temp['total_songs'] = $row['total_songs'];
-                $temp['coverurl'] = $row['coverurl'];
-                array_push($UserPlaylist, $temp);
+                $temp = [
+                    'id' => $row['playlist_id'],
+                    'name' => $row['name'],
+                    'total_songs' => $row['total_songs'],
+                    'coverurl' => $row['coverurl']
+                ];
+                $UserPlaylist_Parent['user_playlist'][] = $temp;
             }
-
-
-            $UserPlaylist_Parent["page"] = $page;
-            $UserPlaylist_Parent["version"] = 1;
-            $UserPlaylist_Parent["user_playlist"] = $UserPlaylist;
-            $UserPlaylist_Parent["total_pages"] = $total_pages;
-            $UserPlaylist_Parent["total_results"] = $total_rows;
-
-
-        } else {
-            $UserPlaylist_Parent["page"] = $page;
-            $UserPlaylist_Parent["version"] = 1;
-            $UserPlaylist_Parent["user_playlist"] = [];
-            $UserPlaylist_Parent["total_pages"] = $total_pages;
-            $UserPlaylist_Parent["total_results"] = $total_rows;
         }
+
         return $UserPlaylist_Parent;
     }
+
+
 
 
     function searchNormal(): array
