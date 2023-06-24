@@ -1408,7 +1408,7 @@ class Handler
         $UserPlaylist_Parent = [
             'page' => $page,
             'version' => 1,
-            'user_playlist' => [],
+            'Playlist_Summary' => [],
             'total_pages' => $total_pages,
             'total_results' => $total_rows
         ];
@@ -1428,7 +1428,7 @@ class Handler
                     'total_songs' => $row['total_songs'],
                     'coverurl' => $row['coverurl']
                 ];
-                $UserPlaylist_Parent['user_playlist'][] = $temp;
+                $UserPlaylist_Parent['Playlist_Summary'][] = $temp;
             }
         }
 
