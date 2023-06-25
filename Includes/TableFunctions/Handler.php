@@ -2752,7 +2752,6 @@ class Handler
         return $response;
     }
 
-
     function AddTrackToPlaylist($data): array
     {
         $current_Time_InSeconds = time();
@@ -2760,20 +2759,25 @@ class Handler
 
         $userID = $data->userID ?? null;
         $playlistID = $data->playlistID ?? null;
-        $trackID = $data->trackID ?? null;;
+        $trackID = $data->trackID ?? null;
         $playlistName = $data->playlistName ?? null;
 
-        $itemRecords = array();
-        $itemRecords['error'] = true;
-        $itemRecords['message'] = "";
-        $itemRecords['date'] = $date_added;
+        $itemRecords = [
+            'error' => true,
+            'message' => '',
+            'date' => $date_added,
+        ];
 
+        if ($userID === null) {
+            $itemRecords['message'] = "Invalid parameters provided: userID is missing";
+            return $itemRecords;
+        }
 
-        if ($playlistID !== null && $trackID !== null && $userID !== null) {
-            // Start the transaction
-            mysqli_begin_transaction($this->conn);
+        // Start the transaction
+        mysqli_begin_transaction($this->conn);
 
-            try {
+        try {
+            if ($playlistID !== null && $trackID !== null) {
                 // Check if the playlist exists
                 $playlistExistsQuery = "SELECT COUNT(*) as count FROM `playlists` WHERE `id` = ?";
                 $playlistExistsStmt = mysqli_prepare($this->conn, $playlistExistsQuery);
@@ -2784,8 +2788,6 @@ class Handler
                 mysqli_stmt_close($playlistExistsStmt);
 
                 if ($playlistCount === 0) {
-                    // Playlist does not exist
-                    $itemRecords['error'] = true;
                     $itemRecords['message'] = "Playlist does not exist.";
                 } else {
                     // Check if the track already exists in the playlist
@@ -2798,19 +2800,17 @@ class Handler
                     mysqli_stmt_close($trackExistsStmt);
 
                     if ($trackCount > 0) {
-                        // Track already exists in the playlist
-                        $itemRecords['error'] = true;
                         $itemRecords['message'] = "Track already exists in the playlist.";
                     } else {
                         // Insert the track into the playlistsongs table
                         $insertQuery = "INSERT INTO `playlistsongs` (`songId`, `playlistId`, `dateAdded`) 
-                SELECT ?, ?, ? 
-                FROM DUAL 
-                WHERE NOT EXISTS (
-                    SELECT 1 
-                    FROM `playlistsongs` 
-                    WHERE `playlistId` = ? AND `songId` = ?
-                )";
+                        SELECT ?, ?, ? 
+                        FROM DUAL 
+                        WHERE NOT EXISTS (
+                            SELECT 1 
+                            FROM `playlistsongs` 
+                            WHERE `playlistId` = ? AND `songId` = ?
+                        )";
                         $insertStmt = mysqli_prepare($this->conn, $insertQuery);
                         mysqli_stmt_bind_param($insertStmt, "sssss", $trackID, $playlistID, $date_added, $playlistID, $trackID);
                         mysqli_stmt_execute($insertStmt);
@@ -2820,141 +2820,45 @@ class Handler
                         if ($affectedRows > 0) {
                             $itemRecords['error'] = false;
                             $itemRecords['message'] = "Track added successfully.";
-                            $itemRecords['date'] = $date_added;
                         } else {
-                            $itemRecords['error'] = true;
                             $itemRecords['message'] = "Track already exists in the playlist.";
                         }
                     }
                 }
+            } elseif ($playlistName !== null) {
+                if ($playlistName === "") {
+                    $itemRecords['message'] = "Playlist name cannot be empty.";
+                } else {
+                    // Generate a unique playlist ID
+                    $playlistID = "mwP_" . uniqid();
 
+                    // Create a new playlist in the playlist table
+                    $insertPlaylistQuery = "INSERT INTO `playlists` (`id`, `name`, `ownerID`, `dateCreated`) VALUES (?, ?, ?, ?)";
+                    $insertPlaylistStmt = mysqli_prepare($this->conn, $insertPlaylistQuery);
+                    mysqli_stmt_bind_param($insertPlaylistStmt, "ssss", $playlistID, $playlistName, $userID, $date_added);
+                    mysqli_stmt_execute($insertPlaylistStmt);
+                    mysqli_stmt_close($insertPlaylistStmt);
+
+                    $itemRecords['error'] = false;
+                    $itemRecords['message'] = "Playlist created successfully.";
+                }
+            } else {
+                $itemRecords['message'] = "Invalid parameters provided.";
+            }
+
+            if ($itemRecords['error']) {
+                // Rollback the transaction if an error occurred
+                mysqli_rollback($this->conn);
+            } else {
                 // Commit the transaction
                 mysqli_commit($this->conn);
-            } catch (Exception $e) {
-                // Rollback the transaction in case of any exception/error
-                mysqli_rollback($this->conn);
-
-                // Handle the exception/error
-                $itemRecords['error'] = true;
-                $itemRecords['message'] = "An error occurred during the transaction.";
             }
+        } catch (Exception $e) {
+            // Rollback the transaction in case of any exception/error
+            mysqli_rollback($this->conn);
 
-            return $itemRecords;
-
-
-        } elseif ($playlistName !== null && $trackID !== null && $userID !== null) {
-            // Generate a unique playlist ID
-            $playlistID = "mwP_" . uniqid();
-
-// Check if the playlist already exists for the user
-            $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
-            $checkStmt = mysqli_prepare($this->conn, $checkQuery);
-            mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
-            mysqli_stmt_execute($checkStmt);
-            mysqli_stmt_store_result($checkStmt);
-            $playlistExists = mysqli_stmt_num_rows($checkStmt) > 0;
-            mysqli_stmt_close($checkStmt);
-
-            if ($playlistExists) {
-                // Playlist already exists for the user
-                $itemRecords['error'] = true;
-                $itemRecords['message'] = "Playlist already exists with the same name";
-            } else {
-                // Begin a transaction
-                mysqli_begin_transaction($this->conn);
-
-                // Create a new playlist in the playlist table
-                $insertPlaylistQuery = "
-        INSERT INTO `playlists` (`id`, `name`, `ownerID`, `dateCreated`)
-        VALUES (?, ?, ?, ?)
-    ";
-                $insertPlaylistStmt = mysqli_prepare($this->conn, $insertPlaylistQuery);
-                mysqli_stmt_bind_param($insertPlaylistStmt, "ssss", $playlistID, $playlistName, $userID, $date_added);
-
-                // Insert the track into the playlistsongs table
-                $insertSongsQuery = "
-        INSERT INTO `playlistsongs` (`songId`, `playlistId`, `dateAdded`)
-        VALUES (?, ?, ?)
-    ";
-                $insertSongsStmt = mysqli_prepare($this->conn, $insertSongsQuery);
-                mysqli_stmt_bind_param($insertSongsStmt, "sss", $trackID, $playlistID,$date_added);
-
-                // Execute both queries within a transaction
-                $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt) && mysqli_stmt_execute($insertSongsStmt);
-
-                if ($transactionSuccessful) {
-                    // Commit the transaction
-                    mysqli_commit($this->conn);
-
-                    $itemRecords['error'] = false;
-                    $itemRecords['message'] = "Playlist created and track added successfully.";
-                    $itemRecords['date'] = $date_added;
-                } else {
-                    // Rollback the transaction
-                    mysqli_rollback($this->conn);
-
-                    $itemRecords['error'] = true;
-                    $itemRecords['message'] = "Failed to create playlist.";
-                }
-
-                mysqli_stmt_close($insertPlaylistStmt);
-                mysqli_stmt_close($insertSongsStmt);
-            }
-
-
-        } elseif ($playlistName !== null && $userID !== null) {
-            // Generate a unique playlist ID
-            $playlistID = "mwP_" . uniqid();
-
-// Check if the playlist already exists for the user
-            $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
-            $checkStmt = mysqli_prepare($this->conn, $checkQuery);
-            mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
-            mysqli_stmt_execute($checkStmt);
-            mysqli_stmt_store_result($checkStmt);
-            $playlistExists = mysqli_stmt_num_rows($checkStmt) > 0;
-            mysqli_stmt_close($checkStmt);
-
-            if ($playlistExists) {
-                // Playlist already exists for the user
-                $itemRecords['error'] = true;
-                $itemRecords['message'] = "Playlist already exists with the same name";
-            } else {
-                // Begin a transaction
-                mysqli_begin_transaction($this->conn);
-
-                // Create a new playlist in the playlist table
-                $insertPlaylistQuery = "
-        INSERT INTO `playlists` (`id`, `name`, `ownerID`, `dateCreated`)
-        VALUES (?, ?, ?, ?)
-    ";
-                $insertPlaylistStmt = mysqli_prepare($this->conn, $insertPlaylistQuery);
-                mysqli_stmt_bind_param($insertPlaylistStmt, "ssss", $playlistID, $playlistName, $userID, $date_added);
-
-
-                // Execute both queries within a transaction
-                $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt);
-
-                if ($transactionSuccessful) {
-                    // Commit the transaction
-                    mysqli_commit($this->conn);
-
-                    $itemRecords['error'] = false;
-                    $itemRecords['message'] = "Playlist created  successfully.";
-                    $itemRecords['date'] = $date_added;
-                } else {
-                    // Rollback the transaction
-                    mysqli_rollback($this->conn);
-
-                    $itemRecords['error'] = true;
-                    $itemRecords['message'] = "Failed to create playlist.";
-                }
-
-                mysqli_stmt_close($insertPlaylistStmt);
-            }
-
-        } else {
-            $itemRecords['message'] = "Invalid parameters provided";
+            // Handle the exception/error
+            $itemRecords['message'] = "An error occurred during the transaction.";
         }
 
         return $itemRecords;
