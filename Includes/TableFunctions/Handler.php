@@ -2873,11 +2873,11 @@ class Handler
 
                 // Insert the track into the playlistsongs table
                 $insertSongsQuery = "
-        INSERT INTO `playlistsongs` (`songId`, `playlistId`, `playlistOrder`)
-        VALUES (?, ?, 0)
+        INSERT INTO `playlistsongs` (`songId`, `playlistId`, `dateAdded`)
+        VALUES (?, ?, ?)
     ";
                 $insertSongsStmt = mysqli_prepare($this->conn, $insertSongsQuery);
-                mysqli_stmt_bind_param($insertSongsStmt, "ss", $trackID, $playlistID);
+                mysqli_stmt_bind_param($insertSongsStmt, "sss", $trackID, $playlistID,$date_added);
 
                 // Execute both queries within a transaction
                 $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt) && mysqli_stmt_execute($insertSongsStmt);
