@@ -53,7 +53,6 @@ class Handler
             array_push($itemRecords["Artist"], $artistIntro);
 
 
-
             // popular tracks
             $populartracks = $artist_instance->getSongIds();
             $popular = array();
@@ -303,14 +302,14 @@ class Handler
 
             // weekly Now
             $featured_weekly = array();
-            $tracks_weekly= array();
+            $tracks_weekly = array();
             $weekly_now_sql = "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10";
             $stmt = $this->conn->prepare($weekly_now_sql);
             $stmt->execute();
             $result = $stmt->get_result();
 
             while ($row = $result->fetch_assoc()) {
-                $song = new Song($this->conn,$row['song_id']);
+                $song = new Song($this->conn, $row['song_id']);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -326,7 +325,7 @@ class Handler
                 $temp['totalplays'] = $song->getPlays();
                 $temp['weeklyplays'] = $song->getWeeklyplays();
                 $temp['position'] = $row['rank'];
-                $temp['trend'] = ($row['rank'] % 3 === 0 ) ? false : true;
+                $temp['trend'] = ($row['rank'] % 3 === 0) ? false : true;
 
                 array_push($tracks_weekly, $temp);
             }
@@ -352,8 +351,6 @@ class Handler
             array_push($menuCategory, $recently_played);
 
 
-
-
             // Trending Now
             $featured_trending = array();
             $tracks_trending = array();
@@ -366,12 +363,12 @@ class Handler
             mysqli_stmt_bind_result($stmt, $song_id, $play_count);
             // Fetch the results
             while (mysqli_stmt_fetch($stmt)) {
-               array_push($featured_trending, $song_id);
+                array_push($featured_trending, $song_id);
             }
             mysqli_stmt_close($stmt);
 
             foreach ($featured_trending as $track) {
-                $song = new Song($this->conn,$track);
+                $song = new Song($this->conn, $track);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -438,7 +435,7 @@ class Handler
 
 
             foreach ($songsForPage as $track) {
-                $song = new Song($this->conn,$track);
+                $song = new Song($this->conn, $track);
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
@@ -532,7 +529,6 @@ class Handler
             array_push($menuCategory, $text_temp);
 
 
-
             //get the latest album Release less than 14 days old
             $featured_albums = array();
             $featuredAlbums = array();
@@ -549,7 +545,7 @@ class Handler
                 $temp['heading'] = "New Release From";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getDatecreated().' - '.$al->getTag();
+                $temp['tag'] = $al->getDatecreated() . ' - ' . $al->getTag();
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
@@ -721,7 +717,6 @@ class Handler
         if ($page == 1) {
 
 
-
             //get the latest album Release less than 14 days old
             $featured_albums = array();
             $featuredAlbums = array();
@@ -738,7 +733,7 @@ class Handler
                 $temp['heading'] = "New Release For You";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getDatecreated().' - '.$al->getTag();;
+                $temp['tag'] = $al->getDatecreated() . ' - ' . $al->getTag();;
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
@@ -1299,7 +1294,7 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
 //                    $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
-                    $temp['description'] = "New ".$name." alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
+                    $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1417,7 +1412,7 @@ class Handler
         if ($total_rows > 0) {
             $user_playlist_stmt = $query . " LIMIT ?, ?";
             $stmt = mysqli_prepare($this->conn, $user_playlist_stmt);
-            mysqli_stmt_bind_param($stmt, "sii",$userID, $offset, $no_of_records_per_page);
+            mysqli_stmt_bind_param($stmt, "sii", $userID, $offset, $no_of_records_per_page);
             mysqli_stmt_execute($stmt);
             $user_playlist_stmt_result = mysqli_stmt_get_result($stmt);
 
@@ -1434,8 +1429,6 @@ class Handler
 
         return $UserPlaylist_Parent;
     }
-
-
 
 
     function searchNormal(): array
@@ -2670,7 +2663,7 @@ class Handler
 
         //getting the values
 //      $m_id = password_hash($data->id, PASSWORD_DEFAULT);
-        $m_id = "mw".$data->id;
+        $m_id = "mw" . $data->id;
         $m_username = $data->username;
         $m_full_name = $data->full_name;
         $m_email = $data->email;
@@ -2757,6 +2750,214 @@ class Handler
         }
 
         return $response;
+    }
+
+
+    function AddTrackToPlaylist($data): array
+    {
+        $current_Time_InSeconds = time();
+        $date_added = date('Y-m-d H:i:s', $current_Time_InSeconds);
+
+        $userID = $data->userID ?? null;
+        $playlistID = $data->playlistID ?? null;
+        $trackID = $data->trackID ?? null;;
+        $playlistName = $data->playlistName ?? null;
+
+        $itemRecords = array();
+        $itemRecords['error'] = true;
+        $itemRecords['message'] = "";
+        $itemRecords['date'] = $date_added;
+
+
+        if ($playlistID !== null && $trackID !== null && $userID !== null) {
+            // Start the transaction
+            mysqli_begin_transaction($this->conn);
+
+            try {
+                // Check if the playlist exists
+                $playlistExistsQuery = "SELECT COUNT(*) as count FROM `playlists` WHERE `id` = ?";
+                $playlistExistsStmt = mysqli_prepare($this->conn, $playlistExistsQuery);
+                mysqli_stmt_bind_param($playlistExistsStmt, "s", $playlistID);
+                mysqli_stmt_execute($playlistExistsStmt);
+                mysqli_stmt_bind_result($playlistExistsStmt, $playlistCount);
+                mysqli_stmt_fetch($playlistExistsStmt);
+                mysqli_stmt_close($playlistExistsStmt);
+
+                if ($playlistCount === 0) {
+                    // Playlist does not exist
+                    $itemRecords['error'] = true;
+                    $itemRecords['message'] = "Playlist does not exist.";
+                } else {
+                    // Check if the track already exists in the playlist
+                    $trackExistsQuery = "SELECT COUNT(*) as count FROM `playlistsongs` WHERE `playlistId` = ? AND `songId` = ?";
+                    $trackExistsStmt = mysqli_prepare($this->conn, $trackExistsQuery);
+                    mysqli_stmt_bind_param($trackExistsStmt, "ss", $playlistID, $trackID);
+                    mysqli_stmt_execute($trackExistsStmt);
+                    mysqli_stmt_bind_result($trackExistsStmt, $trackCount);
+                    mysqli_stmt_fetch($trackExistsStmt);
+                    mysqli_stmt_close($trackExistsStmt);
+
+                    if ($trackCount > 0) {
+                        // Track already exists in the playlist
+                        $itemRecords['error'] = true;
+                        $itemRecords['message'] = "Track already exists in the playlist.";
+                    } else {
+                        // Insert the track into the playlistsongs table
+                        $insertQuery = "INSERT INTO `playlistsongs` (`songId`, `playlistId`, `dateAdded`) 
+                SELECT ?, ?, ? 
+                FROM DUAL 
+                WHERE NOT EXISTS (
+                    SELECT 1 
+                    FROM `playlistsongs` 
+                    WHERE `playlistId` = ? AND `songId` = ?
+                )";
+                        $insertStmt = mysqli_prepare($this->conn, $insertQuery);
+                        mysqli_stmt_bind_param($insertStmt, "sssss", $trackID, $playlistID, $date_added, $playlistID, $trackID);
+                        mysqli_stmt_execute($insertStmt);
+                        $affectedRows = mysqli_stmt_affected_rows($insertStmt);
+                        mysqli_stmt_close($insertStmt);
+
+                        if ($affectedRows > 0) {
+                            $itemRecords['error'] = false;
+                            $itemRecords['message'] = "Track added successfully.";
+                            $itemRecords['date'] = $date_added;
+                        } else {
+                            $itemRecords['error'] = true;
+                            $itemRecords['message'] = "Track already exists in the playlist.";
+                        }
+                    }
+                }
+
+                // Commit the transaction
+                mysqli_commit($this->conn);
+            } catch (Exception $e) {
+                // Rollback the transaction in case of any exception/error
+                mysqli_rollback($this->conn);
+
+                // Handle the exception/error
+                $itemRecords['error'] = true;
+                $itemRecords['message'] = "An error occurred during the transaction.";
+            }
+
+            return $itemRecords;
+
+
+        } elseif ($playlistName !== null && $trackID !== null && $userID !== null) {
+            // Generate a unique playlist ID
+            $playlistID = "mwP_" . uniqid();
+
+// Check if the playlist already exists for the user
+            $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
+            $checkStmt = mysqli_prepare($this->conn, $checkQuery);
+            mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
+            mysqli_stmt_execute($checkStmt);
+            mysqli_stmt_store_result($checkStmt);
+            $playlistExists = mysqli_stmt_num_rows($checkStmt) > 0;
+            mysqli_stmt_close($checkStmt);
+
+            if ($playlistExists) {
+                // Playlist already exists for the user
+                $itemRecords['error'] = true;
+                $itemRecords['message'] = "Playlist already exists with the same name";
+            } else {
+                // Begin a transaction
+                mysqli_begin_transaction($this->conn);
+
+                // Create a new playlist in the playlist table
+                $insertPlaylistQuery = "
+        INSERT INTO `playlists` (`id`, `name`, `ownerID`, `dateCreated`)
+        VALUES (?, ?, ?, ?)
+    ";
+                $insertPlaylistStmt = mysqli_prepare($this->conn, $insertPlaylistQuery);
+                mysqli_stmt_bind_param($insertPlaylistStmt, "ssss", $playlistID, $playlistName, $userID, $date_added);
+
+                // Insert the track into the playlistsongs table
+                $insertSongsQuery = "
+        INSERT INTO `playlistsongs` (`songId`, `playlistId`, `playlistOrder`)
+        VALUES (?, ?, 0)
+    ";
+                $insertSongsStmt = mysqli_prepare($this->conn, $insertSongsQuery);
+                mysqli_stmt_bind_param($insertSongsStmt, "ss", $trackID, $playlistID);
+
+                // Execute both queries within a transaction
+                $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt) && mysqli_stmt_execute($insertSongsStmt);
+
+                if ($transactionSuccessful) {
+                    // Commit the transaction
+                    mysqli_commit($this->conn);
+
+                    $itemRecords['error'] = false;
+                    $itemRecords['message'] = "Playlist created and track added successfully.";
+                    $itemRecords['date'] = $date_added;
+                } else {
+                    // Rollback the transaction
+                    mysqli_rollback($this->conn);
+
+                    $itemRecords['error'] = true;
+                    $itemRecords['message'] = "Failed to create playlist.";
+                }
+
+                mysqli_stmt_close($insertPlaylistStmt);
+                mysqli_stmt_close($insertSongsStmt);
+            }
+
+
+        } elseif ($playlistName !== null && $userID !== null) {
+            // Generate a unique playlist ID
+            $playlistID = "mwP_" . uniqid();
+
+// Check if the playlist already exists for the user
+            $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
+            $checkStmt = mysqli_prepare($this->conn, $checkQuery);
+            mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
+            mysqli_stmt_execute($checkStmt);
+            mysqli_stmt_store_result($checkStmt);
+            $playlistExists = mysqli_stmt_num_rows($checkStmt) > 0;
+            mysqli_stmt_close($checkStmt);
+
+            if ($playlistExists) {
+                // Playlist already exists for the user
+                $itemRecords['error'] = true;
+                $itemRecords['message'] = "Playlist already exists with the same name";
+            } else {
+                // Begin a transaction
+                mysqli_begin_transaction($this->conn);
+
+                // Create a new playlist in the playlist table
+                $insertPlaylistQuery = "
+        INSERT INTO `playlists` (`id`, `name`, `ownerID`, `dateCreated`)
+        VALUES (?, ?, ?, ?)
+    ";
+                $insertPlaylistStmt = mysqli_prepare($this->conn, $insertPlaylistQuery);
+                mysqli_stmt_bind_param($insertPlaylistStmt, "ssss", $playlistID, $playlistName, $userID, $date_added);
+
+
+                // Execute both queries within a transaction
+                $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt);
+
+                if ($transactionSuccessful) {
+                    // Commit the transaction
+                    mysqli_commit($this->conn);
+
+                    $itemRecords['error'] = false;
+                    $itemRecords['message'] = "Playlist created  successfully.";
+                    $itemRecords['date'] = $date_added;
+                } else {
+                    // Rollback the transaction
+                    mysqli_rollback($this->conn);
+
+                    $itemRecords['error'] = true;
+                    $itemRecords['message'] = "Failed to create playlist.";
+                }
+
+                mysqli_stmt_close($insertPlaylistStmt);
+            }
+
+        } else {
+            $itemRecords['message'] = "Invalid parameters provided";
+        }
+
+        return $itemRecords;
     }
 
 
@@ -2858,7 +3059,6 @@ class Handler
         }
         return $itemRecords;
     }
-
 
 
     public function loginHandler(): array
@@ -2966,7 +3166,6 @@ class Handler
             $temp['imagepath'] = $row['imagepath'];
             array_push($sliders, $temp);
         }
-
 
 
         return $sliders;
