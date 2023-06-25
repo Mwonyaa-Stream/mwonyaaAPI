@@ -2844,7 +2844,7 @@ class Handler
 
         } elseif ($playlistName !== null && $trackID !== null && $userID !== null) {
             // Generate a unique playlist ID
-            $playlistID = "mwP_" . uniqid();
+            $playlistID = "mwP_mobile" . uniqid();
 
 // Check if the playlist already exists for the user
             $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
@@ -2904,7 +2904,7 @@ class Handler
 
         } elseif ($playlistName !== null && $userID !== null) {
             // Generate a unique playlist ID
-            $playlistID = "mwP_" . uniqid();
+            $playlistID = "mwP_mobile" . uniqid();
 
 // Check if the playlist already exists for the user
             $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
