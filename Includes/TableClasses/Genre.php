@@ -77,7 +77,7 @@ class Genre
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -113,7 +113,7 @@ class Genre
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();

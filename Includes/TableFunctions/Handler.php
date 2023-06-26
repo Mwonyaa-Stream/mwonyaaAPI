@@ -61,7 +61,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -313,7 +313,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -372,7 +372,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -439,7 +439,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -901,7 +901,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['description'] = $song->getAlbum()->getDescription();
@@ -941,7 +941,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['description'] = $song->getAlbum()->getDescription();
@@ -1103,7 +1103,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -1286,15 +1286,15 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-//                    $temp['description'] = $song->getArtist()->getName() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
-                    $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . " is now playing on Mwonya. Tap to listen!";
+//                    $temp['description'] = $song->getArtist()->getName() .$song->getFeaturing() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
+                    $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() .$song->getFeaturing() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1516,7 +1516,7 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
@@ -1676,7 +1676,7 @@ class Handler
                     if ($row['type'] == "song") {
                         $temp['id'] = $row['id'];
                         $song = new Song($this->conn, $row['id']);
-                        $temp['artist'] = $song->getArtist()->getName();
+                        $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                         $temp['artistID'] = $row['artist'];
                         $temp['title'] = $row['title'];
                         $temp['path'] = $row['path'];
@@ -1818,7 +1818,7 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName();
+                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
@@ -2003,7 +2003,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2084,7 +2084,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2130,7 +2130,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['albumID'] = $song->getAlbumId();
@@ -2155,7 +2155,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2199,7 +2199,7 @@ class Handler
             $song = new Song($this->conn, $songID);
             $trackInfo['id'] = $song->getId();
             $trackInfo['title'] = $song->getTitle();
-            $trackInfo['artist'] = $song->getArtist()->getName();
+            $trackInfo['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $trackInfo['artistID'] = $song->getArtistId();
             $trackInfo['album'] = $song->getAlbum()->getTitle();
             $trackInfo['albumID'] = $song->getAlbumId();
@@ -2255,7 +2255,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2620,11 +2620,11 @@ class Handler
         $itemRecords['id'] = $song->getId();
         $itemRecords["artworkPath"] = $song->getAlbum()->getArtworkPath();;
         $itemRecords["title"] = $song->getTitle();
-        $itemRecords["artist"] = $song->getArtist()->getName();
+        $itemRecords["artist"] = $song->getArtist()->getName() .$song->getFeaturing();
         $itemRecords["artistID"] = $song->getArtistId();
         $itemRecords["genre"] = $song->getGenre()->getGenre();
         $itemRecords["heading"] = "Mwonyaa Mix Station: " . $song->getTitle();
-        $itemRecords["subheading"] = "Selection of tracks based on " . $song->getTitle() . " by " . $song->getArtist()->getName();
+        $itemRecords["subheading"] = "Selection of tracks based on " . $song->getTitle() . " by " . $song->getArtist()->getName() .$song->getFeaturing();
         $itemRecords["updated"] = $date_now;
 
         // get products id from the same cat
@@ -2635,7 +2635,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -3118,7 +3118,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName();
+            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
