@@ -49,7 +49,9 @@ class Handler
             array_push($artist_into, $temp);
 
             $artistIntro = array();
+
             $artistIntro['ArtistIntro'] = $artist_into;
+            $artistIntro['Type'] = "intro";
             array_push($itemRecords["Artist"], $artistIntro);
 
 
@@ -79,6 +81,7 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Most Played";
+            $popular_temps['Type'] = "trending";
             $popular_temps['Tracks'] = $popular;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -129,6 +132,7 @@ class Handler
 
             $artistpick_array = array();
             $artistpick_array['heading'] = "Artist Pick";
+            $artistpick_array['Type'] = "pick";
             $artistpick_array['ArtistPick'] = $ArtistPick;
             array_push($itemRecords["Artist"], $artistpick_array);
 
@@ -154,6 +158,7 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Popular Release";
+            $popular_temps['Type'] = "release";
             $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -173,6 +178,8 @@ class Handler
 
             $popular_temps = array();
             $popular_temps['heading'] = "Related Artist";
+            $popular_temps['Type'] = "related_artist";
+
             $popular_temps['RelatedArtist'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
 
@@ -192,6 +199,7 @@ class Handler
 
             $events_array = array();
             $events_array['heading'] = "Artist Events";
+            $events_array['Type'] = "events";
             $events_array['Events'] = $ArtistEvent;
             array_push($itemRecords["Artist"], $events_array);
 
@@ -220,6 +228,7 @@ class Handler
 
             $events_array = array();
             $events_array['heading'] = "Artist Bio";
+            $events_array['Type'] = "bio";
             $events_array['Bio'] = $bio_array;
             array_push($itemRecords["Artist"], $events_array);
 
