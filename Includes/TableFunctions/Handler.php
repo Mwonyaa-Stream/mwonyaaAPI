@@ -113,15 +113,17 @@ class Handler
             } else {
                 // latest release
                 $arry = $artist_instance->getLatestRelease();
-                $temp = [
-                    'id' => $arry->getId(),
-                    'type' => "Album",
-                    'out_now' => $arry->getTitle() . " - out now",
-                    'coverimage' => $arry->getArtworkPath(),
-                    'song_title' => $arry->getArtist()->getName() . " - " . $arry->getTitle(),
-                    'song_cover' => $arry->getArtworkPath(),
-                ];
-                array_push($ArtistPick, $temp);
+                if ($arry !== null) {
+                    $temp = [
+                        'id' => $arry->getId(),
+                        'type' => "Album",
+                        'out_now' => $arry->getTitle() . " - out now",
+                        'coverimage' => $arry->getArtworkPath(),
+                        'song_title' => $arry->getArtist()->getName() . " - " . $arry->getTitle(),
+                        'song_cover' => $arry->getArtworkPath(),
+                    ];
+                    array_push($ArtistPick, $temp);
+                }
             }
 
 

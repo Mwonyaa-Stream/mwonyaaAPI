@@ -207,23 +207,38 @@ class Artist
 
     public function getLatestRelease()
     {
-        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 1");
-        $row = mysqli_fetch_array($query);
-        $id = $row['id'];
-        return new Album($this->con, $id);
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' AND a.tag != 'ad' GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 1");
+
+        if ($query && mysqli_num_rows($query) > 0) {
+            $row = mysqli_fetch_array($query);
+            $id = $row['id'];
+            return new Album($this->con, $id);
+        }
+
+        return null; // Return null or handle the case when no result is found
     }
 
     public function getSongIds()
     {
-        $query = mysqli_query($this->con, "SELECT id FROM songs WHERE artist='$this->id' and tag != 'ad' ORDER BY plays DESC Limit 8");
+        $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
-            array_push($array, $row['id']);
+            $songId = $row['id'];
+            $featuring = $row['featuring'];
+
+            // Append featuring artists to the song ID
+            if (!empty($featuring)) {
+                $featuringArray = explode(',', $featuring);
+                $songId .= ',' . implode(',', $featuringArray);
+            }
+
+            array_push($array, $songId);
         }
 
         return $array;
     }
+
 
     public function getRelatedArtists()
     {
