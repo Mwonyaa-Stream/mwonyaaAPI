@@ -188,14 +188,18 @@ class Handler
             $ArtistEvent = array();
             $artist_event = new ArtistEvents($this->conn, $artistID);
             $temp = array();
-            $temp['id'] = $artist_event->getId();
-            $temp['name'] = $artist_event->getName();
-            $temp['title'] = $artist_event->getTitle();
-            $temp['description'] = $artist_event->getDescription();
-            $temp['venue'] = $artist_event->getVenu();
-            $temp['date'] = $artist_event->getDate();
-            $temp['time'] = $artist_event->getTime();
-            array_push($ArtistEvent, $temp);
+
+            if($artist_event->getId() != null){
+                $temp['id'] = $artist_event->getId();
+                $temp['name'] = $artist_event->getName();
+                $temp['title'] = $artist_event->getTitle();
+                $temp['description'] = $artist_event->getDescription();
+                $temp['venue'] = $artist_event->getVenu();
+                $temp['date'] = $artist_event->getDate();
+                $temp['time'] = $artist_event->getTime();
+                array_push($ArtistEvent, $temp);
+            }
+
 
             $events_array = array();
             $events_array['heading'] = "Artist Events";
@@ -205,26 +209,28 @@ class Handler
 
             // Artist Bio
             $bio_array = array();
-            $temp = array();
-            $temp['id'] = $artist_instance->getId();
-            $temp['name'] = $artist_instance->getName();
-            $temp['email'] = $artist_instance->getEmail();
-            $temp['phone'] = $artist_instance->getPhone();
-            $temp['facebookurl'] = $artist_instance->getFacebookurl();
-            $temp['twitterurl'] = $artist_instance->getTwitterurl();
-            $temp['instagramurl'] = $artist_instance->getInstagramurl();
-            $temp['RecordLable'] = $artist_instance->getRecordLable();
-            $temp['profilephoto'] = $artist_instance->getProfilePath();
-            $temp['coverimage'] = $artist_instance->getArtistCoverPath();
+           if ($artist_instance->getId() != null){
+               $temp = array();
+               $temp['id'] = $artist_instance->getId();
+               $temp['name'] = $artist_instance->getName();
+               $temp['email'] = $artist_instance->getEmail();
+               $temp['phone'] = $artist_instance->getPhone();
+               $temp['facebookurl'] = $artist_instance->getFacebookurl();
+               $temp['twitterurl'] = $artist_instance->getTwitterurl();
+               $temp['instagramurl'] = $artist_instance->getInstagramurl();
+               $temp['RecordLable'] = $artist_instance->getRecordLable();
+               $temp['profilephoto'] = $artist_instance->getProfilePath();
+               $temp['coverimage'] = $artist_instance->getArtistCoverPath();
 
-            $temp['bio'] = $artist_instance->getArtistBio();
-            $temp['genre'] = $artist_instance->getGenrename()->getGenre();
-            $temp['datecreated'] = $artist_instance->getdateadded();
-            $temp['tag'] = $artist_instance->getTag();
-            $temp['overalplays'] = $artist_instance->getOveralplays();
-            $temp['monthly'] = $artist_instance->getTotalPlays();
-            $temp['status'] = $artist_instance->getStatus();
-            array_push($bio_array, $temp);
+               $temp['bio'] = $artist_instance->getArtistBio();
+               $temp['genre'] = $artist_instance->getGenrename()->getGenre();
+               $temp['datecreated'] = $artist_instance->getdateadded();
+               $temp['tag'] = $artist_instance->getTag();
+               $temp['overalplays'] = $artist_instance->getOveralplays();
+               $temp['monthly'] = $artist_instance->getTotalPlays();
+               $temp['status'] = $artist_instance->getStatus();
+               array_push($bio_array, $temp);
+           }
 
             $events_array = array();
             $events_array['heading'] = "Artist Bio";
