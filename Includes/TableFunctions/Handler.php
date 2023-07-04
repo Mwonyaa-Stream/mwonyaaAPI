@@ -317,6 +317,16 @@ class Handler
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
+
+
+
+            // recently played array
+            $recently_played = array();
+            $recently_played['heading'] = "Recently Played";
+            $recently_played['type'] = "recently";
+            $recently_played['subheading'] = "Tracks Last Listened to";
+            array_push($menuCategory, $recently_played);
+
             // weekly Now
             $featured_weekly = array();
             $tracks_weekly = array();
@@ -361,14 +371,6 @@ class Handler
             array_push($menuCategory, $feat_weekly);
 
             // end weekly
-
-
-            // recently played array
-            $recently_played = array();
-            $recently_played['heading'] = "Recently Played";
-            $recently_played['type'] = "recently";
-            $recently_played['subheading'] = "Tracks Last Listened to";
-            array_push($menuCategory, $recently_played);
 
 
             // Trending Now
