@@ -351,8 +351,10 @@ class Handler
 
             // Close the prepared statement
             $feat_weekly = array();
-            $feat_weekly['heading'] = "Mwonya Top 10";
-            $feat_weekly['subheading'] = "THE WEEK’S MOST POPULAR CURRENT SONGS ACROSS ALL GENRES.";
+            $feat_weekly['heading'] = "Weekly Top 10";
+            $feat_weekly['subheading'] = "Featuring all the tracks that have taken the heat up again. this week with the number one spot";
+            $feat_weekly['weekartist'] = "GeoXwill";
+            $feat_weekly['weekdate'] = "Fri 01 July 2023";
             $feat_weekly['type'] = "timely";
             $feat_weekly['Tracks'] = $tracks_weekly;
             array_push($menuCategory, $feat_weekly);
