@@ -180,7 +180,7 @@ class Artist
     }
 
     public function getIntro() {
-        return convertToSentenceCase($this->tag);
+        return $this->convertToSentenceCase($this->tag);
     }
 
     public function getTag()
