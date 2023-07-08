@@ -231,6 +231,7 @@ class Handler
                $temp['overalplays'] = $artist_instance->getOveralplays();
                $temp['monthly'] = $artist_instance->getTotalPlays();
                $temp['status'] = $artist_instance->getStatus();
+               $temp['verified'] = $artist_instance->getVerified();
                array_push($bio_array, $temp);
            }
 
