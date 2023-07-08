@@ -46,6 +46,7 @@ class Handler
             $temp['profilephoto'] = $artist_instance->getProfilePath();
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
+            $temp['verified'] = $artist_instance->getVerified();
             array_push($artist_into, $temp);
 
             $artistIntro = array();
@@ -365,7 +366,7 @@ class Handler
             $feat_weekly['subheading'] = "Featuring all the tracks that have taken the heat up again. this week with the number one spot";
             $feat_weekly['weekartist'] = "GeoXwill";
             $feat_weekly['weekdate'] = "Fri 01 July 2023";
-            $feat_weekly['weekimage'] = "https://artist.mwonya.com/assets/images/artistprofiles/Akeine_profile_20230319201751_03845.jpg";
+            $feat_weekly['weekimage'] = "https://artist.mwonya.com/assets/images/artistprofiles/Kavali%20King%20_profile_20211025133525_08409.jpg";
             $feat_weekly['type'] = "timely";
             $feat_weekly['Tracks'] = $tracks_weekly;
             array_push($menuCategory, $feat_weekly);

@@ -21,13 +21,14 @@ class Artist
     private $dateAdded;
     private $overalplays;
     private $status;
+    private $verified;
 
     public function __construct($con, $id)
     {
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status` FROM artists WHERE id='$this->id'");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified` FROM artists WHERE id='$this->id'");
         $artistfetched = mysqli_fetch_array($query);
 
 
@@ -49,6 +50,7 @@ class Artist
             $this->dateAdded = null;
             $this->overalplays = null;
             $this->status = null;
+            $this->verified = null;
         } else {
             $this->no = $artistfetched['no'];
             $this->name = $artistfetched['id'];
@@ -67,6 +69,7 @@ class Artist
             $this->dateAdded = $artistfetched['datecreated'];
             $this->overalplays = $artistfetched['overalplays'];
             $this->status = $artistfetched['status'];
+            $this->verified = $artistfetched['verified'];
         }
     }
 
@@ -82,6 +85,10 @@ class Artist
         // $mysqldate = date( 'd/M/Y H:i:s', $phpdate );
 
         return $mysqldate;
+    }
+
+    public function getVerified() {
+        return $this->verified === 1;
     }
 
     public function getName()
