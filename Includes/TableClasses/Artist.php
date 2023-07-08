@@ -88,7 +88,7 @@ class Artist
     }
 
     public function getVerified() {
-        return $this->verified === 1;
+        return $this->verified == 1;
     }
 
     public function getName()
