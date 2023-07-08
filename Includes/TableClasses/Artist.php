@@ -180,7 +180,7 @@ class Artist
     }
 
     public function getIntro() {
-        return $this->tag.$this->genre.getTotalSongs();
+        return $this->tag;
     }
 
     public function getTag()
