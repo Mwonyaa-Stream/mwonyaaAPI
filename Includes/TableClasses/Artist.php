@@ -180,7 +180,7 @@ class Artist
     }
 
     public function getIntro() {
-        return $this->tag;
+        return convertToSentenceCase($this->tag);
     }
 
     public function getTag()
@@ -191,6 +191,12 @@ class Artist
     public function getGenrename()
     {
         return  new Genre($this->con, $this->genre);
+    }
+
+    function convertToSentenceCase($string) {
+        $sentence = strtolower($string); // Convert the string to lowercase
+        $sentence = ucfirst($sentence); // Capitalize the first letter
+        return $sentence;
     }
 
     public function getTotalSongs()
