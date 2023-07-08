@@ -47,6 +47,7 @@ class Handler
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
             $temp['verified'] = $artist_instance->getVerified();
+            $temp['intro'] = $artist_instance->getIntro();
             array_push($artist_into, $temp);
 
             $artistIntro = array();

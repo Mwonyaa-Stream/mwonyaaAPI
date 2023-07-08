@@ -179,6 +179,10 @@ class Artist
         return $this->genre;
     }
 
+    public function getIntro() {
+        return $this->tag.$this->genre.getTotalSongs();
+    }
+
     public function getTag()
     {
         return $this->tag;
