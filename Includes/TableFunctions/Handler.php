@@ -65,7 +65,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -191,7 +191,7 @@ class Handler
             $artist_event = new ArtistEvents($this->conn, $artistID);
             $temp = array();
 
-            if($artist_event->getId() != null){
+            if ($artist_event->getId() != null) {
                 $temp['id'] = $artist_event->getId();
                 $temp['name'] = $artist_event->getName();
                 $temp['title'] = $artist_event->getTitle();
@@ -211,29 +211,29 @@ class Handler
 
             // Artist Bio
             $bio_array = array();
-           if ($artist_instance->getId() != null){
-               $temp = array();
-               $temp['id'] = $artist_instance->getId();
-               $temp['name'] = $artist_instance->getName();
-               $temp['email'] = $artist_instance->getEmail();
-               $temp['phone'] = $artist_instance->getPhone();
-               $temp['facebookurl'] = $artist_instance->getFacebookurl();
-               $temp['twitterurl'] = $artist_instance->getTwitterurl();
-               $temp['instagramurl'] = $artist_instance->getInstagramurl();
-               $temp['RecordLable'] = $artist_instance->getRecordLable();
-               $temp['profilephoto'] = $artist_instance->getProfilePath();
-               $temp['coverimage'] = $artist_instance->getArtistCoverPath();
+            if ($artist_instance->getId() != null) {
+                $temp = array();
+                $temp['id'] = $artist_instance->getId();
+                $temp['name'] = $artist_instance->getName();
+                $temp['email'] = $artist_instance->getEmail();
+                $temp['phone'] = $artist_instance->getPhone();
+                $temp['facebookurl'] = $artist_instance->getFacebookurl();
+                $temp['twitterurl'] = $artist_instance->getTwitterurl();
+                $temp['instagramurl'] = $artist_instance->getInstagramurl();
+                $temp['RecordLable'] = $artist_instance->getRecordLable();
+                $temp['profilephoto'] = $artist_instance->getProfilePath();
+                $temp['coverimage'] = $artist_instance->getArtistCoverPath();
 
-               $temp['bio'] = $artist_instance->getArtistBio();
-               $temp['genre'] = $artist_instance->getGenrename()->getGenre();
-               $temp['datecreated'] = $artist_instance->getdateadded();
-               $temp['tag'] = $artist_instance->getTag();
-               $temp['overalplays'] = $artist_instance->getOveralplays();
-               $temp['monthly'] = $artist_instance->getTotalPlays();
-               $temp['status'] = $artist_instance->getStatus();
-               $temp['verified'] = $artist_instance->getVerified();
-               array_push($bio_array, $temp);
-           }
+                $temp['bio'] = $artist_instance->getArtistBio();
+                $temp['genre'] = $artist_instance->getGenrename()->getGenre();
+                $temp['datecreated'] = $artist_instance->getdateadded();
+                $temp['tag'] = $artist_instance->getTag();
+                $temp['overalplays'] = $artist_instance->getOveralplays();
+                $temp['monthly'] = $artist_instance->getTotalPlays();
+                $temp['status'] = $artist_instance->getStatus();
+                $temp['verified'] = $artist_instance->getVerified();
+                array_push($bio_array, $temp);
+            }
 
             $events_array = array();
             $events_array['heading'] = "Artist Bio";
@@ -321,8 +321,6 @@ class Handler
             // end get_Slider_banner
 
 
-
-
             // recently played array
             $recently_played = array();
             $recently_played['heading'] = "Recently Played";
@@ -343,7 +341,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -397,7 +395,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -464,7 +462,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -926,7 +924,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['description'] = $song->getAlbum()->getDescription();
@@ -966,7 +964,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['description'] = $song->getAlbum()->getDescription();
@@ -1128,7 +1126,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -1311,7 +1309,7 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
@@ -1319,7 +1317,7 @@ class Handler
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
 //                    $temp['description'] = $song->getArtist()->getName() .$song->getFeaturing() . " added a new " . $name . " '" . $row['title'] . "'. give it a listen!";
-                    $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() .$song->getFeaturing() . " is now playing on Mwonya. Tap to listen!";
+                    $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . $song->getFeaturing() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['lyrics'] = $row['lyrics'];
@@ -1541,7 +1539,7 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
@@ -1701,7 +1699,7 @@ class Handler
                     if ($row['type'] == "song") {
                         $temp['id'] = $row['id'];
                         $song = new Song($this->conn, $row['id']);
-                        $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                        $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                         $temp['artistID'] = $row['artist'];
                         $temp['title'] = $row['title'];
                         $temp['path'] = $row['path'];
@@ -1843,7 +1841,7 @@ class Handler
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
                     $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                     $temp['artistID'] = $row['artist'];
                     $temp['title'] = $row['title'];
                     $temp['path'] = $row['path'];
@@ -2028,7 +2026,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2109,7 +2107,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2155,7 +2153,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['albumID'] = $song->getAlbumId();
@@ -2180,7 +2178,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $song->getId();
                 $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
                 $temp['artistID'] = $song->getArtistId();
                 $temp['album'] = $song->getAlbum()->getTitle();
                 $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2224,7 +2222,7 @@ class Handler
             $song = new Song($this->conn, $songID);
             $trackInfo['id'] = $song->getId();
             $trackInfo['title'] = $song->getTitle();
-            $trackInfo['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+            $trackInfo['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $trackInfo['artistID'] = $song->getArtistId();
             $trackInfo['album'] = $song->getAlbum()->getTitle();
             $trackInfo['albumID'] = $song->getAlbumId();
@@ -2244,132 +2242,124 @@ class Handler
     function podcastHome(): array
     {
 
-        $home_page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
-        $page = floatval($home_page);
-        $no_of_records_per_page = 10;
-        $offset = ($page - 1) * $no_of_records_per_page;
-
-        $sql = "SELECT COUNT(id) as count FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT 1";
-        $result = mysqli_query($this->conn, $sql);
-        $data = mysqli_fetch_assoc($result);
-        $total_rows = floatval($data['count']);
-        $total_pages = ceil($total_rows / $no_of_records_per_page);
-
-
-        $category_ids = array();
         $menuCategory = array();
         $itemRecords = array();
 
+        $query_podcast_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='podcast' ORDER BY overalplays DESC LIMIT 8";
+        $query_dj_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='dj' ORDER BY overalplays DESC LIMIT 8";
+        $query_live_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='live' ORDER BY overalplays DESC LIMIT 8";
 
-        if ($page == 1) {
-
-            // get_Slider_banner
-            $song_ids = array();
-            $home_genre_tracks = array();
-            $genre_song_stmt = "SELECT id FROM songs  WHERE tag = 'podcast' ORDER BY `songs`.`plays` DESC LIMIT 8";
-            $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
-
-            while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
-
-                array_push($song_ids, $row['id']);
-            }
-
-            foreach ($song_ids as $row) {
-                $song = new Song($this->conn, $row);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+        $query_podcast_albums = "SELECT id FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT 8";
+        $query_dj_albums = "SELECT id FROM albums WHERE tag = 'dj' ORDER BY totalsongplays DESC LIMIT 8";
+        $query_live_albums = "SELECT id FROM albums WHERE tag = 'live' ORDER BY totalsongplays DESC LIMIT 8";
 
 
-                array_push($home_genre_tracks, $temp);
-            }
+        // get_podcast_dj_live_Sliders
+        $song_ids = array();
+        $home_genre_tracks = array();
+        $genre_song_stmt = "SELECT id FROM songs WHERE tag IN ('podcast', 'dj', 'live') ORDER BY RAND() LIMIT 8";
+        $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
+
+        while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
+
+            array_push($song_ids, $row['id']);
+        }
+
+        foreach ($song_ids as $row) {
+            $song = new Song($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['weeklyplays'] = $song->getWeeklyplays();
 
 
-            $podcast_temps = array();
-            $podcast_temps['heading'] = "Podcast";
-            $podcast_temps['subheading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
-            $podcast_temps['image_pick'] = "https://www.mwonyaa.com/assets/images/createdplaylist/podcastpodcast_mw603382d49906aPka_playlist_20221031091020_04294.jpg";
-            $podcast_temps['tracks'] = $home_genre_tracks;
-            array_push($menuCategory, $podcast_temps);
-            // end get_Slider_banner
-
-
-            //get Trending Artist
-
-            $featuredartists = array();
-            $featuredCategory = array();
-
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='podcast' ORDER BY overalplays DESC LIMIT 8";
-            $feat_cat_id_result = mysqli_query($this->conn, $musicartistQuery);
-            while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-                array_push($featuredartists, $row);
-            }
-
-
-            foreach ($featuredartists as $row) {
-                $temp = array();
-                $temp['id'] = $row['id'];
-                $temp['profilephoto'] = $row['profilephoto'];
-                $temp['name'] = $row['name'];
-                array_push($featuredCategory, $temp);
-            }
-
-            $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Podcasters";
-            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
-            array_push($menuCategory, $feat_Cat_temps);
-            ///end featuredArtist
-
-            // get_Slider_banner
-            $slider_id = array();
-            $sliders = array();
-
-
-            $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
-            $slider_query_id_result = mysqli_query($this->conn, $slider_query);
-            while ($row = mysqli_fetch_array($slider_query_id_result)) {
-                array_push($slider_id, $row['id']);
-            }
-
-
-            foreach ($slider_id as $row) {
-                $temp = array();
-                $slider = new SearchSlider($this->conn, $row);
-                $temp['id'] = $slider->getId();
-                $temp['playlistID'] = $slider->getPlaylistID();
-                $temp['imagepath'] = $slider->getImagepath();
-                array_push($sliders, $temp);
-            }
-
-            $slider_temps = array();
-            $slider_temps['heading'] = "Discover Exclusive Shows on Mwonyaa";
-            $slider_temps['podcast_sliders'] = $sliders;
-            array_push($menuCategory, $slider_temps);
-            // end get_Slider_banner
-
-
+            array_push($home_genre_tracks, $temp);
         }
 
 
-        //get featured Album
+        $podcast_temps = array();
+        $podcast_temps['heading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
+        $podcast_temps['tracks'] = $home_genre_tracks;
+        array_push($menuCategory, $podcast_temps);
+        // end get_Slider_banner
+
+
+        //get Podcast Artist
+        $featuredArtist = array();
+
+        $feat_cat_id_result = mysqli_query($this->conn, $query_podcast_artists);
+        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['profilephoto'] = $row['profilephoto'];
+            $temp['name'] = $row['name'];
+            array_push($featuredArtist, $temp);
+        }
+
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Podcasters";
+        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
+        array_push($menuCategory, $feat_Cat_temps);
+
+
+        //get Podcast Artist
+        $featuredArtist = array();
+
+        $feat_cat_id_result = mysqli_query($this->conn, $query_dj_artists);
+        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['profilephoto'] = $row['profilephoto'];
+            $temp['name'] = $row['name'];
+            array_push($featuredArtist, $temp);
+        }
+
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "DJs";
+        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
+        array_push($menuCategory, $feat_Cat_temps);
+
+
+        //get Podcast Artist
+        $featuredArtist = array();
+
+        $feat_cat_id_result = mysqli_query($this->conn, $query_live_artists);
+        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['profilephoto'] = $row['profilephoto'];
+            $temp['name'] = $row['name'];
+            array_push($featuredArtist, $temp);
+        }
+
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Live Hosts";
+        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
+        array_push($menuCategory, $feat_Cat_temps);
+
+
+
+        //get featured Podcast albums
         $featured_albums = array();
         $featuredAlbums = array();
 
-        $featured_album_Query = "SELECT id FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
-        $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+
+        $featured_album_Query_result = mysqli_query($this->conn, $query_podcast_albums);
         while ($row = mysqli_fetch_array($featured_album_Query_result)) {
             array_push($featured_albums, $row['id']);
         }
@@ -2385,23 +2375,77 @@ class Handler
             $temp['artistImage'] = $pod->getArtist()->getProfilePath();
             $temp['genre'] = $pod->getGenre()->getGenre();
             $temp['tag'] = $pod->getTag();
-//            array_push($featuredAlbums, $temp);
-            array_push($menuCategory, $temp);
+            array_push($featuredAlbums, $temp);
         }
 
-//        $feat_albums_temps = array();
-//        $feat_albums_temps['heading'] = "Featured Podcasts";
-//        $feat_albums_temps['featuredPodcasts'] = $featuredAlbums;
-//        array_push($menuCategory, $feat_albums_temps);
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Podcasts";
+        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
+        array_push($menuCategory, $feat_Cat_temps);
 
-        ///end featuredAlbums
+
+        //get featured DJ mixtapes albums
+
+        $featured_albums = array();
+        $featuredAlbums = array();
+        $featured_album_Query_result = mysqli_query($this->conn, $query_dj_albums);
+        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+            array_push($featured_albums, $row['id']);
+        }
+
+        foreach ($featured_albums as $row) {
+            $pod = new Album($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $pod->getId();
+            $temp['title'] = $pod->getTitle();
+            $temp['description'] = $pod->getDescription();
+            $temp['artworkPath'] = $pod->getArtworkPath();
+            $temp['artist'] = $pod->getArtist()->getName();
+            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+            $temp['genre'] = $pod->getGenre()->getGenre();
+            $temp['tag'] = $pod->getTag();
+            array_push($featuredAlbums, $temp);
+        }
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Mixtapes";
+        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
+        array_push($menuCategory, $feat_Cat_temps);
+
+        //get featured Live Radio albums
+
+        $featured_albums = array();
+        $featuredAlbums = array();
+        $featured_album_Query_result = mysqli_query($this->conn, $query_live_albums);
+        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+            array_push($featured_albums, $row['id']);
+        }
+
+        foreach ($featured_albums as $row) {
+            $pod = new Album($this->conn, $row);
+            $temp = array();
+            $temp['id'] = $pod->getId();
+            $temp['title'] = $pod->getTitle();
+            $temp['description'] = $pod->getDescription();
+            $temp['artworkPath'] = $pod->getArtworkPath();
+            $temp['artist'] = $pod->getArtist()->getName();
+            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+            $temp['genre'] = $pod->getGenre()->getGenre();
+            $temp['tag'] = $pod->getTag();
+            array_push($featuredAlbums, $temp);
+        }
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Live Shows";
+        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
+        array_push($menuCategory, $feat_Cat_temps);
 
 
         $itemRecords["version"] = $this->version;
-        $itemRecords["page"] = $page;
+        $itemRecords["page"] = 1;
         $itemRecords["podcastHome"] = $menuCategory;
-        $itemRecords["total_pages"] = $total_pages;
-        $itemRecords["total_results"] = $total_rows;
+        $itemRecords["total_pages"] = 1;
+        $itemRecords["total_results"] = 1;
 
         return $itemRecords;
     }
@@ -2645,11 +2689,11 @@ class Handler
         $itemRecords['id'] = $song->getId();
         $itemRecords["artworkPath"] = $song->getAlbum()->getArtworkPath();;
         $itemRecords["title"] = $song->getTitle();
-        $itemRecords["artist"] = $song->getArtist()->getName() .$song->getFeaturing();
+        $itemRecords["artist"] = $song->getArtist()->getName() . $song->getFeaturing();
         $itemRecords["artistID"] = $song->getArtistId();
         $itemRecords["genre"] = $song->getGenre()->getGenre();
         $itemRecords["heading"] = "Mwonyaa Mix Station: " . $song->getTitle();
-        $itemRecords["subheading"] = "Selection of tracks based on " . $song->getTitle() . " by " . $song->getArtist()->getName() .$song->getFeaturing();
+        $itemRecords["subheading"] = "Selection of tracks based on " . $song->getTitle() . " by " . $song->getArtist()->getName() . $song->getFeaturing();
         $itemRecords["updated"] = $date_now;
 
         // get products id from the same cat
@@ -2660,7 +2704,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
@@ -2902,7 +2946,7 @@ class Handler
         VALUES (?, ?, ?)
     ";
                 $insertSongsStmt = mysqli_prepare($this->conn, $insertSongsQuery);
-                mysqli_stmt_bind_param($insertSongsStmt, "sss", $trackID, $playlistID,$date_added);
+                mysqli_stmt_bind_param($insertSongsStmt, "sss", $trackID, $playlistID, $date_added);
 
                 // Execute both queries within a transaction
                 $transactionSuccessful = mysqli_stmt_execute($insertPlaylistStmt) && mysqli_stmt_execute($insertSongsStmt);
@@ -3143,7 +3187,7 @@ class Handler
             $temp = array();
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
