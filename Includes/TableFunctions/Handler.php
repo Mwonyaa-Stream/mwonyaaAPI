@@ -2239,217 +2239,134 @@ class Handler
         return $trackInfo;
     }
 
-    function podcastHome(): array
+    function podcastHome(int $page, int $limit): array
     {
-
+        // Pagination calculation
+        $offset = ($page - 1) * $limit;
 
         $menuCategory = array();
         $itemRecords = array();
 
-        $query_podcast_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='podcast' ORDER BY overalplays DESC LIMIT 8";
-        $query_dj_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='dj' ORDER BY overalplays DESC LIMIT 8";
-        $query_live_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='live' ORDER BY overalplays DESC LIMIT 8";
+        // Fetch podcast, DJ, and live artists using prepared statement
+        $artistsQuery = "SELECT id, profilephoto, name, tag FROM artists WHERE tag IN ('podcast', 'dj', 'live') ORDER BY overalplays DESC LIMIT ?, ?";
+        $artistsStmt = mysqli_prepare($this->conn, $artistsQuery);
+        mysqli_stmt_bind_param($artistsStmt, "ii", $offset, $limit);
+        mysqli_stmt_execute($artistsStmt);
+        $artistsResult = mysqli_stmt_get_result($artistsStmt);
 
-        $query_podcast_albums = "SELECT id FROM albums WHERE tag = 'podcast' ORDER BY totalsongplays DESC LIMIT 8";
-        $query_dj_albums = "SELECT id FROM albums WHERE tag = 'dj' ORDER BY totalsongplays DESC LIMIT 8";
-        $query_live_albums = "SELECT id FROM albums WHERE tag = 'live' ORDER BY totalsongplays DESC LIMIT 8";
+        $featuredArtists = array();
+        $artistsByTag = array('podcast' => array(), 'dj' => array(), 'live' => array());
 
+        while ($row = mysqli_fetch_array($artistsResult)) {
+            $artist = array(
+                'id' => $row['id'],
+                'profilephoto' => $row['profilephoto'],
+                'name' => $row['name']
+            );
 
-        // get_podcast_dj_live_Sliders
-        $song_ids = array();
-        $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs WHERE tag IN ('podcast', 'dj', 'live') ORDER BY RAND() LIMIT 8";
-        $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
-
-        while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
-
-            array_push($song_ids, $row['id']);
+            $tag = $row['tag'];
+            array_push($artistsByTag[$tag], $artist);
         }
 
-        foreach ($song_ids as $row) {
-            $song = new Song($this->conn, $row);
-            $temp = array();
-            $temp['id'] = $song->getId();
-            $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-            $temp['artistID'] = $song->getArtistId();
-            $temp['album'] = $song->getAlbum()->getTitle();
-            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-            $temp['genre'] = $song->getGenre()->getGenre();
-            $temp['genreID'] = $song->getGenre()->getGenreid();
-            $temp['duration'] = $song->getDuration();
-            $temp['lyrics'] = $song->getLyrics();
-            $temp['path'] = $song->getPath();
-            $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
-
-
-            array_push($home_genre_tracks, $temp);
+        // Prepare menu categories for podcasters, DJs, and live hosts
+        foreach ($artistsByTag as $tag => $artists) {
+            $category = array(
+                'heading' => ucfirst($tag) . 's',
+                'featuredArtists' => $artists
+            );
+            array_push($menuCategory, $category);
         }
 
+        // Fetch podcast, DJ, and live albums using prepared statement
+        $albumsQuery = "SELECT a.id, a.title, a.description, a.artworkPath, a.tag, ar.name, ar.profilephoto, g.name as genre
+                    FROM albums a
+                    INNER JOIN artists ar ON a.artist = ar.id
+                    INNER JOIN genres g ON a.genre = g.id
+                    WHERE a.tag IN ('podcast', 'dj', 'live')
+                    ORDER BY a.totalsongplays DESC LIMIT ?, ?";
+        $albumsStmt = mysqli_prepare($this->conn, $albumsQuery);
+        mysqli_stmt_bind_param($albumsStmt, "ii", $offset, $limit);
+        mysqli_stmt_execute($albumsStmt);
+        $albumsResult = mysqli_stmt_get_result($albumsStmt);
 
-        $podcast_temps = array();
-        $podcast_temps['heading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
-        $podcast_temps['tracks'] = $home_genre_tracks;
-        array_push($menuCategory, $podcast_temps);
-        // end get_Slider_banner
-
-
-        //get Podcast Artist
-        $featuredArtist = array();
-
-        $feat_cat_id_result = mysqli_query($this->conn, $query_podcast_artists);
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
-            $temp['name'] = $row['name'];
-            array_push($featuredArtist, $temp);
-        }
-
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Podcasters";
-        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-        //get Podcast Artist
-        $featuredArtist = array();
-
-        $feat_cat_id_result = mysqli_query($this->conn, $query_dj_artists);
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
-            $temp['name'] = $row['name'];
-            array_push($featuredArtist, $temp);
-        }
-
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "DJs";
-        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-        //get Podcast Artist
-        $featuredArtist = array();
-
-        $feat_cat_id_result = mysqli_query($this->conn, $query_live_artists);
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
-            $temp['name'] = $row['name'];
-            array_push($featuredArtist, $temp);
-        }
-
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Live Hosts";
-        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-
-        //get featured Podcast albums
-        $featured_albums = array();
         $featuredAlbums = array();
 
+        while ($row = mysqli_fetch_array($albumsResult)) {
+            $album = array(
+                'id' => $row['id'],
+                'title' => $row['title'],
+                'description' => $row['description'],
+                'artworkPath' => $row['artworkPath'],
+                'artist' => $row['name'],
+                'artistImage' => $row['profilephoto'],
+                'genre' => $row['genre'],
+                'tag' => $row['tag']
+            );
 
-
-        $featured_album_Query_result = mysqli_query($this->conn, $query_podcast_albums);
-        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-            array_push($featured_albums, $row['id']);
+            array_push($featuredAlbums, $album);
         }
 
-        foreach ($featured_albums as $row) {
-            $pod = new Album($this->conn, $row);
-            $temp = array();
-            $temp['id'] = $pod->getId();
-            $temp['title'] = $pod->getTitle();
-            $temp['description'] = $pod->getDescription();
-            $temp['artworkPath'] = $pod->getArtworkPath();
-            $temp['artist'] = $pod->getArtist()->getName();
-            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
-            $temp['genre'] = $pod->getGenre()->getGenre();
-            $temp['tag'] = $pod->getTag();
-            array_push($featuredAlbums, $temp);
+        // Prepare menu categories for podcasts, mixtapes, and live shows
+        $categoryHeadings = array('Podcasts', 'Mixtapes', 'Live Shows');
+
+        foreach ($categoryHeadings as $heading) {
+            $category = array(
+                'heading' => $heading,
+                'featuredAlbum' => $featuredAlbums
+            );
+            array_push($menuCategory, $category);
         }
 
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Podcasts";
-        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
-        array_push($menuCategory, $feat_Cat_temps);
+        // Fetch random songs for the genre sliders using prepared statement
+        $genreSongsQuery = "SELECT s.id, s.title, s.path, s.lyrics, s.duration, s.plays, s.weekplays, a.name AS artist, a.profilephoto, al.title AS album, al.artworkPath, g.name as genre, g.id as genreid
+                        FROM songs s
+                        INNER JOIN artists a ON s.artist = a.id
+                        INNER JOIN albums al ON s.album = al.id
+                        INNER JOIN genres g ON s.genre = g.id
+                        WHERE s.tag IN ('podcast', 'dj', 'live')
+                        ORDER BY RAND() LIMIT ?";
+        $genreSongsStmt = mysqli_prepare($this->conn, $genreSongsQuery);
+        mysqli_stmt_bind_param($genreSongsStmt, "i", $limit);
+        mysqli_stmt_execute($genreSongsStmt);
+        $genreSongsResult = mysqli_stmt_get_result($genreSongsStmt);
 
+        $homeGenreTracks = array();
 
-        //get featured DJ mixtapes albums
+        while ($row = mysqli_fetch_array($genreSongsResult)) {
+            $track = array(
+                'id' => $row['id'],
+                'title' => $row['title'],
+                'artist' => $row['artist'],
+                'artistID' => $row['id'],
+                'album' => $row['album'],
+                'artworkPath' => $row['artworkPath'],
+                'genre' => $row['genre'],
+                'genreID' => $row['genreid'],
+                'duration' => $row['duration'],
+                'lyrics' => $row['lyrics'],
+                'path' => $row['path'],
+                'totalplays' => $row['plays'],
+                'weeklyplays' => $row['weekplays']
+            );
 
-        $featured_albums = array();
-        $featuredAlbums = array();
-        $featured_album_Query_result = mysqli_query($this->conn, $query_dj_albums);
-        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-            array_push($featured_albums, $row['id']);
+            array_push($homeGenreTracks, $track);
         }
 
-        foreach ($featured_albums as $row) {
-            $pod = new Album($this->conn, $row);
-            $temp = array();
-            $temp['id'] = $pod->getId();
-            $temp['title'] = $pod->getTitle();
-            $temp['description'] = $pod->getDescription();
-            $temp['artworkPath'] = $pod->getArtworkPath();
-            $temp['artist'] = $pod->getArtist()->getName();
-            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
-            $temp['genre'] = $pod->getGenre()->getGenre();
-            $temp['tag'] = $pod->getTag();
-            array_push($featuredAlbums, $temp);
-        }
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Mixtapes";
-        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
-        array_push($menuCategory, $feat_Cat_temps);
-
-        //get featured Live Radio albums
-
-        $featured_albums = array();
-        $featuredAlbums = array();
-        $featured_album_Query_result = mysqli_query($this->conn, $query_live_albums);
-        while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-            array_push($featured_albums, $row['id']);
-        }
-
-        foreach ($featured_albums as $row) {
-            $pod = new Album($this->conn, $row);
-            $temp = array();
-            $temp['id'] = $pod->getId();
-            $temp['title'] = $pod->getTitle();
-            $temp['description'] = $pod->getDescription();
-            $temp['artworkPath'] = $pod->getArtworkPath();
-            $temp['artist'] = $pod->getArtist()->getName();
-            $temp['artistImage'] = $pod->getArtist()->getProfilePath();
-            $temp['genre'] = $pod->getGenre()->getGenre();
-            $temp['tag'] = $pod->getTag();
-            array_push($featuredAlbums, $temp);
-        }
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Live Shows";
-        $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
-        array_push($menuCategory, $feat_Cat_temps);
-
+        // Prepare menu category for genre sliders
+        $genreSliderCategory = array(
+            'heading' => "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression",
+            'tracks' => $homeGenreTracks
+        );
+        array_push($menuCategory, $genreSliderCategory);
 
         $itemRecords["version"] = $this->version;
-        $itemRecords["page"] = 1;
+        $itemRecords["page"] = $page;
         $itemRecords["podcastHome"] = $menuCategory;
-        $itemRecords["total_pages"] = 1;
-        $itemRecords["total_results"] = 1;
+        $itemRecords["total_pages"] = 1; // Modify this value based on the total number of pages
+        $itemRecords["total_results"] = count($menuCategory);
 
         return $itemRecords;
     }
-
 
     function EventsHome(): array
     {

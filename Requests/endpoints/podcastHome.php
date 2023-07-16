@@ -6,7 +6,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $category = new Handler($db);
-    $result = $category->podcastHome();
+    $result = $category->podcastHome(1,5);
 
     if($result){
         http_response_code(200);
