@@ -2290,6 +2290,7 @@ class Handler
         $podcast_temps = array();
         $podcast_temps['heading'] = "Exclusive podcasts and shows by creatives that make and celebrates Uganda's achievement in freedom of speech and expression";
         $podcast_temps['tracks'] = $home_genre_tracks;
+        $podcast_temps['type'] = "hero";
         array_push($menuCategory, $podcast_temps);
         // end get_Slider_banner
 
@@ -2309,6 +2310,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "Podcasters";
+        $podcast_temps['type'] = "artist";
         $feat_Cat_temps['featuredArtists'] = $featuredArtist;
         array_push($menuCategory, $feat_Cat_temps);
 
@@ -2328,6 +2330,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "DJs";
+        $podcast_temps['type'] = "artist";
         $feat_Cat_temps['featuredArtists'] = $featuredArtist;
         array_push($menuCategory, $feat_Cat_temps);
 
@@ -2347,6 +2350,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "Live Hosts";
+        $podcast_temps['type'] = "artist";
         $feat_Cat_temps['featuredArtists'] = $featuredArtist;
         array_push($menuCategory, $feat_Cat_temps);
 
@@ -2379,6 +2383,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "Podcasts";
+        $podcast_temps['type'] = "album";
         $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
         array_push($menuCategory, $feat_Cat_temps);
 
@@ -2408,6 +2413,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "Mixtapes";
+        $podcast_temps['type'] = "album";
         $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
         array_push($menuCategory, $feat_Cat_temps);
 
@@ -2436,6 +2442,7 @@ class Handler
 
         $feat_Cat_temps = array();
         $feat_Cat_temps['heading'] = "Live Shows";
+        $podcast_temps['type'] = "album";
         $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
         array_push($menuCategory, $feat_Cat_temps);
 
