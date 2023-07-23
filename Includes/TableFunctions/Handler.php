@@ -674,8 +674,15 @@ class Handler
             // Bind the result variables
             mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
 
-            // Fetch the results
+            $featured_album_ids = array();
+
             while (mysqli_stmt_fetch($stmt)) {
+                array_push($featured_album_ids, $id);
+            }
+
+            // Fetch the results
+            foreach ($featured_albums as $row) {
+                $pod = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $pod->getId();
                 $temp['title'] = $pod->getTitle();
@@ -692,7 +699,7 @@ class Handler
             mysqli_stmt_close($stmt);
 
             $feat_dj_temps = array();
-            $feat_dj_temps['heading'] = "DJs Vibuu++";
+            $feat_dj_temps['heading'] = "Featured Mixtapes";
             $feat_dj_temps['type'] = "djs";
             $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
             array_push($menuCategory, $feat_dj_temps);
