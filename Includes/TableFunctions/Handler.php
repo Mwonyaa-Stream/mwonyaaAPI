@@ -635,7 +635,7 @@ class Handler
             }
 
             // Fetch the results
-            foreach ($featured_albums as $row) {
+            foreach ($featured_album_ids as $row) {
                 $pod = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $pod->getId();
@@ -674,14 +674,14 @@ class Handler
             // Bind the result variables
             mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
 
-            $featured_album_ids = array();
+            $featured_dj_ids = array();
 
             while (mysqli_stmt_fetch($stmt)) {
-                array_push($featured_album_ids, $id);
+                array_push($featured_dj_ids, $id);
             }
 
             // Fetch the results
-            foreach ($featured_albums as $row) {
+            foreach ($featured_dj_ids as $row) {
                 $pod = new Album($this->conn, $row);
                 $temp = array();
                 $temp['id'] = $pod->getId();
@@ -708,31 +708,7 @@ class Handler
 
         }
 
-//        // Use a prepared statement and a JOIN clause to get genre and song data in a single query
-//        $stmt = $this->conn->prepare("SELECT g.id, g.name, g.tag, s.id as song_id, s.title, s.plays
-//           FROM genres g
-//           JOIN songs s ON s.genre = g.id
-//           WHERE s.tag = 'music'
-//           GROUP BY g.id
-//           ORDER BY s.plays DESC
-//           LIMIT ?, ?");
-//
-//        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
-//        $stmt->execute();
-//        $result = $stmt->get_result();
-//
-//        while ($row = $result->fetch_assoc()) {
-//            $genre = new Genre($this->conn, $row['id']);
-//            $temp = array();
-//            $temp['id'] = $row['id'];
-//            $temp['name'] = $row['name'];
-//            $temp['type'] = "directSongs";
-//            $temp['tag'] = $row['tag'];
-//
-//            // Use a LIMIT clause in the inner query to get only the top 6 played songs for each genre
-//            $temp['Tracks'] = $genre->getGenre_Songs(6);
-//            array_push($menuCategory, $temp);
-//        }
+
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
