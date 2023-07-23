@@ -628,13 +628,24 @@ class Handler
             // Bind the result variables
             mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
 
-            // Fetch the results
+            $featured_album_ids = array();
+
             while (mysqli_stmt_fetch($stmt)) {
+                array_push($featured_album_ids, $id);
+            }
+
+            // Fetch the results
+            foreach ($featured_albums as $row) {
+                $pod = new Album($this->conn, $row);
                 $temp = array();
-                $temp['id'] = $id;
-                $temp['title'] = $title;
-                $temp['artworkPath'] = $artworkPath;
-                $temp['tag'] = $tag;
+                $temp['id'] = $pod->getId();
+                $temp['title'] = $pod->getTitle();
+                $temp['description'] = $pod->getDescription();
+                $temp['artworkPath'] = $pod->getArtworkPath();
+                $temp['artist'] = $pod->getArtist()->getName();
+                $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+                $temp['genre'] = $pod->getGenre()->getGenre();
+                $temp['tag'] = $pod->getTag();
                 array_push($featured_Albums, $temp);
             }
 
@@ -666,10 +677,14 @@ class Handler
             // Fetch the results
             while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
-                $temp['id'] = $id;
-                $temp['title'] = $title;
-                $temp['artworkPath'] = $artworkPath;
-                $temp['tag'] = $tag;
+                $temp['id'] = $pod->getId();
+                $temp['title'] = $pod->getTitle();
+                $temp['description'] = $pod->getDescription();
+                $temp['artworkPath'] = $pod->getArtworkPath();
+                $temp['artist'] = $pod->getArtist()->getName();
+                $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+                $temp['genre'] = $pod->getGenre()->getGenre();
+                $temp['tag'] = $pod->getTag();
                 array_push($featured_dj_mixes, $temp);
             }
 
