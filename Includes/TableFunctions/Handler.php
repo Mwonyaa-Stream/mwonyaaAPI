@@ -2315,53 +2315,9 @@ class Handler
         array_push($menuCategory, $feat_Cat_temps);
 
 
-        //get Podcast Artist
-        $featuredArtist = array();
-
-        $feat_cat_id_result = mysqli_query($this->conn, $query_dj_artists);
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
-            $temp['name'] = $row['name'];
-            array_push($featuredArtist, $temp);
-        }
-
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "DJs";
-        $feat_Cat_temps['type'] = "artist";
-        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-        //get Podcast Artist
-        $featuredArtist = array();
-
-        $feat_cat_id_result = mysqli_query($this->conn, $query_live_artists);
-        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
-            $temp = array();
-            $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
-            $temp['name'] = $row['name'];
-            array_push($featuredArtist, $temp);
-        }
-
-
-        $feat_Cat_temps = array();
-        $feat_Cat_temps['heading'] = "Live Hosts";
-        $feat_Cat_temps['type'] = "artist";
-        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
-        array_push($menuCategory, $feat_Cat_temps);
-
-
-
         //get featured Podcast albums
         $featured_albums = array();
         $featuredAlbums = array();
-
-
-
         $featured_album_Query_result = mysqli_query($this->conn, $query_podcast_albums);
         while ($row = mysqli_fetch_array($featured_album_Query_result)) {
             array_push($featured_albums, $row['id']);
@@ -2387,6 +2343,25 @@ class Handler
         $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
         array_push($menuCategory, $feat_Cat_temps);
 
+
+        //get DJ Artist
+        $featuredArtist = array();
+
+        $feat_cat_id_result = mysqli_query($this->conn, $query_dj_artists);
+        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['profilephoto'] = $row['profilephoto'];
+            $temp['name'] = $row['name'];
+            array_push($featuredArtist, $temp);
+        }
+
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "DJs";
+        $feat_Cat_temps['type'] = "artist";
+        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
+        array_push($menuCategory, $feat_Cat_temps);
 
         //get featured DJ mixtapes albums
 
@@ -2416,6 +2391,29 @@ class Handler
         $feat_Cat_temps['type'] = "album";
         $feat_Cat_temps['featuredAlbum'] = $featuredAlbums;
         array_push($menuCategory, $feat_Cat_temps);
+
+
+        //get Live Artist
+        $featuredArtist = array();
+
+        $feat_cat_id_result = mysqli_query($this->conn, $query_live_artists);
+        while ($row = mysqli_fetch_array($feat_cat_id_result)) {
+            $temp = array();
+            $temp['id'] = $row['id'];
+            $temp['profilephoto'] = $row['profilephoto'];
+            $temp['name'] = $row['name'];
+            array_push($featuredArtist, $temp);
+        }
+
+
+        $feat_Cat_temps = array();
+        $feat_Cat_temps['heading'] = "Live Hosts";
+        $feat_Cat_temps['type'] = "artist";
+        $feat_Cat_temps['featuredArtists'] = $featuredArtist;
+        array_push($menuCategory, $feat_Cat_temps);
+
+
+
 
         //get featured Live Radio albums
 
