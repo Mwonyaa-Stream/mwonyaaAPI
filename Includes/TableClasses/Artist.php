@@ -236,7 +236,13 @@ class Artist
 
     public function getSongIds()
     {
-        $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
+
+        if($this->tag !== 'music') {
+            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
+        } else {
+            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
+
+        }
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
