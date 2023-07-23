@@ -87,9 +87,11 @@ class Artist
         return $mysqldate;
     }
 
-    public function getVerified() {
-        return (int) $this->verified === 1;
+    public function getVerified()
+    {
+        return (int)$this->verified === 1;
     }
+
     public function getName()
     {
         return $this->name;
@@ -157,7 +159,6 @@ class Artist
     }
 
 
-
     public function getProfilePath()
     {
         return $this->profilephoto;
@@ -179,8 +180,11 @@ class Artist
         return $this->genre;
     }
 
-    public function getIntro() {
-        return $this->convertToSentenceCase($this->tag);
+    public function getIntro()
+    {
+        $genre = $this->getGname();
+        $text_sentence = "Experience the exceptional talent of $this->name, an artist known for their diverse content in $genre and beyond. They are proudly signed with $this->RecordLable. Stay updated and captivated with the latest releases from $this->name.";
+        return $this->convertToSentenceCase($text_sentence);
     }
 
     public function getTag()
@@ -190,12 +194,21 @@ class Artist
 
     public function getGenrename()
     {
-        return  new Genre($this->con, $this->genre);
+        return new Genre($this->con, $this->genre);
     }
 
-    function convertToSentenceCase($string) {
+    public function getGname()
+    {
+        $gn = new Genre($this->con, $this->genre);
+
+        return $gn->getGenre();
+    }
+
+
+    function convertToSentenceCase($string)
+    {
         $sentence = strtolower($string); // Convert the string to lowercase
-        $sentence = ucfirst($sentence); // Capitalize the first letter
+        $sentence = ucwords($sentence); // Capitalize the first letters
         return $sentence;
     }
 
@@ -216,9 +229,13 @@ class Artist
 
     public function getTotalPlays()
     {
-        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs where `artist` = '$this->id' and tag != 'ad'");
+        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs WHERE `artist` = '$this->id' AND tag != 'ad'");
         $row = mysqli_fetch_array($query);
-        return $row['totalplays'];
+        $totalPlays = $row['totalplays'];
+        $formattedTotalPlays = number_format($totalPlays);
+
+        return "$formattedTotalPlays Listeners.";
+
     }
 
     public function getLatestRelease()
@@ -237,7 +254,7 @@ class Artist
     public function getSongIds()
     {
 
-        if($this->tag !== 'music') {
+        if ($this->tag !== 'music') {
             $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
         } else {
             $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
