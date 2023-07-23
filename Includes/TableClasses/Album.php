@@ -102,7 +102,13 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
         public function getSongIds($offset,$no_of_records_per_page){
-            $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC LIMIT " . $offset . "," . $no_of_records_per_page . "");
+
+            if($this->tag !== 'music'){
+                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY dateAdded DESC LIMIT " . $offset . "," . $no_of_records_per_page . "");
+            } else{
+                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC LIMIT " . $offset . "," . $no_of_records_per_page . "");
+            }
+
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
@@ -113,7 +119,13 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
         public function getSongPaths(){
-            $query = mysqli_query($this->con, "SELECT path FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
+
+
+            if($this->tag !== 'music'){
+                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE album='$this->id' ORDER BY dateAdded DESC");
+            } else{
+                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
+            }
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
