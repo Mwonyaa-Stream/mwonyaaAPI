@@ -2772,7 +2772,7 @@ class Handler
             $response['status'] = $m_status;
             $response['mwRole'] = $m_mwRole;
             $response['error'] = false;
-            $response['message'] = 'User already registered, Here are details';
+            $response['message'] = 'Login Successful, Welcome!';
             $stmt->close();
         } else {
             $response['id'] = $m_id;
