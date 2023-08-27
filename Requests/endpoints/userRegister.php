@@ -16,9 +16,9 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
-    if (!empty($data->id)) {
+    if (!empty($data->email) || !empty($data->password)) {
         $handler = new Handler($db);
-        $result = $handler->saveAuthUser($data);
+        $result = $handler->userRegister($data);
         if ($result) {
             http_response_code(200);
             echo json_encode($result);

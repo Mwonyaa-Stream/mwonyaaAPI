@@ -16,9 +16,9 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
-    if (!empty($data->id)) {
+    if (!empty($data->username) && !empty($data->password)) {
         $handler = new Handler($db);
-        $result = $handler->saveAuthUser($data);
+        $result = $handler->loginUser($data);
         if ($result) {
             http_response_code(200);
             echo json_encode($result);
@@ -35,9 +35,9 @@ if (!empty($db)) {
                     "profilePic" => null,
                     "status" => null,
                     "mwRole" => null,
-                    "error" => true,
-                    "message" => "Server failed to process request"
-                )
+                    "error"=> true,
+                    "message"=> "Server failed to process request"
+                    )
             );
         }
     } else {
@@ -53,8 +53,8 @@ if (!empty($db)) {
                 "profilePic" => null,
                 "status" => null,
                 "mwRole" => null,
-                "error" => true,
-                "message" => "User Authentication Failed due to incorrect User Data"
+                "error"=> true,
+                "message"=> "User Authentication Failed due to incorrect User Data"
             )
         );
 

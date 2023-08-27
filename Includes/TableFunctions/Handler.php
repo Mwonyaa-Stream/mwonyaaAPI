@@ -709,7 +709,6 @@ class Handler
         }
 
 
-
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
         $itemRecords["featured"] = $menuCategory;
@@ -2411,8 +2410,6 @@ class Handler
         array_push($menuCategory, $feat_Cat_temps);
 
 
-
-
         //get featured Live Radio albums
 
         $featured_albums = array();
@@ -2729,6 +2726,187 @@ class Handler
         return $itemRecords;
     }
 
+    function loginUser($data): array
+    {
+        //getting the values
+        $m_username = $data->username;
+        $m_password = md5($data->password);
+
+        $check_email = $this->Is_email($m_username);
+        if ($check_email) {
+            // email & password combination
+            $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE password = ? AND email = ? limit 1");
+            $stmt->bind_param("ss", $m_password, $m_username);
+
+        } else {
+            // username & password combination
+            $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE password = ? AND phone = ? limit 1");
+            $stmt->bind_param("ss", $m_password, $m_username);
+        }
+
+
+        $stmt->execute();
+        $m_id = null;
+        $m_full_name = null;
+        $m_email = null;
+        $m_phone = null;
+        $m_signUpDate = null;
+        $m_profilePic = null;
+        $m_status = null;
+        $m_mwRole = null;
+        $stmt->bind_result($m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_mwRole);
+        $stmt->store_result();
+        $stmt->fetch();
+        $response = array();
+
+        //if the user already exist in the database
+        if ($stmt->num_rows > 0) {
+            $response['id'] = $m_id;
+            $response['username'] = $m_username;
+            $response['full_name'] = $m_full_name;
+            $response['email'] = $m_email;
+            $response['phone'] = $m_phone;
+            $response['password'] = $m_password;
+            $response['signUpDate'] = $m_signUpDate;
+            $response['profilePic'] = $m_profilePic;
+            $response['status'] = $m_status;
+            $response['mwRole'] = $m_mwRole;
+            $response['error'] = false;
+            $response['message'] = 'User already registered, Here are details';
+            $stmt->close();
+        } else {
+            $response['id'] = $m_id;
+            $response['username'] = $m_username;
+            $response['full_name'] = $m_full_name;
+            $response['email'] = $m_email;
+            $response['phone'] = $m_phone;
+            $response['password'] = $m_password;
+            $response['signUpDate'] = $m_signUpDate;
+            $response['profilePic'] = $m_profilePic;
+            $response['status'] = $m_status;
+            $response['mwRole'] = $m_mwRole;
+            $response['error'] = true;
+            $response['message'] = 'User is not Existing';
+        }
+
+        return $response;
+    }
+
+    function generateUniqueUserID($username): string
+    {
+        // Replace spaces with underscores
+        $username = str_replace(' ', '_', $username);
+        $username = substr($username, 0, 3);
+        // Generate a unique ID using a timestamp and modified username
+        $timestamp = time();
+        return "mw" . uniqid()  . $username . $timestamp;
+    }
+
+    function userRegister($data): array
+    {
+        // Getting the values
+        $m_username = isset($data->username) ? trim($data->username) : null;
+        $m_full_name = isset($data->full_name) ? trim($data->full_name) : null;
+        $m_email = isset($data->email) ? trim($data->email) : null;
+        $m_phone = isset($data->phone) ? trim($data->phone) : null;
+        $m_profilePic = $data->profilePic ?? "";
+
+        // Validate email (if provided)
+        if (!empty($m_email) && !filter_var($m_email, FILTER_VALIDATE_EMAIL)) {
+            // Email is not in a valid format
+            // Handle the error or validation failure here
+            $response = array();
+            $response['error'] = true;
+            $response['message'] = 'Invalid Email Address';
+            return $response;
+
+        }
+
+        // Validate phone (if provided)
+        if (!empty($m_phone) && !preg_match('/^[0-9]{10}$/', $m_phone)) {
+            // Phone number is not in a valid format (assuming a 10-digit number)
+            // Handle the error or validation failure here
+            $response = array();
+            $response['error'] = true;
+            $response['message'] = 'Invalid Phone Number';
+            return $response;
+        }
+
+
+        $m_id = $this->generateUniqueUserID($m_username);
+        $m_password = md5($data->password);
+        $m_signUpDate = date('Y-m-d H:i:s', time());
+        $m_status = "registered";
+        $m_mwRole = "mwuser";
+        $m_accountOrigin = "app";
+
+        //checking if the user is already exist with this username or email
+        //as the email and username should be unique for every user
+        $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE email = ? or username = ?");
+        $stmt->bind_param("ss", $m_email, $m_username);
+        $stmt->execute();
+        $stmt->bind_result($m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_mwRole);
+        $stmt->store_result();
+        $stmt->fetch();
+        $response = array();
+
+        //if the user already exist in the database
+        if ($stmt->num_rows > 0) {
+            $response['error'] = true;
+            $response['message'] = 'User with this email / username already exists';
+            $stmt->close();
+        } else {
+
+            //if user is new creating an insert query
+            $stmt = $this->conn->prepare("INSERT INTO users (`id`,`username`,`firstName`,`email`,`phone`,`Password`,`signUpDate`,`profilePic`,`status`,`accountOrigin`) VALUES (?, ?, ?, ?,?, ?, ?, ?, ?,?)");
+            $stmt->bind_param("ssssssssss", $m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_accountOrigin);
+
+            //if the user is successfully added to the database
+            if ($stmt->execute()) {
+
+                //fetching the user back
+                $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE email = ? AND password = ?");
+                $stmt->bind_param("ss", $m_email, $m_password);
+                $stmt->execute();
+                $stmt->bind_result($m_id, $m_username, $m_full_name, $m_email, $m_phone, $m_password, $m_signUpDate, $m_profilePic, $m_status, $m_mwRole);
+                $stmt->store_result();
+                $stmt->fetch();
+
+                //if the user already exist in the database
+                if ($stmt->num_rows > 0) {
+                    $response['id'] = $m_id;
+                    $response['username'] = $m_username;
+                    $response['full_name'] = $m_full_name;
+                    $response['email'] = $m_email;
+                    $response['phone'] = $m_phone;
+                    $response['password'] = $m_password;
+                    $response['signUpDate'] = $m_signUpDate;
+                    $response['profilePic'] = $m_profilePic;
+                    $response['status'] = $m_status;
+                    $response['mwRole'] = $m_mwRole;
+                    $response['error'] = false;
+                    $response['message'] = 'Registration Complete. Welcome!';
+                    $stmt->close();
+                } else {
+                    $response['id'] = null;
+                    $response['username'] = null;
+                    $response['full_name'] = null;
+                    $response['email'] = null;
+                    $response['phone'] = null;
+                    $response['password'] = null;
+                    $response['signUpDate'] = null;
+                    $response['profilePic'] = null;
+                    $response['status'] = null;
+                    $response['mwRole'] = null;
+                    $response['error'] = true;
+                    $response['message'] = 'User Registration Failed';
+                }
+            }
+        }
+
+        return $response;
+    }
+
     function saveAuthUser($data): array
     {
 
@@ -2821,6 +2999,16 @@ class Handler
         }
 
         return $response;
+    }
+
+    function Is_email($user_email)
+    {
+        //If the username input string is an e-mail, return true
+        if (filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
