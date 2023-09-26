@@ -32,7 +32,7 @@ if (!empty($db)) {
     } else {
         http_response_code(404);
         echo json_encode(
-            array("error" => true,"message" => "User Authentication Failed due to incorrect User Data"
+            array("error" => true,"message" => "Incomplete Data"
             )
         );
 
