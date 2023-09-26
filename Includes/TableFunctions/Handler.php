@@ -2802,6 +2802,52 @@ class Handler
         return "mw" . uniqid()  . $username . $timestamp;
     }
 
+
+    function AddUpdateToken($data):array{
+        // Getting the values
+        $m_token = isset($data->token) ? trim($data->token) : null;
+        $m_userId = isset($data->userId) ? trim($data->userId) : null;
+        $response = array();
+        // User exists, you can proceed with adding or updating the token
+        $response['error'] = false;
+        $response['message'] = 'User exists.';
+
+        // Check if the token already exists for this user
+        $stmt = $this->conn->prepare("SELECT `id` FROM user_notification_tokens WHERE user_id = ?");
+        $stmt->bind_param("s", $m_userId);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            // Token already exists, update it
+            $stmt = $this->conn->prepare("UPDATE user_notification_tokens SET token = ? WHERE user_id = ?");
+            $stmt->bind_param("ss", $m_token, $m_userId);
+
+            if ($stmt->execute()) {
+                $response['message'] = 'Token added or updated successfully.';
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'Token operation failed.';
+            }
+
+        } else {
+            // Token does not exist, insert it
+            $stmt = $this->conn->prepare("INSERT INTO user_notification_tokens (user_id, token, dateCreated) VALUES (?, ?, NOW())");
+            $stmt->bind_param("ss", $m_userId, $m_token);
+
+            if ($stmt->execute()) {
+                $response['message'] = 'Token added';
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'Token operation failed.';
+            }
+        }
+
+
+
+        return $response;
+    }
+
     function userRegister($data): array
     {
         // Getting the values
