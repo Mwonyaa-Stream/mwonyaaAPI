@@ -2803,50 +2803,58 @@ class Handler
     }
 
 
-    function AddUpdateToken($data):array{
+    function addOrUpdateToken($data): array {
         // Getting the values
-        $m_token = isset($data->token) ? trim($data->token) : null;
-        $m_userId = isset($data->userId) ? trim($data->userId) : null;
-        $response = array();
-        // User exists, you can proceed with adding or updating the token
-        $response['error'] = false;
-        $response['message'] = 'User exists.';
+        $token = isset($data->token) ? trim($data->token) : null;
+        $userId = isset($data->userId) ? trim($data->userId) : null;
 
-        // Check if the token already exists for this user
-        $stmt = $this->conn->prepare("SELECT `id` FROM user_notification_tokens WHERE user_id = ?");
-        $stmt->bind_param("s", $m_userId);
-        $stmt->execute();
-        $stmt->store_result();
+        $response = [
+            'error' => false,
+            'message' => 'Token Default'
+        ];
 
-        if ($stmt->num_rows > 0) {
-            // Token already exists, update it
-            $stmt = $this->conn->prepare("UPDATE user_notification_tokens SET token = ? WHERE user_id = ?");
-            $stmt->bind_param("ss", $m_token, $m_userId);
+        try {
+            // Check if the token already exists for this user
+            $stmt = $this->conn->prepare("SELECT `id`, `token` FROM user_notification_tokens WHERE user_id = ?");
+            $stmt->bind_param("s", $userId);
+            $stmt->execute();
+            $stmt->bind_result($tokenId, $existingToken);
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $stmt->fetch();
+
+                // Check if the new token is different from the existing token
+                if ($token !== $existingToken) {
+                    // Token is different, update it
+                    $stmt = $this->conn->prepare("UPDATE user_notification_tokens SET token = ? WHERE user_id = ?");
+                    $stmt->bind_param("ss", $token, $userId);
+                    $operation = 'updated';
+                } else {
+                    // Token is the same, no update needed
+                    $operation = 'unchanged';
+                }
+            } else {
+                // Token does not exist, insert it
+                $stmt = $this->conn->prepare("INSERT INTO user_notification_tokens (user_id, token, dateCreated) VALUES (?, ?, NOW())");
+                $stmt->bind_param("ss", $userId, $token);
+                $operation = 'added';
+            }
 
             if ($stmt->execute()) {
-                $response['message'] = 'Token added or updated successfully.';
+                $response['message'] = "Token $operation successfully.";
             } else {
                 $response['error'] = true;
                 $response['message'] = 'Token operation failed.';
             }
-
-        } else {
-            // Token does not exist, insert it
-            $stmt = $this->conn->prepare("INSERT INTO user_notification_tokens (user_id, token, dateCreated) VALUES (?, ?, NOW())");
-            $stmt->bind_param("ss", $m_userId, $m_token);
-
-            if ($stmt->execute()) {
-                $response['message'] = 'Token added';
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'Token operation failed.';
-            }
+        } catch (Exception $e) {
+            $response['error'] = true;
+            $response['message'] = 'An error occurred during token operation.';
         }
-
-
 
         return $response;
     }
+
 
     function userRegister($data): array
     {
