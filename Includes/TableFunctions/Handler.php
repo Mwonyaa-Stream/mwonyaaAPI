@@ -548,7 +548,7 @@ class Handler
             $text_temp['type'] = "text_ad";
             $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
             $text_temp['ad_link'] = "https://artist.mwonya.com/";
-            $text_temp['ad_image'] = "http://urbanflow256.com/home/images/rectangleimage.png";
+            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
             array_push($menuCategory, $text_temp);
 
 
