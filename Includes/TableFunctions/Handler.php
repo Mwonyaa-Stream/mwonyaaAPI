@@ -704,6 +704,14 @@ class Handler
             $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
             array_push($menuCategory, $feat_dj_temps);
             ///end featuredAlbums
+            ///
+            $text_temp1 = array();
+            $text_temp1['ad_title'] = "You create, We share";
+            $text_temp1['type'] = "text_ad";
+            $text_temp1['ad_description'] = "Here for the new wave of ugandan Music: featured - Akeine";
+            $text_temp1['ad_link'] = "https://artist.mwonya.com/";
+            $text_temp1['ad_image'] = "https://viberatecdn.blob.core.windows.net/entity/artist/akeine-oGYo9";
+            array_push($menuCategory, $text_temp1);
 
 
         }
