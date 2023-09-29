@@ -313,11 +313,11 @@ class Handler
             // Close the prepared statement
             mysqli_stmt_close($stmt);
 
-            $slider_temps = array();
-            $slider_temps['heading'] = "Discover";
-            $slider_temps['type'] = "slider";
-            $slider_temps['featured_sliderBanners'] = $sliders;
-            array_push($menuCategory, $slider_temps);
+//            $slider_temps = array();
+//            $slider_temps['heading'] = "Discover";
+//            $slider_temps['type'] = "slider";
+//            $slider_temps['featured_sliderBanners'] = $sliders;
+//            array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
             $text_temp2 = array();
