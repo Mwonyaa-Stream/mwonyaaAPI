@@ -129,7 +129,7 @@ class Playlist
         $songIds = [];
 
         // Set the default query to select song IDs based on the playlist ID
-        $query = "SELECT DISTINCT songId as id FROM playlistsongs WHERE playlistId=? ORDER BY playlistOrder ASC";
+        $query = "SELECT DISTINCT songId as id FROM playlistsongs WHERE playlistId=? ORDER BY dateAdded ASC";
 
         // Check if the playlist ID is one of the predefined queries
         switch ($this->id) {
