@@ -295,7 +295,7 @@ class Handler
             // get_Slider_banner
             $sliders = array();
             // Set up the prepared statement
-            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY date_created DESC LIMIT 8;";
+            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
             $stmt = mysqli_prepare($this->conn, $slider_query);
             // Execute the query
             mysqli_stmt_execute($stmt);
