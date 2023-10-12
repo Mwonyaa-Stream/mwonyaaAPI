@@ -29,6 +29,7 @@ class Handler
         $itemRecords = array();
 
         $artistID = htmlspecialchars(strip_tags($_GET["artistID"]));
+        $user_ID = htmlspecialchars(strip_tags($_GET["user_ID"]));
         $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
 
         if ($artistID) {
@@ -47,6 +48,7 @@ class Handler
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
             $temp['verified'] = $artist_instance->getVerified();
+            $temp['following'] = $artist_instance->getFollowStatus($user_ID);
             $temp['intro'] = $artist_instance->getIntro();
             array_push($artist_into, $temp);
 

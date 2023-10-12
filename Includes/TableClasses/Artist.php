@@ -303,5 +303,20 @@ class Artist
         return $array;
     }
 
+    public function getFollowStatus(string $user_ID)
+    {
+        $stmt = $this->con->prepare("SELECT COUNT(*) FROM artistfollowing WHERE artistid = ? AND userid = ?");
+        $stmt->bind_param("ss", $this->id, $user_ID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $count = $result->fetch_row()[0];
+        if ($count > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }
