@@ -769,7 +769,7 @@ class Handler
             //get the latest album Release less than 14 days old
             $featured_albums = array();
             $featuredAlbums = array();
-            $featured_album_Query = "SELECT DISTINCT a.id as id FROM albums a JOIN songs s ON a.id = s.album JOIN artistfollowing af ON s.artist = af.artistid WHERE af.userid = '$libraryUserID' AND a.datecreated > DATE_SUB(NOW(), INTERVAL 2 WEEK) ORDER BY a.datecreated DESC";
+            $featured_album_Query = "SELECT DISTINCT a.id as id FROM albums a JOIN songs s ON a.id = s.album JOIN artistfollowing af ON s.artist = af.artistid WHERE af.userid = '$libraryUserID' AND a.datecreated > DATE_SUB(NOW(), INTERVAL 2 WEEK) ORDER BY RAND ()";
             $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
             while ($row = mysqli_fetch_array($featured_album_Query_result)) {
                 array_push($featured_albums, $row['id']);
@@ -827,7 +827,7 @@ class Handler
 
             //get Featured Playlist
             $featuredPlaylist = array();
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
             // Execute the query
@@ -856,7 +856,7 @@ class Handler
             ///
             //get Featured Artist
             $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY af.datefollowed DESC LIMIT 10";
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY RAND () LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
