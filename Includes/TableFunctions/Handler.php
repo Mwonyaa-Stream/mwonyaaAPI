@@ -320,13 +320,7 @@ class Handler
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
-            $text_temp2 = array();
-            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
-            $text_temp2['type'] = "text_ad";
-            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
-            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
-            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
-            array_push($menuCategory, $text_temp2);
+
 
 
             // recently played array
@@ -720,6 +714,14 @@ class Handler
             $text_temp1['ad_link'] = "https://artist.mwonya.com/";
             $text_temp1['ad_image'] = "https://viberatecdn.blob.core.windows.net/entity/artist/akeine-oGYo9";
             array_push($menuCategory, $text_temp1);
+
+            $text_temp2 = array();
+            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
+            $text_temp2['type'] = "text_ad";
+            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
+            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
+            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
+            array_push($menuCategory, $text_temp2);
 
 
         }
