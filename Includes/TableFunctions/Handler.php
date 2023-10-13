@@ -1209,9 +1209,19 @@ class Handler
 
         $slider_temps = array();
         $slider_temps['heading'] = "Discover";
+        $slider_temps['type'] = "image_slider_ad";
         $slider_temps['search_sliders'] = $sliders;
         array_push($menuCategory, $slider_temps);
         // end get_Slider_banner
+
+
+        $image_temp = array();
+        $image_temp['ad_title'] = "Vote is on";
+        $image_temp['type'] = "image_ad";
+        $image_temp['ad_description'] = "Time to vote";
+        $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+        $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        array_push($menuCategory, $image_temp);
 
 
         //  popular search Begin
@@ -1242,6 +1252,7 @@ class Handler
 
         $slider_temps = array();
         $slider_temps['heading'] = "Popular on Mwonya";
+        $slider_temps['type'] = "text_chips";
         $slider_temps['popularSearch'] = $bestSellingProducts;
         array_push($menuCategory, $slider_temps);
 
@@ -1271,6 +1282,7 @@ class Handler
 
         $genreCategory = array();
         $genreCategory['heading'] = "Browse";
+        $genreCategory['type'] = "categories";
         $genreCategory['genreCategories'] = $SearchGenreBody;
         array_push($menuCategory, $genreCategory);
 
