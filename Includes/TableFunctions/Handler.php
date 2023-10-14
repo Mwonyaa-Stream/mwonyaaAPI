@@ -1187,6 +1187,14 @@ class Handler
         $itemRecords = array();
 
 
+        $text_temp = array();
+        $text_temp['ad_title'] = "Mwonya Artist Program";
+        $text_temp['type'] = "text_ad";
+        $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+        $text_temp['ad_link'] = "https://artist.mwonya.com/";
+        $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        array_push($menuCategory, $text_temp);
+
         // get_Slider_banner
         $slider_id = array();
         $sliders = array();
@@ -1215,23 +1223,9 @@ class Handler
         // end get_Slider_banner
 
 
-        $image_temp = array();
-        $image_temp['ad_title'] = "Vote is on";
-        $image_temp['type'] = "image_ad";
-        $image_temp['ad_description'] = "Time to vote";
-        $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
-        $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-        array_push($menuCategory, $image_temp);
 
 
 
-        $text_temp = array();
-        $text_temp['ad_title'] = "Mwonya Artist Program";
-        $text_temp['type'] = "text_ad";
-        $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-        $text_temp['ad_link'] = "https://artist.mwonya.com/";
-        $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-        array_push($menuCategory, $text_temp);
 
 
         //  popular search Begin
