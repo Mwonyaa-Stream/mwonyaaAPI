@@ -1187,14 +1187,6 @@ class Handler
         $itemRecords = array();
 
 
-        $text_temp = array();
-        $text_temp['ad_title'] = "Mwonya Artist Program";
-        $text_temp['type'] = "text_ad";
-        $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-        $text_temp['ad_link'] = "https://artist.mwonya.com/";
-        $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-        array_push($menuCategory, $text_temp);
-
         // get_Slider_banner
         $slider_id = array();
         $sliders = array();
@@ -1221,10 +1213,6 @@ class Handler
         $slider_temps['search_sliders'] = $sliders;
         array_push($menuCategory, $slider_temps);
         // end get_Slider_banner
-
-
-
-
 
 
 
@@ -1262,6 +1250,14 @@ class Handler
 
         // end popular search  Fetch
 
+        $text_temp = array();
+        $text_temp['ad_title'] = "Mwonya Artist Program";
+        $text_temp['type'] = "text_ad";
+        $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+        $text_temp['ad_link'] = "https://artist.mwonya.com/";
+        $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        array_push($menuCategory, $text_temp);
+
 
         //fetch other categories Begin
         $Search_genreIDs = array();
@@ -1289,6 +1285,8 @@ class Handler
         $genreCategory['type'] = "categories";
         $genreCategory['genreCategories'] = $SearchGenreBody;
         array_push($menuCategory, $genreCategory);
+
+
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = 1;
