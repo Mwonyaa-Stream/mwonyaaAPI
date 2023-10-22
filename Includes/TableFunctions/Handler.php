@@ -1382,14 +1382,14 @@ class Handler
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
-                    $temp['artist'] = $row['title'] . ' has joined Mwonya!';
+                    $temp['artist'] = $row['title'];
                     $temp['artistID'] = '';
                     $temp['title'] = '';
                     $temp['path'] = $row['path'];
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = "Welcome " . $row['title'] . ", a new artist now available on Mwonya. Visit their profile to learn more and discover their content!";
+                    $temp['description'] = "New artist on Mwonya. follow and discover more!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
@@ -1407,7 +1407,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = $user->getFirstname() . " created a new playlist '" . $row['title'] . "'. Stream it now on demand";
+                    $temp['description'] = $user->getFirstname() . " created a new playlist '" . $row['title'] . "'.";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
