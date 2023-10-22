@@ -1373,7 +1373,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = "New Release from " . $album->getArtist()->getName();
+                    $temp['description'] = "New ".$row['tag']." Release from " . $album->getArtist()->getName();
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
