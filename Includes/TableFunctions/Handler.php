@@ -1428,13 +1428,16 @@ class Handler
                 $interval = $currentDate->diff($dateAdded);
                 $daysAgo = $interval->days;
 
+                // Create a heading based on the number of days
+                $heading = $this->getHeadingForDaysAgo($daysAgo);
+
                 // Create an array for the specific day if it doesn't exist
-                if (!isset($groupedNotifications[$daysAgo])) {
-                    $groupedNotifications[$daysAgo] = array();
+                if (!isset($groupedNotifications[$heading])) {
+                    $groupedNotifications[$heading] = array();
                 }
 
                 // Add the notification to the corresponding day
-                $groupedNotifications[$daysAgo][] = $notification;
+                $groupedNotifications[$heading][] = $notification;
             }
 
             $itemRecords["page"] = $page;
@@ -1452,6 +1455,18 @@ class Handler
             $itemRecords["total_results"] = $total_rows;
         }
         return $itemRecords;
+    }
+
+    // Function to create headings based on the number of days ago
+    private function getHeadingForDaysAgo($daysAgo) {
+        switch ($daysAgo) {
+            case 0:
+                return "Today";
+            case 1:
+                return "Yesterday";
+            default:
+                return $daysAgo . " days ago";
+        }
     }
 
 
