@@ -1420,9 +1420,26 @@ class Handler
                 array_push($menuCategory, $temp);
             }
 
+
+            $groupedNotifications = array();
+            foreach ($menuCategory as $notification) {
+                $dateAdded = new DateTime($notification['date']);
+                $currentDate = new DateTime();
+                $interval = $currentDate->diff($dateAdded);
+                $daysAgo = $interval->days;
+
+                // Create an array for the specific day if it doesn't exist
+                if (!isset($groupedNotifications[$daysAgo])) {
+                    $groupedNotifications[$daysAgo] = array();
+                }
+
+                // Add the notification to the corresponding day
+                $groupedNotifications[$daysAgo][] = $notification;
+            }
+
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
-            $itemRecords["notice_home"] = $menuCategory;
+            $itemRecords["notice_home"] = $groupedNotifications;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
 
