@@ -1428,17 +1428,20 @@ class Handler
                 $interval = $currentDate->diff($dateAdded);
                 $daysAgo = $interval->days;
 
+
                 // Create a heading based on the number of days
                 $heading = $this->getHeadingForDaysAgo($daysAgo);
+                $temp = array(
+                    "heading" => $heading,
+                    "type" => "notification",
+                    "notification_List" => array()
+                );
 
-                // Create an array for the specific day if it doesn't exist
-                if (!isset($groupedNotifications[$heading])) {
-                    $groupedNotifications[$heading] = array();
-                }
 
-                // Add the notification to the corresponding day
-                $groupedNotifications[$heading][] = $notification;
+                $groupedNotifications[$heading]["notification_List"][] = $notification;
             }
+
+            $groupedNotifications = array_values($groupedNotifications);
 
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
