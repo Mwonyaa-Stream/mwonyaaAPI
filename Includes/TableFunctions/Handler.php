@@ -1463,13 +1463,21 @@ class Handler
 
     // Function to create headings based on the number of days ago
     private function getHeadingForDaysAgo($daysAgo) {
-        switch ($daysAgo) {
-            case 0:
+        switch (true) {
+            case ($daysAgo === 0):
                 return "Today";
-            case 1:
+            case ($daysAgo === 1):
                 return "Yesterday";
+            case ($daysAgo >= 2 && $daysAgo <= 5):
+                return "{$daysAgo} days ago";
+            case ($daysAgo >= 6 && $daysAgo <= 13):
+                return "1 week ago";
+            case ($daysAgo >= 14 && $daysAgo <= 27):
+                return "2 weeks ago";
             default:
-                return $daysAgo . " days ago";
+                // Notifications older than 2 weeks
+                $weeksAgo = ceil($daysAgo / 7);
+                return "{$weeksAgo} weeks ago";
         }
     }
 
