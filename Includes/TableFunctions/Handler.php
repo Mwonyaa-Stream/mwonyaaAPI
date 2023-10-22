@@ -1303,7 +1303,7 @@ class Handler
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
 
         $noticeString = "
-        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 7 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 7 DAY)) ORDER BY `dateAdded` DESC
+        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 30 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 30 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 30 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE dateCreated > DATE_SUB(NOW(), INTERVAL 30 DAY)) ORDER BY `dateAdded` DESC
         ";
 
         // run the query in the db and search through each of the records returned
@@ -1360,6 +1360,7 @@ class Handler
                     $temp['description'] = "New " . $name . " alert! '" . $row['title'] . "' by " . $song->getArtist()->getName() . $song->getFeaturing() . " is now playing on Mwonya. Tap to listen!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
                 }
                 if ($row['type'] == "album") {
@@ -1375,6 +1376,7 @@ class Handler
                     $temp['description'] = "New release alert! Discover the latest " . $row['tag'] . " from " . $album->getArtist()->getName() . " with their new '" . $row['title'] . "' collection now on our site";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
 
 
@@ -1391,6 +1393,7 @@ class Handler
                     $temp['description'] = "Welcome " . $row['title'] . ", a new artist now available on Mwonya. Visit their profile to learn more and discover their content!";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
 
 
@@ -1408,6 +1411,7 @@ class Handler
                     $temp['description'] = $user->getFirstname() . " created a new playlist '" . $row['title'] . "'. Stream it now on demand";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
+                    $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
 
 
