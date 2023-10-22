@@ -1444,6 +1444,11 @@ class Handler
 
             $groupedNotifications = array_values($groupedNotifications);
 
+            usort($groupedNotifications, function($a, $b) {
+                // Implement custom sorting logic if required
+                return strtotime($b['heading']) - strtotime($a['heading']);
+            });
+
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["notice_home"] = $groupedNotifications;
