@@ -1373,7 +1373,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = "New release alert! Discover the latest " . $row['tag'] . " from " . $album->getArtist()->getName() . " with their new '" . $row['title'] . "' collection now on our site";
+                    $temp['description'] = "New Release from " . $album->getArtist()->getName();
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
