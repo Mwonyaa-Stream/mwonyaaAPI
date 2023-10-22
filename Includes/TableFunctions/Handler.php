@@ -1431,11 +1431,13 @@ class Handler
 
                 // Create a heading based on the number of days
                 $heading = $this->getHeadingForDaysAgo($daysAgo);
-                $temp = array(
-                    "heading" => $heading,
-                    "type" => "notification",
-                    "notification_List" => array()
-                );
+                if (!isset($groupedNotifications[$heading])) {
+                    $groupedNotifications[$heading] = array(
+                        "heading" => $heading,
+                        "type" => "notification",
+                        "notification_List" => array()
+                    );
+                }
 
 
                 $groupedNotifications[$heading]["notification_List"][] = $notification;
