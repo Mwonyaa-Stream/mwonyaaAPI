@@ -1356,7 +1356,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                    $temp['description'] = "New " . $name . " on Mwonya. " . $song->getArtist()->getName() . $song->getFeaturing() . "";
+                    $temp['description'] = "New " . $name . " on Mwonya from " . $song->getArtist()->getName() . $song->getFeaturing() . "";
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
