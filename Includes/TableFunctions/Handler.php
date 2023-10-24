@@ -725,8 +725,8 @@ class Handler
             $text_temp1['ad_title'] = "Drillz The Rapper";
             $text_temp1['type'] = "text_ad";
             $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
-            $text_temp1['ad_link'] = "https://www.youtube.com/watch?v=9WVsmaMBWec";
-            $text_temp1['ad_type'] = "link";
+            $text_temp1['ad_link'] = "1463";
+            $text_temp1['ad_type'] = "track";
             $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
             array_push($menuCategory, $text_temp1);
 
