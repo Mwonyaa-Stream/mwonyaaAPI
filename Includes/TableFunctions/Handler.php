@@ -426,6 +426,7 @@ class Handler
             $image_temp['type'] = "image_ad";
             $image_temp['ad_description'] = "Time to vote";
             $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+            $image_temp['ad_type'] = "link";
             $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
             array_push($menuCategory, $image_temp);
 
@@ -552,6 +553,7 @@ class Handler
             $text_temp['type'] = "text_ad";
             $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
             $text_temp['ad_link'] = "https://artist.mwonya.com/";
+            $image_temp['ad_type'] = "link";
             $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
             array_push($menuCategory, $text_temp);
 
@@ -714,6 +716,7 @@ class Handler
             $text_temp1['type'] = "text_ad";
             $text_temp1['ad_description'] = "Here for the new wave of ugandan Music: featured - Akeine";
             $text_temp1['ad_link'] = "https://artist.mwonya.com/";
+            $image_temp['ad_type'] = "link";
             $text_temp1['ad_image'] = "https://viberatecdn.blob.core.windows.net/entity/artist/akeine-oGYo9";
             array_push($menuCategory, $text_temp1);
 
@@ -723,6 +726,7 @@ class Handler
             $text_temp1['type'] = "text_ad";
             $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
             $text_temp1['ad_link'] = "https://www.youtube.com/watch?v=9WVsmaMBWec";
+            $image_temp['ad_type'] = "link";
             $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
             array_push($menuCategory, $text_temp1);
 
@@ -731,6 +735,7 @@ class Handler
             $text_temp2['type'] = "text_ad";
             $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
             $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
+            $image_temp['ad_type'] = "link";
             $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
             array_push($menuCategory, $text_temp2);
 
