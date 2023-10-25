@@ -1306,9 +1306,10 @@ class Handler
     public function Notifications(): array
     {
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+        $notification_user_ID = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'userID';
 
         $noticeString = "
-        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 14 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE  status <> 0 AND  dateCreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) ORDER BY `dateAdded` DESC
+        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 14 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE  (status <> 0 OR ownerID='$notification_user_ID')  dateCreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) ORDER BY `dateAdded` DESC
         ";
 
         // run the query in the db and search through each of the records returned
