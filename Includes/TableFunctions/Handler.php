@@ -787,7 +787,7 @@ class Handler
                 $temp['heading'] = "New Release For You";
                 $temp['title'] = $al->getTitle();
                 $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getDatecreated() . ' - ' . $al->getTag();;
+                $temp['tag'] = $al->getDatecreated() . ' - ' . ucwords($al->getTag());
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
