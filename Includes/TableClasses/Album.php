@@ -76,7 +76,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         public function getDatecreated(){
 
             $phpdate = strtotime($this->datecreated);
-            $mysqldate = date('d/M/Y', $phpdate);
+            $mysqldate = date('Y', $phpdate);
 
             return $mysqldate;
         }
