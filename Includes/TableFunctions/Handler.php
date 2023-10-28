@@ -2027,34 +2027,6 @@ class Handler
         $itemRecords = array();
 
 
-        // get_Slider_banner
-        $slider_id = array();
-        $sliders = array();
-
-
-        $slider_query = "SELECT id FROM search_slider WHERE status=1 ORDER BY date_created DESC LIMIT 8";
-        $slider_query_id_result = mysqli_query($this->conn, $slider_query);
-        while ($row = mysqli_fetch_array($slider_query_id_result)) {
-            array_push($slider_id, $row['id']);
-        }
-
-
-        foreach ($slider_id as $row) {
-            $temp = array();
-            $slider = new SearchSlider($this->conn, $row);
-            $temp['id'] = $slider->getId();
-            $temp['playlistID'] = $slider->getPlaylistID();
-            $temp['imagepath'] = $slider->getImagepath();
-            array_push($sliders, $temp);
-        }
-
-        $slider_temps = array();
-        $slider_temps['heading'] = "Discover";
-        $slider_temps['search_sliders'] = $sliders;
-        array_push($menuCategory, $slider_temps);
-        // end get_Slider_banner
-
-
         // genre songs id
         $genre = new Genre($this->conn, $genreID);
         $temp = array();
