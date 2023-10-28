@@ -1627,6 +1627,7 @@ class Handler
                     $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
+                    $temp['verified'] = false;
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1640,10 +1641,12 @@ class Handler
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
+                    $temp['verified'] = false;
 
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
+                    $artist_instance = new Artist($this->conn, $row['id']);
                     $temp['artist'] = $row['title'];
                     $temp['artistID'] = '';
                     $temp['title'] = '';
@@ -1653,6 +1656,7 @@ class Handler
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
+                    $temp['verified'] = $artist_instance->getVerified();
 
                 }
                 if ($row['type'] == "playlist") {
@@ -1666,6 +1670,7 @@ class Handler
                     $temp['artworkPath'] = $row['artworkPath'];
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
+                    $temp['verified'] = false;
 
                 }
 
