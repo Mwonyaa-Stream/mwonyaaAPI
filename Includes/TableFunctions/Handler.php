@@ -1192,8 +1192,11 @@ class Handler
         $itemRecords = array();
 
 
-
-
+        $slider_temps = array();
+        $slider_temps['heading'] = "Search";
+        $slider_temps['type'] = "hero_page";
+        array_push($menuCategory, $slider_temps);
+        // end get_Slider_banner
 
 
         //  popular search Begin
