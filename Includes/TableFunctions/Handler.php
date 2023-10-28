@@ -161,7 +161,7 @@ class Handler
             }
 
             $popular_temps = array();
-            $popular_temps['heading'] = "Popular Release";
+            $popular_temps['heading'] = "Discography";
             $popular_temps['Type'] = "release";
             $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Artist"], $popular_temps);
@@ -175,6 +175,7 @@ class Handler
                 $temp = array();
                 $temp['id'] = $artist->getId();
                 $temp['name'] = $artist->getName();
+                $temp['verified'] = $artist->getVerified();
                 $temp['genre'] = $artist->getGenrename()->getGenre();
                 $temp['profilephoto'] = $artist->getProfilePath();
                 array_push($popular_release, $temp);
