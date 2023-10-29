@@ -3138,7 +3138,7 @@ class Handler
 
         echo $userID.$trackID.$lastPlayed;
 
-        if ($userID !== null && $trackID !== null && $lastPlayed !== null) {
+        if ($userID && $trackID && $lastPlayed ) {
             mysqli_begin_transaction($this->conn);
 
             // Check if the user and track combination exists in the 'frequency' table
