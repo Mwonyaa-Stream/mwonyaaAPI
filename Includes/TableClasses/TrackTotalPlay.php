@@ -17,7 +17,7 @@ class TrackTotalPlay
         $track_query = mysqli_query($this->con, "SELECT `id`, `songid`, `total_plays`, `last_updated` FROM `track_plays` WHERE songid ='$song_id'");
         $track_fetched = mysqli_fetch_array($track_query);
 
-        if (mysqli_num_rows($track_fetched) == 0) {
+        if (mysqli_num_rows($track_query) == 0) {
             $this->id = null;
             $this->songid = null;
             $this->total_pays = null;
