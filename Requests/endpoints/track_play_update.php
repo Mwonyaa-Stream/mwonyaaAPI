@@ -10,19 +10,19 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 include_once 'includedFiles.php';
 if (!empty($db)) {
-
-    $data = json_decode(file_get_contents("php://input"));
     $handler = new Handler($db);
-    $result = $handler->UpdateTrackPlay($data);
-    if ($result) {
+    $result = $handler->UpdateTrackPlay();
+
+    if($result){
         http_response_code(200);
         echo json_encode($result);
-    } else {
+    }else{
         http_response_code(404);
         echo json_encode(
             array("message" => "No item found.")
         );
     }
+
 }
 
 ?>

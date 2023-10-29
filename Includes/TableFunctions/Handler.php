@@ -3122,14 +3122,14 @@ class Handler
         }
     }
 
-    function UpdateTrackPlay($data): array
+    function UpdateTrackPlay(): array
     {
         $current_Time_InSeconds = time();
         $date_now = date('Y-m-d H:i:s', $current_Time_InSeconds);
 
-        $userID = $data->userID ?? null;
-        $trackID = $data->trackID ?? null;
-        $lastPlayed = $data->lastPlayed ?? null;
+        $userID = htmlspecialchars(strip_tags($_GET["userID"]));
+        $trackID = htmlspecialchars(strip_tags($_GET["trackID"]));
+        $lastPlayed = htmlspecialchars(strip_tags($_GET["lastPlayed"]));
 
         $itemRecords = array();
         $itemRecords['error'] = true;
@@ -3168,7 +3168,7 @@ class Handler
 
             $itemRecords['error'] = false;
         } else {
-            $itemRecords['message'] = "Invalid parameters provided";
+            $itemRecords['message'] = "Invalided parameters provided";
         }
 
         return $itemRecords;
