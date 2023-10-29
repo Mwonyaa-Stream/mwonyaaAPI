@@ -157,7 +157,7 @@
         public function getPlays(){
             // get plays in a month
             $track_plays = new TrackTotalPlay($this->con, $this->id);
-            return $track_plays->getTotalPays();
+            return number_format($track_plays->getTotalPays());
         }
         public function getWeeklyplays(){
             // get plays in a week
