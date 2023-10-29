@@ -324,8 +324,6 @@ class Handler
             // end get_Slider_banner
 
 
-
-
             // recently played array
             $recently_played = array();
             $recently_played['heading'] = "Recently Played";
@@ -1243,8 +1241,6 @@ class Handler
         // end popular search  Fetch
 
 
-
-
         //fetch other categories Begin
         $Search_genreIDs = array();
         $SearchGenreBody = array();
@@ -1271,7 +1267,6 @@ class Handler
         $genreCategory['type'] = "categories";
         $genreCategory['genreCategories'] = $SearchGenreBody;
         array_push($menuCategory, $genreCategory);
-
 
 
         $itemRecords["version"] = $this->version;
@@ -1359,7 +1354,7 @@ class Handler
                     $temp['plays'] = $row['plays'];
                     $temp['weekplays'] = $row['weekplays'];
                     $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['description'] = "New ".$row['tag']." Release from " . $album->getArtist()->getName();
+                    $temp['description'] = "New " . $row['tag'] . " Release from " . $album->getArtist()->getName();
                     $temp['type'] = $row['type'];
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
@@ -1431,7 +1426,7 @@ class Handler
 
             $groupedNotifications = array_values($groupedNotifications);
 
-            usort($groupedNotifications, function($a, $b) {
+            usort($groupedNotifications, function ($a, $b) {
                 // Implement custom sorting logic if required
                 return strtotime($b['heading']) - strtotime($a['heading']);
             });
@@ -1454,7 +1449,8 @@ class Handler
     }
 
     // Function to create headings based on the number of days ago
-    private function getHeadingForDaysAgo($daysAgo) {
+    private function getHeadingForDaysAgo($daysAgo)
+    {
         switch (true) {
             case ($daysAgo === 0):
                 return "Today";
@@ -2859,11 +2855,12 @@ class Handler
         $username = substr($username, 0, 3);
         // Generate a unique ID using a timestamp and modified username
         $timestamp = time();
-        return "mw" . uniqid()  . $username . $timestamp;
+        return "mw" . uniqid() . $username . $timestamp;
     }
 
 
-    function addOrUpdateToken($data): array {
+    function addOrUpdateToken($data): array
+    {
         // Getting the values
         $token = isset($data->token) ? trim($data->token) : null;
         $userId = isset($data->userId) ? trim($data->userId) : null;
@@ -3124,6 +3121,57 @@ class Handler
             return false;
         }
     }
+
+    function UpdateTrackPlay($data): array
+    {
+        $current_Time_InSeconds = time();
+        $date_now = date('Y-m-d H:i:s', $current_Time_InSeconds);
+
+        $userID = $data->userID ?? null;
+        $trackID = $data->trackID ?? null;
+        $lastPlayed = $data->lastPlayed ?? null;
+
+        $itemRecords = array();
+        $itemRecords['error'] = true;
+        $itemRecords['message'] = "";
+        $itemRecords['date'] = $date_now;
+
+        if ($userID !== null && $trackID !== null && $lastPlayed !== null) {
+            mysqli_begin_transaction($this->conn);
+
+            // Check if the user and track combination exists in the 'frequency' table
+            $query = "SELECT * FROM frequency WHERE userid = ? AND songid = ?";
+            $stmt = mysqli_prepare($this->conn, $query);
+            mysqli_stmt_bind_param($stmt, 'si', $userID, $trackID);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+
+            if (mysqli_num_rows($result) > 0) {
+                // User and track combination exists, update the record
+                $updateQuery = "UPDATE frequency SET plays = plays + 1, lastPlayed = ? WHERE userid = ? AND songid = ?";
+                $stmt = mysqli_prepare($this->conn, $updateQuery);
+                mysqli_stmt_bind_param($stmt, 'ssi', $lastPlayed, $userID, $trackID);
+                mysqli_stmt_execute($stmt);
+                $itemRecords['message'] = "Track play updated successfully";
+            } else {
+                // User and track combination doesn't exist, insert a new record
+                $insertQuery = "INSERT INTO frequency (userid, songid, plays, lastPlayed) VALUES (?, ?, 1, ?)";
+                $stmt = mysqli_prepare($this->conn, $insertQuery);
+                mysqli_stmt_bind_param($stmt, 'sis', $userID, $trackID, $lastPlayed);
+                mysqli_stmt_execute($stmt);
+                $itemRecords['message'] = "Track play inserted successfully";
+            }
+
+            mysqli_commit($this->conn);
+
+            $itemRecords['error'] = false;
+        } else {
+            $itemRecords['message'] = "Invalid parameters provided";
+        }
+
+        return $itemRecords;
+    }
+
 
 
     function AddTrackToPlaylist($data): array
@@ -3434,7 +3482,8 @@ class Handler
     }
 
 
-    public function loginHandler(): array
+    public
+    function loginHandler(): array
     {
         $feedback = [];
 
@@ -3515,7 +3564,8 @@ class Handler
         return $itemRecords;
     }
 
-    public function Versioning()
+    public
+    function Versioning()
     {
         $itemRecords = array();
         $itemRecords["version"] = "9"; // build number should match
@@ -3524,7 +3574,8 @@ class Handler
         return $itemRecords;
     }
 
-    public function LibraryBanners(): array
+    public
+    function LibraryBanners(): array
     {
 
         // get_Slider_banner
