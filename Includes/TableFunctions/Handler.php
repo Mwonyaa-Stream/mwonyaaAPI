@@ -3136,6 +3136,8 @@ class Handler
         $itemRecords['message'] = "";
         $itemRecords['date'] = $date_now;
 
+        echo $userID.$trackID.$lastPlayed;
+
         if ($userID !== null && $trackID !== null && $lastPlayed !== null) {
             mysqli_begin_transaction($this->conn);
 
