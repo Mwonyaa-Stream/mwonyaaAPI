@@ -3401,14 +3401,10 @@ class Handler
                 $id = htmlspecialchars(strip_tags($i_value->id));
                 $path = htmlspecialchars(strip_tags($i_value->path));
                 $title = htmlspecialchars(strip_tags($i_value->title));
-                $totalplays = htmlspecialchars(strip_tags($i_value->totalplays));
+                $total_plays = htmlspecialchars(strip_tags($i_value->totalplays));
                 $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
                 $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
 
-                $user_sql = "UPDATE users set songsplayed = songsplayed + $trackUserPlays WHERE id ='$user_id'";
-                mysqli_query($this->conn, $user_sql);
-                $song_sql = "UPDATE songs SET plays = plays + $trackUserPlays, weekplays = weekplays + $trackUserPlays, lastplayed='$trackLastPlayed'  WHERE id='$id'";
-                mysqli_query($this->conn, $song_sql);
 
                 //user favourites
                 $fav_sql = "SELECT * FROM frequency where  userid='$user_id' AND songid='$id'";
@@ -3417,12 +3413,12 @@ class Handler
 
                 if (mysqli_num_rows($sql) > 0) {
                     // echo "song and user Id Already Exists";
-                    $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET playsmonth = playsmonth + ?, plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
-                    $stmt_RecentPlays->bind_param("iisssi", $trackUserPlays, $trackUserPlays, $update_date, $trackLastPlayed, $user_id, $id);
+                    $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
+                    $stmt_RecentPlays->bind_param("isssi", $total_plays, $update_date, $trackLastPlayed, $user_id, $id);
 
                 } else {
-                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,playsmonth,lastPlayed) VALUES (?,?,?,?,?)");
-                    $stmt_RecentPlays->bind_param("isiis", $id, $user_id, $trackUserPlays, $trackUserPlays, $trackLastPlayed);
+                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,lastPlayed) VALUES (?,?,?,?)");
+                    $stmt_RecentPlays->bind_param("isis", $id, $user_id, $total_plays, $trackLastPlayed);
 
                 }
 
