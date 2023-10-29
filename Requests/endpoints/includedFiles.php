@@ -16,6 +16,7 @@ require "../../Includes/TableClasses/SearchSlider.php";
 require "../../Includes/TableClasses/Events.php";
 require "../../Includes/TableClasses/Constants.php";
 require "../../Includes/TableClasses/Account.php";
+require "../../Includes/TableClasses/TrackTotalPlay.php";
 
 include_once '../../Includes/TableFunctions/Handler.php';
 include_once '../../Includes/TableFunctions/FilterGateway.php';
