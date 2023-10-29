@@ -3137,7 +3137,7 @@ class Handler
         $itemRecords['date'] = $date_now;
 
 
-        if ($userID && $trackID && $lastPlayed ) {
+        if (!empty($userID) && !empty($trackID) && !empty($lastPlayed)) {
             mysqli_begin_transaction($this->conn);
 
             // Check if the user and track combination exists in the 'frequency' table
