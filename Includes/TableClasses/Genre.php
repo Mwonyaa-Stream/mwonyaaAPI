@@ -87,7 +87,7 @@ class Genre
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
 
 
             array_push($home_genre_tracks, $temp);
@@ -123,7 +123,7 @@ class Genre
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
 
 
             array_push($home_genre_tracks, $temp);

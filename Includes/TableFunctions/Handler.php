@@ -77,7 +77,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
 
                 array_push($popular, $temp);
             }
@@ -354,7 +354,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
                 $temp['position'] = $row['rank'];
                 $temp['trend'] = ($row['rank'] % 3 === 0) ? false : true;
 
@@ -408,7 +408,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
                 array_push($tracks_trending, $temp);
 
             }
@@ -476,7 +476,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
                 array_push($R_trackListArray, $temp);
 
             }
@@ -965,7 +965,7 @@ class Handler
                 $temp['cover'] = $song->getCover();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
                 $temp['tag'] = $song->getTag();
 
 
@@ -1005,7 +1005,7 @@ class Handler
             $temp['cover'] = $song->getCover();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
             $temp['tag'] = $song->getTag();
 
             array_push($menuCategory, $temp);
@@ -1078,7 +1078,7 @@ class Handler
                     $temp['lyrics'] = $songLiked->getLyrics();
                     $temp['path'] = $songLiked->getPath();
                     $temp['totalplays'] = $songLiked->getPlays();
-                    $temp['weeklyplays'] = $songLiked->getWeeklyplays();
+                    $temp['albumID'] = $songLiked->getAlbumId();
                     array_push($allProducts, $temp);
                 }
 
@@ -1166,7 +1166,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
 
 
                 array_push($allProducts, $temp);
@@ -2089,7 +2089,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
 
 
                 array_push($allProducts, $temp);
@@ -2170,7 +2170,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
 
 
                 array_push($allProducts, $temp);
@@ -2217,7 +2217,7 @@ class Handler
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
 
             array_push($itemRecords['Song'], $temp);
 
@@ -2241,7 +2241,7 @@ class Handler
                 $temp['lyrics'] = $song->getLyrics();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
 
 
                 array_push($all_Related_Songs, $temp);
@@ -2286,7 +2286,7 @@ class Handler
             $trackInfo['lyrics'] = $song->getLyrics();
             $trackInfo['path'] = $song->getPath();
             $trackInfo['totalplays'] = $song->getPlays();
-            $trackInfo['weeklyplays'] = $song->getWeeklyplays();
+            $trackInfo['albumID'] = $song->getAlbumId();
 
         }
         return $trackInfo;
@@ -2333,7 +2333,7 @@ class Handler
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
 
 
             array_push($home_genre_tracks, $temp);
@@ -2769,7 +2769,7 @@ class Handler
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $song->getWeeklyplays();
+            $temp['albumID'] = $song->getAlbumId();
 
 
             array_push($menuCategory, $temp);
@@ -3547,7 +3547,7 @@ class Handler
             $temp['lyrics'] = $song->getLyrics();
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
-            $temp['weeklyplays'] = $id['totalplays'];
+            $temp['albumID'] = $song->getAlbumId();
 
 
             array_push($dailyTrendsTracks, $temp);

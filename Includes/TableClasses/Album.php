@@ -163,7 +163,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $temp['lyrics'] = $lyrics;
                 $temp['path'] = $path;
                 $temp['totalplays'] = $trackPlays;
-                $temp['weeklyplays'] = $weeklyplays;
+                $temp['albumID'] = $this->id;
                 array_push($allProducts, $temp);
             }
 

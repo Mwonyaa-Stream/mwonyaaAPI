@@ -84,7 +84,7 @@ class FilterGateway
                 $temp['cover'] = $song->getCover();
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
-                $temp['weeklyplays'] = $song->getWeeklyplays();
+                $temp['albumID'] = $song->getAlbumId();
                 $temp['tag'] = $song->getTag();
 
                 array_push($trackListArray, $temp);
