@@ -13,7 +13,6 @@
         private $cover;
         private $path;
         private $plays;
-        private $weekplays;
         private $tag;
         private $lyrics;
         private $featuring;
@@ -22,7 +21,7 @@
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
-            $song_query_sql = "SELECT s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, COALESCE(SUM(CASE WHEN DATE_FORMAT(f.lastPlayed, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m') THEN 1 ELSE 0 END), 0) AS playsmonth, COALESCE(SUM(CASE WHEN YEARWEEK(f.lastPlayed, 1) = YEARWEEK(NOW(), 1)THEN 1 ELSE 0 END), 0) AS weekplays, s.tag, s.cover,s.featuring, s.lyrics FROM songs s LEFT JOIN frequency f ON s.id = f.songid GROUP BY s.id HAVING s.id = '$this->id'";
+            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring, s.lyrics FROM songs s where s.id = '$this->id'";
             $query = mysqli_query($this->con, $song_query_sql);
 
 
@@ -35,7 +34,6 @@
                 $this->duration = null;
                 $this->path = null;
                 $this->plays = null;
-                $this->weekplays = null;
                 $this->tag = null;
                 $this->cover = null;
                 $this->lyrics = null;
@@ -53,10 +51,6 @@
                 $this->genre = $this->mysqliData['genre'];
                 $this->duration = $this->mysqliData['duration'];
                 $this->path = $this->mysqliData['path'];
-                // get song plays in a month
-                $this->plays = $this->mysqliData['playsmonth'];
-                // get song plays in a week
-                $this->weekplays = $this->mysqliData['weekplays'];
                 $this->releaseDate = $this->mysqliData['releaseDate'];
                 $this->tag = $this->mysqliData['tag'];
                 $this->cover = $this->mysqliData['cover'];
@@ -171,10 +165,7 @@
             $track_plays = new TrackTotalPlay($this->con, $this->id);
             return number_format($track_plays->getTotalPays());
         }
-        public function getWeeklyplays(){
-            // get plays in a week
-            return $this->weekplays;
-        }
+
 
         public function getRelatedSongs(){
             $query = mysqli_query($this->con, "SELECT * FROM `songs` WHERE genre = '$this->genre' AND id != '$this->id'  ORDER by weekplays DESC LIMIT 14 ");
