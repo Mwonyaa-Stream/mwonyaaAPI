@@ -168,7 +168,7 @@
 
 
         public function getRelatedSongs(){
-            $query = mysqli_query($this->con, "SELECT s.id as song_id from track_plays t join songs s on s.id = t.songid where s.genre = '$this->genre' AND id != '$this->id' ORDER BY `t`.`total_plays` DESC  LIMIT 14 ");
+            $query = mysqli_query($this->con, "SELECT s.id as song_id from track_plays t join songs s on s.id = t.songid where s.genre = '$this->genre' AND s.id != '$this->id' ORDER BY `t`.`total_plays` DESC  LIMIT 14 ");
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
