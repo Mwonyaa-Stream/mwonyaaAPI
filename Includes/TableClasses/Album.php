@@ -82,7 +82,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
         public function getDescription(){
 
-            if ($this->description === null) {
+            if ($this->description == null) {
                 return  "Genre: ".$this->getGenre()->getGenre()." • Release Date: ".$this->getReleaseDate();
             } else {
                 return $this->description;
