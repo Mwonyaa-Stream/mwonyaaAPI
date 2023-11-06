@@ -173,7 +173,7 @@
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
-                array_push($array, $row['id']);
+                array_push($array, $row['songid']);
             }
 
             return $array;
