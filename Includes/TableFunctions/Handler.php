@@ -153,7 +153,7 @@ class Handler
                 $temp['artworkPath'] = $album->getArtworkPath();
                 $temp['tag'] = $album->getTag();
                 $temp['description'] = $album->getDescription();
-                $temp['datecreated'] = $album->getDatecreated();
+                $temp['datecreated'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
 
 
