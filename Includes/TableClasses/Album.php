@@ -12,7 +12,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         private $tag;
         private $totaltrackplays;
         private $artworkPath;
-        private $datecreated;
+        private $releaseDate;
         private $description;
 
       
@@ -33,14 +33,14 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $this->genre = null;
                 $this->artworkPath = null;
                 $this->description = null;
-                $this->datecreated = null;
+                $this->releaseDate = null;
             
             } else{                            
                 $this->title = $album['title'];
                 $this->id = $album['id'];
                 $this->artistId = $album['artist'];
                 $this->genre = $album['genre'];
-                $this->datecreated = $album['datecreated'];
+                $this->releaseDate = $album['releaseDate'];
                 $this->artworkPath = $album['artworkPath'];
                 $this->description = $album['description'];
                 $this->tag = $album['tag'];
@@ -73,17 +73,20 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             return $this->artworkPath;
         }
 
-        public function getDatecreated(){
+        public function getReleaseDate(): string
+        {
 
-            $phpdate = strtotime($this->datecreated);
-            $mysqldate = date('Y', $phpdate);
-
-            return $mysqldate;
+            $php_date = strtotime($this->releaseDate);
+            return date('M Y', $php_date);
         }
 
         public function getDescription(){
 
-            return $this->description;
+            if ($this->description === null) {
+                return  "Genre: ".$this->getGenre()->getGenre()." • Release Date: ".$this->getDatecreated();
+            } else {
+                return $this->description;
+            }
         }
 
 
