@@ -130,7 +130,8 @@
 
         public function getReleasedDate()
         {
-            return $this->releaseDate;
+
+            return $this->releaseDate->format('M Y');
         }
 
         /**
