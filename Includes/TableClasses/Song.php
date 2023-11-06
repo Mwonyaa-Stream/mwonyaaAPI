@@ -131,7 +131,9 @@
         public function getReleasedDate()
         {
 
-            return $this->releaseDate->format('M Y');
+
+            $php_date = strtotime($this->releaseDate);
+            return date('M Y', $php_date);
         }
 
         /**
