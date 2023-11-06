@@ -2218,7 +2218,7 @@ class Handler
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['albumID'] = $song->getAlbumId();
-            $temp['metaData'] = "Okello • • johnes";
+            $temp['metaData'] = "Plays: ".$song->getPlays()." • ".$song->getGenre()->getGenre()." • ".$song->getAlbum()->getTitle()." • ".$song->getDuration();
 
             array_push($itemRecords['Song'], $temp);
 
