@@ -156,6 +156,11 @@
         public function getMysqliData(){
             return  $this->mysqliData;
         }
+
+        public function getGenreID(){
+            return $this->genre;
+        }
+
         public function getGenre(){
             return new Genre($this->con, $this->genre);
         }
