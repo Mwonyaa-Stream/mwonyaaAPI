@@ -1206,6 +1206,16 @@ class Handler
         array_push($menuCategory, $text_temp);
 
 
+        $image_temp = array();
+        $image_temp['ad_title'] = "Vote is on";
+        $image_temp['type'] = "image_ad";
+        $image_temp['ad_description'] = "Time to vote";
+        $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
+        $image_temp['ad_type'] = "link";
+        $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        array_push($menuCategory, $image_temp);
+
+
         //  popular search Begin
         $bestSellingProducts = array();
         $top_artist = "SELECT artists.name, SUM(frequency.plays) as total_plays, artists.datecreated,artists.id FROM frequency INNER JOIN songs ON frequency.songid = songs.id INNER JOIN artists ON songs.artist = artists.id GROUP BY artists.name ORDER BY total_plays DESC LIMIT 40";
