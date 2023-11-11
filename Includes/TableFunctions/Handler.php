@@ -323,6 +323,15 @@ class Handler
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
+            $image_temp = array();
+            $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
+            $image_temp['type'] = "image_ad";
+            $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+            $image_temp['ad_link'] = "m_allncqhp9a1002";
+            $image_temp['ad_type'] = "collection";
+            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
+            array_push($menuCategory, $image_temp);
+
 
             // recently played array
             $recently_played = array();
@@ -420,14 +429,7 @@ class Handler
             $feat_trend['Tracks'] = $tracks_trending;
             array_push($menuCategory, $feat_trend);
 
-            $image_temp = array();
-            $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
-            $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
-            $image_temp['ad_link'] = "m_allncqhp9a1002";
-            $image_temp['ad_type'] = "collection";
-            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
-            array_push($menuCategory, $image_temp);
+
 
 
             // Recommended
