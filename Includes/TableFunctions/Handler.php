@@ -421,12 +421,12 @@ class Handler
             array_push($menuCategory, $feat_trend);
 
             $image_temp = array();
-            $image_temp['ad_title'] = "Vote is on";
+            $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
             $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Time to vote";
-            $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
-            $image_temp['ad_type'] = "link";
-            $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+            $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+            $image_temp['ad_link'] = "m_allncqhp9a1002";
+            $image_temp['ad_type'] = "collection";
+            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
             array_push($menuCategory, $image_temp);
 
 
@@ -1207,12 +1207,12 @@ class Handler
 
 
         $image_temp = array();
-        $image_temp['ad_title'] = "Vote is on";
+        $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
         $image_temp['type'] = "image_ad";
-        $image_temp['ad_description'] = "Time to vote";
-        $image_temp['ad_link'] = "http://urbanflow256.com/home/index.html";
-        $image_temp['ad_type'] = "link";
-        $image_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+        $image_temp['ad_link'] = "m_allncqhp9a1002";
+        $image_temp['ad_type'] = "collection";
+        $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
         array_push($menuCategory, $image_temp);
 
 
