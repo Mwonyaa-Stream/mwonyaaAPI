@@ -549,14 +549,17 @@ class Handler
             ///end featuredArtist
             ///
             ///
-            $text_temp = array();
-            $text_temp['ad_title'] = "Mwonya Artist Program";
-            $text_temp['type'] = "text_ad";
-            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-            $text_temp['ad_link'] = "https://artist.mwonya.com/";
-            $text_temp['ad_type'] = "link";
-            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-            array_push($menuCategory, $text_temp);
+            ///
+
+
+//            $text_temp = array();
+//            $text_temp['ad_title'] = "Mwonya Artist Program";
+//            $text_temp['type'] = "text_ad";
+//            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+//            $text_temp['ad_link'] = "https://artist.mwonya.com/";
+//            $text_temp['ad_type'] = "link";
+//            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+//            array_push($menuCategory, $text_temp);
 
 
             //get the latest album Release less than 14 days old
@@ -712,33 +715,34 @@ class Handler
             array_push($menuCategory, $feat_dj_temps);
             ///end featuredAlbums
             ///
-            $text_temp1 = array();
-            $text_temp1['ad_title'] = "You create, We share";
-            $text_temp1['type'] = "text_ad";
-            $text_temp1['ad_description'] = "Here for the new wave of ugandan Music: featured - Akeine";
-            $text_temp1['ad_link'] = "https://artist.mwonya.com/";
-            $text_temp1['ad_type'] = "link";
-            $text_temp1['ad_image'] = "https://viberatecdn.blob.core.windows.net/entity/artist/akeine-oGYo9";
-            array_push($menuCategory, $text_temp1);
+
+//            $text_temp1 = array();
+//            $text_temp1['ad_title'] = "You create, We share";
+//            $text_temp1['type'] = "text_ad";
+//            $text_temp1['ad_description'] = "Here for the new wave of ugandan Music: featured - Akeine";
+//            $text_temp1['ad_link'] = "https://artist.mwonya.com/";
+//            $text_temp1['ad_type'] = "link";
+//            $text_temp1['ad_image'] = "https://viberatecdn.blob.core.windows.net/entity/artist/akeine-oGYo9";
+//            array_push($menuCategory, $text_temp1);
 
 
-            $text_temp1 = array();
-            $text_temp1['ad_title'] = "Drillz The Rapper";
-            $text_temp1['type'] = "text_ad";
-            $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
-            $text_temp1['ad_link'] = "1463";
-            $text_temp1['ad_type'] = "track";
-            $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
-            array_push($menuCategory, $text_temp1);
+//            $text_temp1 = array();
+//            $text_temp1['ad_title'] = "Drillz The Rapper";
+//            $text_temp1['type'] = "text_ad";
+//            $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
+//            $text_temp1['ad_link'] = "1463";
+//            $text_temp1['ad_type'] = "track";
+//            $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
+//            array_push($menuCategory, $text_temp1);
 
-            $text_temp2 = array();
-            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
-            $text_temp2['type'] = "text_ad";
-            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
-            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
-            $text_temp2['ad_type'] = "link";
-            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
-            array_push($menuCategory, $text_temp2);
+//            $text_temp2 = array();
+//            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
+//            $text_temp2['type'] = "text_ad";
+//            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
+//            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
+//            $text_temp2['ad_type'] = "link";
+//            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
+//            array_push($menuCategory, $text_temp2);
 
 
         }
@@ -1199,14 +1203,14 @@ class Handler
         array_push($menuCategory, $slider_temps);
         // end get_Slider_banner
 
-        $text_temp = array();
-        $text_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
-        $text_temp['type'] = "text_ad";
-        $text_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
-        $text_temp['ad_link'] = "m_allncqhp9a1002";
-        $text_temp['ad_type'] = "collection";
-        $text_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
-        array_push($menuCategory, $text_temp);
+//        $text_temp = array();
+//        $text_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
+//        $text_temp['type'] = "text_ad";
+//        $text_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+//        $text_temp['ad_link'] = "m_allncqhp9a1002";
+//        $text_temp['ad_type'] = "collection";
+//        $text_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
+//        array_push($menuCategory, $text_temp);
 
 
         $image_temp = array();
