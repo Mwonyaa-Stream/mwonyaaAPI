@@ -1200,11 +1200,12 @@ class Handler
         // end get_Slider_banner
 
         $text_temp = array();
-        $text_temp['ad_title'] = "Mwonya Artist Program";
+        $text_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
         $text_temp['type'] = "text_ad";
-        $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-        $text_temp['ad_link'] = "https://artist.mwonya.com/";
-        $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+        $text_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+        $text_temp['ad_link'] = "m_allncqhp9a1002";
+        $image_temp['ad_type'] = "collection";
+        $text_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
         array_push($menuCategory, $text_temp);
 
 
