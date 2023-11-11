@@ -295,6 +295,15 @@ class Handler
 
         if ($page == 1) {
 
+
+            // recently played array
+            $home_hero = array();
+            $home_hero['heading'] = "Home";
+            $home_hero['type'] = "hero";
+            $home_hero['subheading'] = "Mwonya vibes";
+            array_push($menuCategory, $home_hero);
+
+
             // get_Slider_banner
             $sliders = array();
             // Set up the prepared statement
