@@ -25,6 +25,7 @@ class WeeklyTopTracks
     public function WeeklyTrackSongs(): array
     {
         foreach ($this->track_ids as $row) {
+            echo $row;
             $song = new Song($this->con,$row);
             $temp = array();
             $temp['id'] = $song->getId();
