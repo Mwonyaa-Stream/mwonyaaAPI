@@ -126,7 +126,7 @@ class Handler
                     $temp = [
                         'id' => $arry->getId(),
                         'type' => $arry->getArtist()->getName(),
-                        'out_now' => "Date: "+$arry->getReleaseDate(),
+                        'out_now' => "Date: ". $arry->getReleaseDate(),
                         'coverimage' => $arry->getArtworkPath(),
                         'song_title' => $arry->getTitle(),
                         'song_cover' => $arry->getArtworkPath(),
