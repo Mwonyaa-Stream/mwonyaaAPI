@@ -52,7 +52,7 @@ class WeeklyTopTracks
         $stmt = mysqli_prepare($this->con, "SELECT songs.id as song_id, songs.title, artists.name as weekartist, artists.profilephoto as weekimage FROM songs JOIN artists ON songs.artist = artists.id WHERE songs.id = ?");
 
         // Bind the parameter
-        mysqli_stmt_bind_param($stmt, "i", $this->track_ids['song_id'][0]);
+        mysqli_stmt_bind_param($stmt, "i", $this->track_ids[0]['song_id']);
 
         // Execute the statement
         mysqli_stmt_execute($stmt);
