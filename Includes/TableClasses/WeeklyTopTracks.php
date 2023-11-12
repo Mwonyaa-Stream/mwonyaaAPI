@@ -85,19 +85,23 @@ class WeeklyTopTracks
         foreach ($this->track_ids as $row) {
             $song = new Song($this->con,$row);
             $temp = array();
-            $temp['id'] = $song->getId();
-            $temp['title'] = $song->getTitle();
-            $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
-            $temp['artistID'] = $song->getArtistId();
-            $temp['album'] = $song->getAlbum()->getTitle();
-            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-            $temp['genre'] = $song->getGenre()->getGenre();
-            $temp['genreID'] = $song->getGenre()->getGenreid();
-            $temp['duration'] = $song->getDuration();
-            $temp['lyrics'] = $song->getLyrics();
-            $temp['path'] = $song->getPath();
-            $temp['totalplays'] = $song->getPlays();
-            $temp['albumID'] = $song->getAlbumId();
+
+            if($song->getId() != null){
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['albumID'] = $song->getAlbumId();
+            }
+
 
 
             array_push($this->tracks_weekly, $temp);
