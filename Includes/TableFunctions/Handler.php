@@ -353,38 +353,7 @@ class Handler
             array_push($menuCategory, $recently_played);
 
             // weekly Now
-            $featured_weekly = array();
-            $tracks_weekly = array();
-            $weekly_now_sql = "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10";
-            $stmt = $this->conn->prepare($weekly_now_sql);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            while ($row = $result->fetch_assoc()) {
-                $song = new Song($this->conn, $row['song_id']);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
-                $temp['position'] = $row['rank'];
-                $temp['trend'] = ($row['rank'] % 3 === 0) ? false : true;
-
-                array_push($tracks_weekly, $temp);
-            }
-            mysqli_stmt_close($stmt);
-
-
-            // Close the prepared statement
+            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
             $feat_weekly = array();
             $feat_weekly['heading'] = "Weekly Top 10";
             $feat_weekly['subheading'] = "Featuring all the tracks that have taken the heat up again. this week with the number one spot";
@@ -392,7 +361,7 @@ class Handler
             $feat_weekly['weekdate'] = "Fri 11 August 2023";
             $feat_weekly['weekimage'] = "https://asset.urbanflow256.com/images/artistprofiles/artist_profile_2023010419_Drillz%20The%20Rapper_martist628734bb29578emm.png";
             $feat_weekly['type'] = "timely";
-            $feat_weekly['Tracks'] = $tracks_weekly;
+            $feat_weekly['Tracks'] = $weeklyTracks_data->WeeklyTrackSongs();
             array_push($menuCategory, $feat_weekly);
 
             // end weekly
