@@ -84,7 +84,7 @@ class Handler
 
 
             $popular_temps = array();
-            $popular_temps['heading'] = ($artist_instance->getTag() !== 'music') ? "Most Recent" : "Most Played";
+            $popular_temps['heading'] = ($artist_instance->getTag() !== 'music') ? "Most Recent" : "Popular";
             $popular_temps['Type'] = "trending";
             $popular_temps['Tracks'] = $popular;
             array_push($itemRecords["Artist"], $popular_temps);
