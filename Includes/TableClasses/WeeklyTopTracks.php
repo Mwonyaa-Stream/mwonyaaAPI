@@ -16,7 +16,7 @@ class WeeklyTopTracks
         $check_weekly_query = mysqli_query($this->con, "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10");
 
         while ($row = mysqli_fetch_array($check_weekly_query)) {
-            array_push($this->track_ids, $row['id']);
+            array_push($this->track_ids, $row['song_id']);
         }
 
 
