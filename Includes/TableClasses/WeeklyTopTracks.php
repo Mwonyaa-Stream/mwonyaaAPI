@@ -8,8 +8,8 @@ class WeeklyTopTracks
     private $track_ids;
 
     private $track_id;
-    private $title ;
-    private $weekartist ;
+    private $title;
+    private $weekartist;
     private $weekimage;
 
 
@@ -17,7 +17,7 @@ class WeeklyTopTracks
     {
         $this->con = $con;
         $this->track_ids = array();
-        $this->tracks_weekly  = array();
+        $this->tracks_weekly = array();
         $check_weekly_query = mysqli_query($this->con, "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10");
 
         while ($row = mysqli_fetch_array($check_weekly_query)) {
@@ -25,9 +25,8 @@ class WeeklyTopTracks
         }
 
 
-
-
     }
+
     public function getWeeklyData(): array
     {
         // Fetch metadata for the top track
@@ -48,7 +47,8 @@ class WeeklyTopTracks
     }
 
 
-    public function WeeklyMetaData(){
+    public function WeeklyMetaData()
+    {
         $stmt = mysqli_prepare($this->con, "SELECT songs.id as song_id, songs.title, artists.name as weekartist, artists.profilephoto as weekimage FROM songs JOIN artists ON songs.artist = artists.id WHERE songs.id = ?");
 
         // Bind the parameter
@@ -78,47 +78,34 @@ class WeeklyTopTracks
     }
 
 
-
-
     public function WeeklyTrackSongs(): array
     {
         foreach ($this->track_ids as $row) {
-            $song = new Song($this->con,$row);
+            $song = new Song($this->con, $row);
             $temp = array();
 
-            if($song->getId() != null){
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() .$song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
+            $temp['id'] = $song->getId();
+            $temp['title'] = $song->getTitle();
+            $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+            $temp['artistID'] = $song->getArtistId();
+            $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+            $temp['genre'] = $song->getGenre()->getGenre();
+            $temp['genreID'] = $song->getGenre()->getGenreid();
+            $temp['duration'] = $song->getDuration();
+            $temp['lyrics'] = $song->getLyrics();
+            $temp['path'] = $song->getPath();
+            $temp['totalplays'] = $song->getPlays();
+            $temp['albumID'] = $song->getAlbumId();
+
+
+            if ($song->getId() != null) {
+                array_push($this->tracks_weekly, $temp);
             }
-
-
-
-            array_push($this->tracks_weekly, $temp);
         }
 
         return $this->tracks_weekly;
     }
 
 
-
-
-
-
-
-
-
-  
-
- 
 }
