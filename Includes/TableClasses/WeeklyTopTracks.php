@@ -44,6 +44,10 @@ class WeeklyTopTracks
         $feat_weekly['type'] = "timely";
         $feat_weekly['Tracks'] = $this->WeeklyTrackSongs();
 
+        if($this->weekartist == null){
+            return array();
+        }
+
         return $feat_weekly;
     }
 
