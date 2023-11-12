@@ -151,7 +151,7 @@ class Handler
                 $temp['artist'] = $album->getArtist()->getName();
                 $temp['genre'] = $album->getGenre()->getGenre();
                 $temp['artworkPath'] = $album->getArtworkPath();
-                $temp['tag'] = $album->getTag();
+                $temp['tag'] = "Latest Release";
                 $temp['description'] = $album->getDescription();
                 $temp['datecreated'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
