@@ -305,32 +305,32 @@ class Handler
 
 
             // get_Slider_banner
-            $sliders = array();
-            // Set up the prepared statement
-            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
-            $stmt = mysqli_prepare($this->conn, $slider_query);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['playlistID'] = $playlistID;
-                $temp['imagepath'] = $imagepath;
-                array_push($sliders, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $slider_temps = array();
-            $slider_temps['heading'] = "Discover";
-            $slider_temps['type'] = "slider";
-            $slider_temps['featured_sliderBanners'] = $sliders;
-            array_push($menuCategory, $slider_temps);
-            // end get_Slider_banner
+//            $sliders = array();
+//            // Set up the prepared statement
+//            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
+//            $stmt = mysqli_prepare($this->conn, $slider_query);
+//            // Execute the query
+//            mysqli_stmt_execute($stmt);
+//            // Bind the result variables
+//            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+//            // Fetch the results
+//            while (mysqli_stmt_fetch($stmt)) {
+//                $temp = array();
+//                $temp['id'] = $id;
+//                $temp['playlistID'] = $playlistID;
+//                $temp['imagepath'] = $imagepath;
+//                array_push($sliders, $temp);
+//            }
+//
+//            // Close the prepared statement
+//            mysqli_stmt_close($stmt);
+//
+//            $slider_temps = array();
+//            $slider_temps['heading'] = "Discover";
+//            $slider_temps['type'] = "slider";
+//            $slider_temps['featured_sliderBanners'] = $sliders;
+//            array_push($menuCategory, $slider_temps);
+//            // end get_Slider_banner
 
             $image_temp = array();
             $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
