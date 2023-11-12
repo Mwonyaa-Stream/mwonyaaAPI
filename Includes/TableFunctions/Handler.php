@@ -125,10 +125,10 @@ class Handler
                 if ($arry !== null) {
                     $temp = [
                         'id' => $arry->getId(),
-                        'type' => "Album",
-                        'out_now' => $arry->getTitle() . " - out now",
+                        'type' => $arry->getArtist()->getName(),
+                        'out_now' => $arry->getReleaseDate(),
                         'coverimage' => $arry->getArtworkPath(),
-                        'song_title' => $arry->getArtist()->getName() . " - " . $arry->getTitle(),
+                        'song_title' => $arry->getTitle(),
                         'song_cover' => $arry->getArtworkPath(),
                     ];
                     array_push($ArtistPick, $temp);
