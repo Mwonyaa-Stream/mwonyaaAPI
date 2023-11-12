@@ -99,13 +99,13 @@ class Handler
             $ArtistPick = [];
 
             if ($row = $result->fetch_assoc()) {
+                $pick_heading =  "Artist Pick";
+
                 $ar_id = $row['id'];
                 $ar_title = $row['tile'];
                 $ar_artistID = $row['artistID'];
                 $ar_CoverArt = $row['CoverArt'];
                 $ar_songID = $row['songID'];
-                $ar_date_created = $row['date_created'];
-                $ar_Artist = new Artist($this->conn, $ar_artistID);
                 $ar_Song = new Song($this->conn, $ar_songID);
 
                 $temp = [
@@ -119,6 +119,8 @@ class Handler
                 array_push($ArtistPick, $temp);
             } else {
                 // latest release
+                $pick_heading =  "Latest Release";
+
                 $arry = $artist_instance->getLatestRelease();
                 if ($arry !== null) {
                     $temp = [
@@ -131,11 +133,12 @@ class Handler
                     ];
                     array_push($ArtistPick, $temp);
                 }
+
             }
 
 
             $artistpick_array = array();
-            $artistpick_array['heading'] = "Artist Pick";
+            $artistpick_array['heading'] = $pick_heading;
             $artistpick_array['Type'] = "pick";
             $artistpick_array['ArtistPick'] = $ArtistPick;
             array_push($itemRecords["Artist"], $artistpick_array);
@@ -151,7 +154,7 @@ class Handler
                 $temp['artist'] = $album->getArtist()->getName();
                 $temp['genre'] = $album->getGenre()->getGenre();
                 $temp['artworkPath'] = $album->getArtworkPath();
-                $temp['tag'] = "Latest Release";
+                $temp['tag'] = $album->getTag();
                 $temp['description'] = $album->getDescription();
                 $temp['datecreated'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
