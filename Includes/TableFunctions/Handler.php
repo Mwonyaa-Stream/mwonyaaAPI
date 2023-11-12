@@ -354,15 +354,7 @@ class Handler
 
             // weekly Now
             $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-            $feat_weekly = array();
-            $feat_weekly['heading'] = "Weekly Top 10";
-            $feat_weekly['subheading'] = "Featuring all the tracks that have taken the heat up again. this week with the number one spot";
-            $feat_weekly['weekartist'] = "Drillz The Rapper";
-            $feat_weekly['weekdate'] = "Fri 11 August 2023";
-            $feat_weekly['weekimage'] = "https://asset.urbanflow256.com/images/artistprofiles/artist_profile_2023010419_Drillz%20The%20Rapper_martist628734bb29578emm.png";
-            $feat_weekly['type'] = "timely";
-            $feat_weekly['Tracks'] = $weeklyTracks_data->WeeklyTrackSongs();
-            array_push($menuCategory, $feat_weekly);
+            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
 
             // end weekly
 

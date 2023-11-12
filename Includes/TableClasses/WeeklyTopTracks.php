@@ -7,6 +7,11 @@ class WeeklyTopTracks
     private $tracks_weekly;
     private $track_ids;
 
+    private $track_id;
+    private $title ;
+    private $weekartist ;
+    private $weekimage;
+
 
     public function __construct($con)
     {
@@ -20,7 +25,60 @@ class WeeklyTopTracks
         }
 
 
+
+
     }
+    public function getWeeklyData(): array
+    {
+        // Fetch metadata for the top track
+        $this->WeeklyMetaData();
+        $currentDate = date('D j F Y');
+        $interestingHeading = $this->title . " by " . $this->weekartist;
+
+        $feat_weekly = array();
+        $feat_weekly['heading'] = "Weekly Top 10";
+        $feat_weekly['subheading'] = "Featuring " . $interestingHeading . ". This track has taken the heat up again, securing the number one spot.";
+        $feat_weekly['weekartist'] = $this->weekartist;  // Use the property from the class
+        $feat_weekly['weekdate'] = $currentDate;  // Update this value if needed
+        $feat_weekly['weekimage'] = $this->weekimage;
+        $feat_weekly['type'] = "timely";
+        $feat_weekly['Tracks'] = $this->WeeklyTrackSongs();
+
+        return $feat_weekly;
+    }
+
+
+    public function WeeklyMetaData(){
+        $stmt = mysqli_prepare($this->con, "SELECT songs.id as song_id, songs.title, artists.name as weekartist, artists.profilephoto as weekimage FROM songs JOIN artists ON songs.artist = artists.id WHERE songs.id = ?");
+
+        // Bind the parameter
+        mysqli_stmt_bind_param($stmt, "i", $this->track_ids[0]);
+
+        // Execute the statement
+        mysqli_stmt_execute($stmt);
+
+        // Get the result
+        $meta_data = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($meta_data) == 0) {
+            $this->track_id = null;
+            $this->title = null;
+            $this->weekartist = null;
+            $this->weekimage = null;
+        } else {
+            $metaFetched = mysqli_fetch_array($meta_data);
+            $this->track_id = $metaFetched['song_id'];
+            $this->title = $metaFetched['title'];
+            $this->weekartist = $metaFetched['weekartist'];
+            $this->weekimage = $metaFetched['weekimage'];
+        }
+
+        // Close the statement
+        mysqli_stmt_close($stmt);
+    }
+
+
+
 
     public function WeeklyTrackSongs(): array
     {
