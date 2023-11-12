@@ -21,7 +21,7 @@ class WeeklyTopTracks
         $check_weekly_query = mysqli_query($this->con, "SELECT `id`, `song_id`, `rank`, `weeks_on_chart`, `last_week_rank`, `peak_rank`, `entry_date` FROM `weeklytop10` ORDER BY rank ASC LIMIT 10");
 
         while ($row = mysqli_fetch_array($check_weekly_query)) {
-            array_push($this->track_ids, $row['song_id']);
+            array_push($this->track_ids, $row);
         }
 
 
@@ -81,9 +81,8 @@ class WeeklyTopTracks
     public function WeeklyTrackSongs(): array
     {
         foreach ($this->track_ids as $row) {
-            $song = new Song($this->con, $row);
+            $song = new Song($this->con, $row['song_id']);
             $temp = array();
-
             $temp['id'] = $song->getId();
             $temp['title'] = $song->getTitle();
             $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
@@ -97,7 +96,8 @@ class WeeklyTopTracks
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['albumID'] = $song->getAlbumId();
-
+            $temp['position'] = $row['rank'];
+            $temp['trend'] = !(($row['rank'] % 3 === 0));
 
             if ($song->getId() != null) {
                 array_push($this->tracks_weekly, $temp);
