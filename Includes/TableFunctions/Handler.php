@@ -3576,7 +3576,7 @@ class Handler
     function Versioning()
     {
         $itemRecords = array();
-        $itemRecords["version"] = "11"; // build number should match
+        $itemRecords["version"] = "12"; // build number should match
         $itemRecords["update"] = true; // update dialog dismissable
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
