@@ -1763,6 +1763,7 @@ class Handler
 
     function keywordMatchScore($title, $artist, $query)
     {
+        echo $title."-".$artist."-".$query;
         // Implement a scoring mechanism based on exact word matching
 
         // Normalize strings to lowercase for case-insensitive matching
