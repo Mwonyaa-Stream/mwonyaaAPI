@@ -1602,7 +1602,6 @@ class Handler
 
             // Calculate and store the relevance score for the current result
             $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
-            echo $row['id']."-".$this->calculateRelevanceScore($row)." \u2022 ";
         }
 
         // Sort the results based on the relevance scores
@@ -1733,7 +1732,7 @@ class Handler
         $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
 
         // Example: Add popularity score
-        $score += $popularityWeight * $result['plays'];
+//        $score += $popularityWeight * $result['plays'];
 
         // Example: Add freshness score (consider the date added or updated)
         $score += $freshnessWeight * $this->calculateFreshnessScore($result['date_added']);
