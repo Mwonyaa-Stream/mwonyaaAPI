@@ -1607,7 +1607,7 @@ class Handler
         // Sort the results based on the relevance scores
         array_multisort($relevanceScores, SORT_DESC, $data);
 
-        echo json_encode($relevanceScores[$row['id']]);
+//        echo json_encode($data);
 
         $total_results_got = count($data);
 
@@ -1732,7 +1732,7 @@ class Handler
     function calculateRelevanceScore($result)
     {
         // Example: Assign weights to different factors
-        $keywordWeight = 10;
+        $keywordWeight = 2;
         $popularityWeight = 1;
         $freshnessWeight = 0.5;
 
@@ -1740,7 +1740,7 @@ class Handler
         $totalWeight = 0;
 
         // Example: Check keyword match
-        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['title'], $_GET['key_query']);
+        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
         $totalWeight += $keywordWeight;
 
         // Example: Add popularity score if 'plays' attribute is available and is a numeric value
@@ -1783,7 +1783,7 @@ class Handler
         }, true);
 
         // Return a higher score if the entire words match completely
-        return ($titleMatches || $artistMatches) ? 5 : 1;
+        return ($titleMatches || $artistMatches) ? 2 : 1;
     }
 
 
