@@ -1564,13 +1564,13 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics FROM songs WHERE title LIKE ? ) 
+        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics, releaseDate as date_added FROM songs WHERE title LIKE ? ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics' FROM artists  WHERE name LIKE ? ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics',datecreated as date_added FROM artists  WHERE name LIKE ? ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics' FROM albums  WHERE title LIKE ? ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics',releaseDate as date_added FROM albums  WHERE title LIKE ? ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics' FROM playlists WHERE name LIKE ? )"; // SQL with parameters
+           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics',dateCreated as date_added FROM playlists WHERE name LIKE ? )"; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
         $stmt->bind_param("ssss", $search, $search, $search, $search);
         $stmt->execute();
