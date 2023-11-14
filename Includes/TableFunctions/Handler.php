@@ -1743,8 +1743,8 @@ class Handler
         $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
         $totalWeight += $keywordWeight;
 
-        // Example: Add popularity score if 'plays' attribute is available
-        if (isset($result['plays'])) {
+        // Example: Add popularity score if 'plays' attribute is available and is a numeric value
+        if (isset($result['plays']) && is_numeric($result['plays'])) {
             $score += $popularityWeight * $result['plays'];
             $totalWeight += $popularityWeight;
         }
@@ -1758,6 +1758,7 @@ class Handler
 
         return $normalizedScore;
     }
+
 
 
     function keywordMatchScore($title, $artist, $query)
