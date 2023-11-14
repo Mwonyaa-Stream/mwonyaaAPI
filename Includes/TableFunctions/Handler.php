@@ -1595,7 +1595,7 @@ class Handler
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
         $relevanceScores = array();
-        echo json_encode($data);
+//        echo json_encode($data);
         // Loop through the search results
         foreach ($data as $row) {
             $temp = array();
@@ -1607,7 +1607,7 @@ class Handler
         // Sort the results based on the relevance scores
         array_multisort($relevanceScores, SORT_DESC, $data);
 
-        echo json_encode($data);
+//        echo json_encode($data);
 
         $total_results_got = count($data);
 
