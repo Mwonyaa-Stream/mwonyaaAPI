@@ -1763,26 +1763,27 @@ class Handler
 
     function keywordMatchScore($title, $artist, $query)
     {
-        // Implement a scoring mechanism based on partial string matching (Levenshtein distance)
+        // Implement a scoring mechanism based on exact word matching
 
         // Normalize strings to lowercase for case-insensitive matching
         $title = strtolower($title);
         $artist = strtolower($artist);
         $query = strtolower($query);
 
-        // Calculate Levenshtein distance for title and artist
-        $titleDistance = levenshtein($title, $query);
-        $artistDistance = levenshtein($artist, $query);
+        // Split the query into individual words
+        $queryWords = explode(' ', $query);
 
-        // Set a threshold for partial string matching
-        $threshold = 5; // You can adjust this threshold based on your needs
+        // Check if each word in the query matches the title or artist completely
+        $titleMatches = array_reduce($queryWords, function ($carry, $word) use ($title) {
+            return $carry && (strpos($title, $word) !== false);
+        }, true);
 
-        // If the Levenshtein distance is within the threshold, consider it a match
-        $titleMatch = $titleDistance <= $threshold;
-        $artistMatch = $artistDistance <= $threshold;
+        $artistMatches = array_reduce($queryWords, function ($carry, $word) use ($artist) {
+            return $carry && (strpos($artist, $word) !== false);
+        }, true);
 
-        // Return a score based on whether there's a match in either title or artist
-        return ($titleMatch || $artistMatch) ? 1 : 0;
+        // Return a higher score if the entire words match completely
+        return ($titleMatches || $artistMatches) ? 2 : 1;
     }
 
 
