@@ -1775,15 +1775,15 @@ class Handler
 
         // Check if each word in the query matches the title or artist completely
         $titleMatches = array_reduce($queryWords, function ($carry, $word) use ($title) {
-            return $carry && (str_contains($title, $word));
+            return $carry && (strpos($title, $word) !== false);
         }, true);
 
         $artistMatches = array_reduce($queryWords, function ($carry, $word) use ($artist) {
-            return $carry && (str_contains($artist, $word));
+            return $carry && (strpos($artist, $word) !== false);
         }, true);
 
         // Return a higher score if the entire words match completely
-        return ($titleMatches || $artistMatches) ? 2 : 1;
+        return ($titleMatches || $artistMatches) ? 1 : 2;
     }
 
 
