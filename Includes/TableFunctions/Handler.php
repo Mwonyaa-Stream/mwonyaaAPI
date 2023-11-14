@@ -1740,7 +1740,7 @@ class Handler
         $totalWeight = 0;
 
         // Example: Check keyword match
-        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
+        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['title'], $_GET['key_query']);
         $totalWeight += $keywordWeight;
 
         // Example: Add popularity score if 'plays' attribute is available and is a numeric value
