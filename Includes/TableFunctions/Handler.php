@@ -1737,18 +1737,28 @@ class Handler
         $freshnessWeight = 0.5;
 
         $score = 0;
+        $totalWeight = 0;
 
         // Example: Check keyword match
         $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
+        $totalWeight += $keywordWeight;
 
-        // Example: Add popularity score
-        $score += $popularityWeight * $result['plays'];
+        // Example: Add popularity score if 'plays' attribute is available
+        if (isset($result['plays'])) {
+            $score += $popularityWeight * $result['plays'];
+            $totalWeight += $popularityWeight;
+        }
 
         // Example: Add freshness score (consider the date added or updated)
         $score += $freshnessWeight * $this->calculateFreshnessScore($result['date_added']);
+        $totalWeight += $freshnessWeight;
 
-        return $score;
+        // Normalize the score by dividing by the total weight
+        $normalizedScore = ($totalWeight > 0) ? $score / $totalWeight : 0;
+
+        return $normalizedScore;
     }
+
 
     function keywordMatchScore($title, $artist, $query)
     {
