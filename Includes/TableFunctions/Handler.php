@@ -1602,6 +1602,7 @@ class Handler
 
             // Calculate and store the relevance score for the current result
             $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
+            echo $this->calculateRelevanceScore($row);
         }
 
         // Sort the results based on the relevance scores
