@@ -1607,7 +1607,7 @@ class Handler
         // Sort the results based on the relevance scores
         array_multisort($relevanceScores, SORT_DESC, $data);
 
-//        echo json_encode($data);
+        echo json_encode($relevanceScores[$row['id']]);
 
         $total_results_got = count($data);
 
@@ -1763,7 +1763,6 @@ class Handler
 
     function keywordMatchScore($title, $artist, $query)
     {
-        echo $title."-".$artist."-".$query;
         // Implement a scoring mechanism based on exact word matching
 
         // Normalize strings to lowercase for case-insensitive matching
