@@ -1594,6 +1594,19 @@ class Handler
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
+        $relevanceScores = array();
+
+        // Loop through the search results
+        foreach ($data as $row) {
+            $temp = array();
+
+            // Calculate and store the relevance score for the current result
+            $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
+        }
+
+        // Sort the results based on the relevance scores
+        array_multisort($relevanceScores, SORT_DESC, $data);
+
         $total_results_got = count($data);
 
 
@@ -1704,6 +1717,46 @@ class Handler
 
         return $itemRecords;
     }
+
+
+    function calculateRelevanceScore($result)
+    {
+        // Example: Assign weights to different factors
+        $keywordWeight = 2;
+        $popularityWeight = 1;
+        $freshnessWeight = 0.5;
+
+        $score = 0;
+
+        // Example: Check keyword match
+        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
+
+        // Example: Add popularity score
+        $score += $popularityWeight * $result['plays'];
+
+        // Example: Add freshness score (consider the date added or updated)
+        $score += $freshnessWeight * $this->calculateFreshnessScore($result['date_added']);
+
+        return $score;
+    }
+
+    function keywordMatchScore($title, $artist, $query)
+    {
+        // Implement a scoring mechanism based on keyword match
+        // You may use different algorithms like Levenshtein distance, partial string matching, etc.
+        // For simplicity, let's assume a basic match for this example
+        return (stripos($title, $query) !== false || stripos($artist, $query) !== false) ? 1 : 0;
+    }
+
+    function calculateFreshnessScore($dateAdded)
+    {
+        // Implement a scoring mechanism based on freshness
+        // You may consider the difference between the current date and the date added
+        // For simplicity, let's assume a basic calculation
+        $daysAgo = (strtotime('now') - strtotime($dateAdded)) / (60 * 60 * 24);
+        return 1 / ($daysAgo + 1); // The '+ 1' ensures a non-zero score even if it's not very fresh
+    }
+
 
     function searchAdvance(): array
     {
