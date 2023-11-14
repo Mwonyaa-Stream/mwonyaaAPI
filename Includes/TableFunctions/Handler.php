@@ -1732,7 +1732,7 @@ class Handler
     function calculateRelevanceScore($result)
     {
         // Example: Assign weights to different factors
-        $keywordWeight = 2;
+        $keywordWeight = 10;
         $popularityWeight = 1;
         $freshnessWeight = 0.5;
 
@@ -1783,7 +1783,7 @@ class Handler
         }, true);
 
         // Return a higher score if the entire words match completely
-        return ($titleMatches || $artistMatches) ? 1 : 2;
+        return ($titleMatches || $artistMatches) ? 5 : 1;
     }
 
 
