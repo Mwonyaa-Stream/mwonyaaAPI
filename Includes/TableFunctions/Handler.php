@@ -1595,7 +1595,7 @@ class Handler
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
         $relevanceScores = array();
-
+        echo json_encode($data);
         // Loop through the search results
         foreach ($data as $row) {
             $temp = array();
