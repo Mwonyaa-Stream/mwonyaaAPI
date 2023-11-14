@@ -1607,6 +1607,8 @@ class Handler
         // Sort the results based on the relevance scores
         array_multisort($relevanceScores, SORT_DESC, $data);
 
+        echo json_encode($data);
+
         $total_results_got = count($data);
 
 
