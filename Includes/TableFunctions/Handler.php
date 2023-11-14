@@ -1614,6 +1614,9 @@ class Handler
 
             foreach ($data as $row) {
                 $temp = array();
+                $relevanceScore = $this->calculateRelevanceScore($row);
+
+                // Add the relevance score to the temporary array
 
                 if ($row['type'] == "song") {
                     $temp['id'] = $row['id'];
@@ -1633,6 +1636,8 @@ class Handler
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
+                    $temp['relevance_score'] = $relevanceScore;
+
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1652,6 +1657,7 @@ class Handler
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
+                    $temp['relevance_score'] = $relevanceScore;
 
                 }
                 if ($row['type'] == "artist") {
@@ -1672,6 +1678,7 @@ class Handler
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = $artist_instance->getVerified();
+                    $temp['relevance_score'] = $relevanceScore;
 
                 }
                 if ($row['type'] == "playlist") {
@@ -1691,6 +1698,7 @@ class Handler
                     $temp['type'] = $row['type'];
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
+                    $temp['relevance_score'] = $relevanceScore;
 
                 }
 
