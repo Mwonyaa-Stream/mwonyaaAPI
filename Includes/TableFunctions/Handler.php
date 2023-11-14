@@ -1752,11 +1752,28 @@ class Handler
 
     function keywordMatchScore($title, $artist, $query)
     {
-        // Implement a scoring mechanism based on keyword match
-        // You may use different algorithms like Levenshtein distance, partial string matching, etc.
-        // For simplicity, let's assume a basic match for this example
-        return (stripos($title, $query) !== false || stripos($artist, $query) !== false) ? 1 : 0;
+        // Implement a scoring mechanism based on partial string matching (Levenshtein distance)
+
+        // Normalize strings to lowercase for case-insensitive matching
+        $title = strtolower($title);
+        $artist = strtolower($artist);
+        $query = strtolower($query);
+
+        // Calculate Levenshtein distance for title and artist
+        $titleDistance = levenshtein($title, $query);
+        $artistDistance = levenshtein($artist, $query);
+
+        // Set a threshold for partial string matching
+        $threshold = 5; // You can adjust this threshold based on your needs
+
+        // If the Levenshtein distance is within the threshold, consider it a match
+        $titleMatch = $titleDistance <= $threshold;
+        $artistMatch = $artistDistance <= $threshold;
+
+        // Return a score based on whether there's a match in either title or artist
+        return ($titleMatch || $artistMatch) ? 1 : 0;
     }
+
 
     function calculateFreshnessScore($dateAdded)
     {
