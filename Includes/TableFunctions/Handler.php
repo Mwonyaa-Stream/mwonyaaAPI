@@ -1740,7 +1740,7 @@ class Handler
         $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
 
         // Example: Add popularity score
-//        $score += $popularityWeight * $result['plays'];
+        $score += $popularityWeight * $result['plays'];
 
         // Example: Add freshness score (consider the date added or updated)
         $score += $freshnessWeight * $this->calculateFreshnessScore($result['date_added']);
