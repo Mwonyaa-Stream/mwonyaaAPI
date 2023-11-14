@@ -1789,11 +1789,18 @@ class Handler
 
     function calculateFreshnessScore($dateAdded)
     {
-        // Implement a scoring mechanism based on freshness
-        // You may consider the difference between the current date and the date added
-        // For simplicity, let's assume a basic calculation
+
+        // Define constants for freshness scoring
+        $halfLifeInDays = 7; // Adjust this based on your preference
+        $maxScore = 1; // The maximum freshness score
+
+        // Calculate the difference in days from the current date
         $daysAgo = (strtotime('now') - strtotime($dateAdded)) / (60 * 60 * 24);
-        return 1 / ($daysAgo + 1); // The '+ 1' ensures a non-zero score even if it's not very fresh
+
+        // Use an exponential decay function to calculate freshness score
+        $freshnessScore = $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
+
+        return $freshnessScore;
     }
 
 
