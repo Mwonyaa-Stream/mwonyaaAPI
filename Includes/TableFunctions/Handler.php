@@ -356,7 +356,7 @@ class Handler
             $text_temp['ad_description'] = "Immerse yourself in the latest beats. #FreshFridays #WeeklySoundtrack";
             $text_temp['ad_link'] = "mwP_mobile6b2496c8fe";
             $text_temp['ad_type'] = "playlist";
-            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newMusicWeek.png";
+            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newmusic_designtwo.png";
             array_push($menuCategory, $text_temp);
 
 
