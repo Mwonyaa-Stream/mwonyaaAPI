@@ -336,12 +336,17 @@ class Handler
             // end get_Slider_banner
 
             $image_temp = array();
-            $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
+            $image_temp['ad_title'] = "Interest";
             $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
-            $image_temp['ad_link'] = "m_allncqhp9a1002";
-            $image_temp['ad_type'] = "collection";
-            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
+            $image_temp['ad_description'] = "Kavali King \u2022 Timothy Dylan New Banger is setting trends. Listen Now.";
+            $image_temp['ad_link'] = "1764";
+//            $image_temp['ad_type'] = "collection";
+            $image_temp['ad_type'] = "track";
+//            $image_temp['ad_type'] = "event";
+//            $image_temp['ad_type'] = "artist";
+//            $image_temp['ad_type'] = "playlist";
+//            $image_temp['ad_type'] = "link";
+            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/VXX.jpg";
             array_push($menuCategory, $image_temp);
 
 
@@ -1186,13 +1191,19 @@ class Handler
 //        array_push($menuCategory, $text_temp);
 
 
+
         $image_temp = array();
-        $image_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
+        $image_temp['ad_title'] = "Interest";
         $image_temp['type'] = "image_ad";
-        $image_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
-        $image_temp['ad_link'] = "m_allncqhp9a1002";
-        $image_temp['ad_type'] = "collection";
-        $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
+        $image_temp['ad_description'] = "Kavali King \u2022 Timothy Dylan New Banger is setting trends. Listen Now.";
+        $image_temp['ad_link'] = "1764";
+//            $image_temp['ad_type'] = "collection";
+        $image_temp['ad_type'] = "track";
+//            $image_temp['ad_type'] = "event";
+//            $image_temp['ad_type'] = "artist";
+//            $image_temp['ad_type'] = "playlist";
+//            $image_temp['ad_type'] = "link";
+        $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/VXX.jpg";
         array_push($menuCategory, $image_temp);
 
 
