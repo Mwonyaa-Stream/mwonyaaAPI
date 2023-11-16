@@ -335,19 +335,29 @@ class Handler
             array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
-            $image_temp = array();
-            $image_temp['ad_title'] = "Interest";
-            $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Kavali King  •  Timothy Dylan New Banger is setting trends. Listen Now.";
-            $image_temp['ad_link'] = "1764";
-//            $image_temp['ad_type'] = "collection";
-            $image_temp['ad_type'] = "track";
-//            $image_temp['ad_type'] = "event";
-//            $image_temp['ad_type'] = "artist";
-//            $image_temp['ad_type'] = "playlist";
-//            $image_temp['ad_type'] = "link";
-            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/VXX.jpg";
-            array_push($menuCategory, $image_temp);
+//            $image_temp = array();
+//            $image_temp['ad_title'] = "Interest";
+//            $image_temp['type'] = "image_ad";
+//            $image_temp['ad_description'] = "Kavali King  •  Timothy Dylan New Banger is setting trends. Listen Now.";
+//            $image_temp['ad_link'] = "1764";
+////            $image_temp['ad_type'] = "collection";
+//            $image_temp['ad_type'] = "track";
+////            $image_temp['ad_type'] = "event";
+////            $image_temp['ad_type'] = "artist";
+////            $image_temp['ad_type'] = "playlist";
+////            $image_temp['ad_type'] = "link";
+//            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/VXX.jpg";
+//            array_push($menuCategory, $image_temp);
+
+
+            $text_temp = array();
+            $text_temp['ad_title'] = "New Music Friday";
+            $text_temp['type'] = "text_ad";
+            $text_temp['ad_description'] = "Every Friday, immerse yourself in the latest beats carefully curated for your sonic pleasure. #FreshFridays #WeeklySoundtrack";
+            $text_temp['ad_link'] = "mwP_mobile6b2496c8fe";
+            $text_temp['ad_type'] = "playlist";
+            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newMusicWeek.png";
+            array_push($menuCategory, $text_temp);
 
 
             // recently played array
