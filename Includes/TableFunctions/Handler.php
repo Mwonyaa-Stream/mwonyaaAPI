@@ -338,7 +338,7 @@ class Handler
             $image_temp = array();
             $image_temp['ad_title'] = "Interest";
             $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Kavali King \u2022 Timothy Dylan New Banger is setting trends. Listen Now.";
+            $image_temp['ad_description'] = "Kavali King  •  Timothy Dylan New Banger is setting trends. Listen Now.";
             $image_temp['ad_link'] = "1764";
 //            $image_temp['ad_type'] = "collection";
             $image_temp['ad_type'] = "track";
@@ -1195,7 +1195,7 @@ class Handler
         $image_temp = array();
         $image_temp['ad_title'] = "Interest";
         $image_temp['type'] = "image_ad";
-        $image_temp['ad_description'] = "Kavali King \u2022 Timothy Dylan New Banger is setting trends. Listen Now.";
+        $image_temp['ad_description'] = "Kavali King • Timothy Dylan New Banger is setting trends. Listen Now.";
         $image_temp['ad_link'] = "1764";
 //            $image_temp['ad_type'] = "collection";
         $image_temp['ad_type'] = "track";
