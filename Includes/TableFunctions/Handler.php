@@ -353,7 +353,7 @@ class Handler
             $text_temp = array();
             $text_temp['ad_title'] = "New Music Friday";
             $text_temp['type'] = "text_ad";
-            $text_temp['ad_description'] = "Every Friday, immerse yourself in the latest beats carefully curated for your sonic pleasure. #FreshFridays #WeeklySoundtrack";
+            $text_temp['ad_description'] = "Immerse yourself in the latest beats. #FreshFridays #WeeklySoundtrack";
             $text_temp['ad_link'] = "mwP_mobile6b2496c8fe";
             $text_temp['ad_type'] = "playlist";
             $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newMusicWeek.png";
