@@ -1612,7 +1612,6 @@ class Handler
 
         $search_query_sql = $search_query_top . " ORDER BY `title` ASC LIMIT ?,?";
         $stmt = $this->conn->prepare($search_query_sql);
-        echo $search_query_sql;
         $stmt->bind_param("ssssii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
