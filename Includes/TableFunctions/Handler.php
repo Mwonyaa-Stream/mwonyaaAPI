@@ -359,6 +359,12 @@ class Handler
 //            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newmusic_designtwo.png";
 //            array_push($menuCategory, $text_temp);
 
+            // weekly Now
+            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
+            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+
+            // end weekly
+
 
             // recently played array
             $recently_played = array();
@@ -367,11 +373,7 @@ class Handler
             $recently_played['subheading'] = "Tracks Last Listened to";
             array_push($menuCategory, $recently_played);
 
-            // weekly Now
-            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
 
-            // end weekly
 
 
             // Trending Now
