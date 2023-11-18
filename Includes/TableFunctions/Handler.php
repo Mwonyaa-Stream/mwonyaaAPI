@@ -1998,7 +1998,6 @@ class Handler
         $search_algorithm = "fulltext";
         // create the base variables for building the search query
 
-//        SELECT id,name,'path',profilephoto, 'artist' as type FROM artists  WHERE MATCH(name) AGAINST('oil phone' IN NATURAL LANGUAGE MODE)
 
 //        echo $search_string;
         $search_string = "
@@ -2039,7 +2038,7 @@ class Handler
 
             $category_stmt = $search_string . " ORDER BY `title` ASC LIMIT " . $offset . "," . $no_of_records_per_page . "";
 
-//            echo $category_stmt;
+            echo $category_stmt;
 
 
             $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
