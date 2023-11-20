@@ -663,7 +663,7 @@ class Handler
             //get featured Dj mixes
             $featured_dj_mixes = array();
 
-            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE tag = \"dj\" GROUP BY artist  ORDER BY datecreated DESC LIMIT 8";
+            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
 
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $featured_album_Query);
