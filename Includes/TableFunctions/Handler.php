@@ -376,7 +376,7 @@ class Handler
 
 
 
-             Trending Now
+//             Trending Now
             $featured_trending = array();
             $tracks_trending = array();
             $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
@@ -475,7 +475,7 @@ class Handler
 
             // Close the prepared statement
             $feat_recommended = array();
-            $feat_recommended['heading'] = "Recommended";
+            $feat_recommended['heading'] = "You Might Like";
             $feat_recommended['type'] = "trend";
             $feat_recommended['Tracks'] = $R_trackListArray;
             array_push($menuCategory, $feat_recommended);
