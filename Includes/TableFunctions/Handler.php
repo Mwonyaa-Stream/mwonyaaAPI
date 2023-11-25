@@ -307,47 +307,78 @@ class Handler
             array_push($menuCategory, $home_hero);
 
 
-            // get_Slider_banner
-            $sliders = array();
+
+            //get Featured Artist
+            $featuredCategory = array();
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
             // Set up the prepared statement
-            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
-            $stmt = mysqli_prepare($this->conn, $slider_query);
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
             mysqli_stmt_execute($stmt);
             // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
             // Fetch the results
             while (mysqli_stmt_fetch($stmt)) {
                 $temp = array();
                 $temp['id'] = $id;
-                $temp['playlistID'] = $playlistID;
-                $temp['imagepath'] = $imagepath;
-                array_push($sliders, $temp);
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
             }
 
             // Close the prepared statement
             mysqli_stmt_close($stmt);
 
-            $slider_temps = array();
-            $slider_temps['heading'] = "Discover";
-            $slider_temps['type'] = "slider";
-            $slider_temps['featured_sliderBanners'] = $sliders;
-            array_push($menuCategory, $slider_temps);
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Featured Artists";
+            $feat_Cat_temps['type'] = "artist";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+
+
+            // get_Slider_banner
+//            $sliders = array();
+//            // Set up the prepared statement
+//            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
+//            $stmt = mysqli_prepare($this->conn, $slider_query);
+//            // Execute the query
+//            mysqli_stmt_execute($stmt);
+//            // Bind the result variables
+//            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+//            // Fetch the results
+//            while (mysqli_stmt_fetch($stmt)) {
+//                $temp = array();
+//                $temp['id'] = $id;
+//                $temp['playlistID'] = $playlistID;
+//                $temp['imagepath'] = $imagepath;
+//                array_push($sliders, $temp);
+//            }
+//
+//            // Close the prepared statement
+//            mysqli_stmt_close($stmt);
+//
+//            $slider_temps = array();
+//            $slider_temps['heading'] = "Discover";
+//            $slider_temps['type'] = "slider";
+//            $slider_temps['featured_sliderBanners'] = $sliders;
+//            array_push($menuCategory, $slider_temps);
             // end get_Slider_banner
 
-            $image_temp = array();
-            $image_temp['ad_title'] = "BOUNCE";
-            $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Selecta Jeff  •  Kanyere New Banger is setting trends. Listen Now.";
-            $image_temp['ad_link'] = "1796";
-//            $image_temp['ad_type'] = "collection";
-            $image_temp['ad_type'] = "track";
-//            $image_temp['ad_type'] = "event";
-//            $image_temp['ad_type'] = "artist";
-//            $image_temp['ad_type'] = "playlist";
-//            $image_temp['ad_type'] = "link";
-            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bounce_cover.jpg";
-            array_push($menuCategory, $image_temp);
+//            $image_temp = array();
+//            $image_temp['ad_title'] = "BOUNCE";
+//            $image_temp['type'] = "image_ad";
+//            $image_temp['ad_description'] = "Selecta Jeff  •  Kanyere New Banger is setting trends. Listen Now.";
+//            $image_temp['ad_link'] = "1796";
+////            $image_temp['ad_type'] = "collection";
+//            $image_temp['ad_type'] = "track";
+////            $image_temp['ad_type'] = "event";
+////            $image_temp['ad_type'] = "artist";
+////            $image_temp['ad_type'] = "playlist";
+////            $image_temp['ad_type'] = "link";
+//            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bounce_cover.jpg";
+//            array_push($menuCategory, $image_temp);
 
 
 //            $text_temp = array();
@@ -360,8 +391,8 @@ class Handler
 //            array_push($menuCategory, $text_temp);
 
             // weekly Now
-//            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-//            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
+            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
 
             // end weekly
 
@@ -377,47 +408,47 @@ class Handler
 
 
 //             Trending Now
-            $featured_trending = array();
-            $tracks_trending = array();
-            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                array_push($featured_trending, $song_id);
-            }
-            mysqli_stmt_close($stmt);
-
-            foreach ($featured_trending as $track) {
-                $song = new Song($this->conn, $track);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
-                array_push($tracks_trending, $temp);
-
-            }
-
-            // Close the prepared statement
-            $feat_trend = array();
-            $feat_trend['heading'] = "Trending Now";
-            $feat_trend['type'] = "trend";
-            $feat_trend['Tracks'] = $tracks_trending;
-            array_push($menuCategory, $feat_trend);
+//            $featured_trending = array();
+//            $tracks_trending = array();
+//            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+//            // Set up the prepared statement
+//            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
+//            // Execute the query
+//            mysqli_stmt_execute($stmt);
+//            // Bind the result variables
+//            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
+//            // Fetch the results
+//            while (mysqli_stmt_fetch($stmt)) {
+//                array_push($featured_trending, $song_id);
+//            }
+//            mysqli_stmt_close($stmt);
+//
+//            foreach ($featured_trending as $track) {
+//                $song = new Song($this->conn, $track);
+//                $temp = array();
+//                $temp['id'] = $song->getId();
+//                $temp['title'] = $song->getTitle();
+//                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+//                $temp['artistID'] = $song->getArtistId();
+//                $temp['album'] = $song->getAlbum()->getTitle();
+//                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+//                $temp['genre'] = $song->getGenre()->getGenre();
+//                $temp['genreID'] = $song->getGenre()->getGenreid();
+//                $temp['duration'] = $song->getDuration();
+//                $temp['lyrics'] = $song->getLyrics();
+//                $temp['path'] = $song->getPath();
+//                $temp['totalplays'] = $song->getPlays();
+//                $temp['albumID'] = $song->getAlbumId();
+//                array_push($tracks_trending, $temp);
+//
+//            }
+//
+//            // Close the prepared statement
+//            $feat_trend = array();
+//            $feat_trend['heading'] = "Trending Now";
+//            $feat_trend['type'] = "trend";
+//            $feat_trend['Tracks'] = $tracks_trending;
+//            array_push($menuCategory, $feat_trend);
 
 
 
@@ -509,34 +540,6 @@ class Handler
             // recommemded
 
 
-            //get Featured Artist
-            $featuredCategory = array();
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
-
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['profilephoto'] = $profilephoto;
-                $temp['name'] = $name;
-                array_push($featuredCategory, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Featured Artists";
-            $feat_Cat_temps['type'] = "artist";
-            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
-            array_push($menuCategory, $feat_Cat_temps);
-            ///end featuredArtist
             ///
             ///
             ///
@@ -1208,7 +1211,7 @@ class Handler
         $image_temp['ad_title'] = "Interest";
         $image_temp['type'] = "image_ad";
         $image_temp['ad_description'] = "Kavali King • Timothy Dylan New Banger is setting trends. Listen Now.";
-        $image_temp['ad_link'] = "1764";
+        $image_temp['ad_link'] = "1787";
 //            $image_temp['ad_type'] = "collection";
         $image_temp['ad_type'] = "track";
 //            $image_temp['ad_type'] = "event";
