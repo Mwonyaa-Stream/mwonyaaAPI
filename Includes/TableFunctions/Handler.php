@@ -396,6 +396,14 @@ class Handler
 
             // end weekly
 
+            $text_temp1 = array();
+            $text_temp1['ad_title'] = "Swangz Avenue - Event";
+            $text_temp1['type'] = "text_ad";
+            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
+            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
+            $text_temp1['ad_type'] = "link";
+            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
+            array_push($menuCategory, $text_temp1);
 
             // recently played array
             $recently_played = array();
@@ -709,14 +717,14 @@ class Handler
             ///end featuredAlbums
             ///
 
-            $text_temp1 = array();
-            $text_temp1['ad_title'] = "Swangz Avenue - Event";
-            $text_temp1['type'] = "text_ad";
-            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
-            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
-            $text_temp1['ad_type'] = "link";
-            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/IMG_9974-scaled.jpeg?fit=3840%2C1718";
-            array_push($menuCategory, $text_temp1);
+//            $text_temp1 = array();
+//            $text_temp1['ad_title'] = "Swangz Avenue - Event";
+//            $text_temp1['type'] = "text_ad";
+//            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
+//            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
+//            $text_temp1['ad_type'] = "link";
+//            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
+//            array_push($menuCategory, $text_temp1);
 
 
 //            $text_temp1 = array();
