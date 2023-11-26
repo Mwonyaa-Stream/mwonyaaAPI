@@ -21,7 +21,7 @@
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
-            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring, s.lyrics FROM songs s where s.id = '$this->id'";
+            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
             $query = mysqli_query($this->con, $song_query_sql);
 
 
@@ -173,7 +173,7 @@
 
 
         public function getRelatedSongs(){
-            $query = mysqli_query($this->con, "SELECT s.id as song_id from track_plays t join songs s on s.id = t.songid where s.genre = '$this->genre' AND s.id != '$this->id' ORDER BY `t`.`total_plays` DESC  LIMIT 14 ");
+            $query = mysqli_query($this->con, "SELECT s.id as song_id from track_plays t join songs s on s.id = t.songid where s.available = 1 AND s.genre = '$this->genre' AND s.id != '$this->id' ORDER BY `t`.`total_plays` DESC  LIMIT 14 ");
             $array = array();
 
             while($row = mysqli_fetch_array($query)){
@@ -184,7 +184,7 @@
         }
 
         public function getSongRadio(){
-            $sql_query = "SELECT s.id, s.title, s.artist, s.genre, s.duration FROM ( SELECT * FROM songs WHERE genre = '$this->genre' AND id != '$this->id' ORDER BY RAND() LIMIT 12 ) s LEFT JOIN track_plays f ON s.id = f.songid LEFT JOIN likedsongs l ON s.id = l.songId GROUP BY s.id ORDER BY COALESCE(f.total_plays, 0) DESC, COALESCE(l.dateAdded, 0) DESC";
+            $sql_query = "SELECT s.id, s.title, s.artist, s.genre, s.duration FROM ( SELECT * FROM songs WHERE available = 1 AND genre = '$this->genre' AND id != '$this->id' ORDER BY RAND() LIMIT 12 ) s LEFT JOIN track_plays f ON s.id = f.songid LEFT JOIN likedsongs l ON s.id = l.songId GROUP BY s.id ORDER BY COALESCE(f.total_plays, 0) DESC, COALESCE(l.dateAdded, 0) DESC";
             $query = mysqli_query($this->con, $sql_query);
             $array = array();
 

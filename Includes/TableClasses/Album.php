@@ -21,7 +21,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             $this->con = $con;
             $this->id = $id;
 
-            $query = mysqli_query($this->con, "SELECT * FROM albums WHERE id='$this->id'");
+            $query = mysqli_query($this->con, "SELECT * FROM albums WHERE available = 1 AND id='$this->id'");
             $album = mysqli_fetch_array($query);
 
 
@@ -97,7 +97,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
         public function getNumberOfSongs(){
-            $sql = "SELECT COUNT(*) as count FROM songs WHERE album = '". $this->id . "'  limit 1";
+            $sql = "SELECT COUNT(*) as count FROM songs WHERE available = 1 AND album = '". $this->id . "'  limit 1";
             $result = mysqli_query($this->con, $sql);
             $data = mysqli_fetch_assoc($result);
             $track_count = floatval($data['count']);
@@ -107,9 +107,9 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         public function getSongIds($offset,$no_of_records_per_page){
 
             if($this->tag !== 'music'){
-                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY dateAdded DESC LIMIT " . $offset . "," . $no_of_records_per_page . "");
+                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE available = 1 AND album='$this->id' ORDER BY dateAdded DESC LIMIT " . $offset . "," . $no_of_records_per_page . "");
             } else{
-                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC LIMIT " . $offset . "," . $no_of_records_per_page . "");
+                $query = mysqli_query($this->con, "SELECT id FROM songs WHERE available = 1 AND album='$this->id' ORDER BY albumOrder ASC LIMIT " . $offset . "," . $no_of_records_per_page . "");
             }
 
             $array = array();
@@ -125,9 +125,9 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 
             if($this->tag !== 'music'){
-                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE album='$this->id' ORDER BY dateAdded DESC");
+                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE available = 1 AND album='$this->id' ORDER BY dateAdded DESC");
             } else{
-                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE album='$this->id' ORDER BY albumOrder ASC");
+                $query = mysqli_query($this->con, "SELECT path FROM songs WHERE available = 1 AND album='$this->id' ORDER BY albumOrder ASC");
             }
             $array = array();
 
@@ -141,7 +141,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         public function getTracks(){
             $allProducts = array();
 
-            $all_tracks = "SELECT s.id,s.title, s.artist, ar.name, s.album, a.title,s.lyrics, a.artworkPath, s.genre,g.name, s.duration,s.path, s.albumOrder, s.plays, s.weekplays, s.lastplayed, s.tag, s.dateAdded FROM songs s INNER JOIN albums a on s.album = a.id INNER JOIN artists ar on s.artist = ar.id INNER JOIN genres g on s.genre = g.id WHERE s.album='$this->id' ORDER BY s.albumOrder ASC";
+            $all_tracks = "SELECT s.id,s.title, s.artist, ar.name, s.album, a.title,s.lyrics, a.artworkPath, s.genre,g.name, s.duration,s.path, s.albumOrder, s.plays, s.weekplays, s.lastplayed, s.tag, s.dateAdded FROM songs s INNER JOIN albums a on s.album = a.id INNER JOIN artists ar on s.artist = ar.id INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.album='$this->id' ORDER BY s.albumOrder ASC";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->con, $all_tracks);
 

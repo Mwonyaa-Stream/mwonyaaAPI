@@ -51,7 +51,7 @@ class Genre
 
 
     public function getGenreTopPic(){
-        $sql = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 1";
+        $sql = "SELECT id FROM songs  WHERE available = 1 AND genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 1";
         $result = mysqli_query($this->con, $sql);
         $id_data = mysqli_fetch_assoc($result);
         $song = new Song($this->con,$id_data['id']);
@@ -64,7 +64,7 @@ class Genre
         //fetch other categories Begin
         $song_ids = array();
         $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT $limit";
+        $genre_song_stmt = "SELECT id FROM songs  WHERE available = 1 AND genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT $limit";
         $genre_song_stmt_result = mysqli_query($this->con, $genre_song_stmt);
 
         while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
@@ -101,7 +101,7 @@ class Genre
         //fetch other categories Begin
         $song_ids = array();
         $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs  WHERE genre = '$this->genreid' AND  tag='dj' ORDER BY `songs`.`plays` DESC LIMIT $limit";
+        $genre_song_stmt = "SELECT id FROM songs  WHERE available = 1 AND genre = '$this->genreid' AND  tag='dj' ORDER BY `songs`.`plays` DESC LIMIT $limit";
         $genre_song_stmt_result = mysqli_query($this->con, $genre_song_stmt);
 
         while ($row = mysqli_fetch_array($genre_song_stmt_result)) {

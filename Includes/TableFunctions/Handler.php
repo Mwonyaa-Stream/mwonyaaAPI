@@ -262,7 +262,7 @@ class Handler
 
         // Set up the prepared statement to retrieve the number of genres
         $tag_music = "music";
-        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.tag = ?");
+        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.available = 1 AND s.tag = ?");
 
         mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
 
@@ -310,7 +310,7 @@ class Handler
 
             //get Featured Artist
             $featuredCategory = array();
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -521,7 +521,7 @@ class Handler
 
             //get genres
             $featured_genres = array();
-            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
+            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
             // Execute the query
@@ -566,7 +566,7 @@ class Handler
             //get the latest album Release less than 14 days old
             $featured_albums = array();
             $featuredAlbums = array();
-            $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
+            $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
             $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
             while ($row = mysqli_fetch_array($featured_album_Query_result)) {
                 array_push($featured_albums, $row['id']);
@@ -628,7 +628,7 @@ class Handler
             //get featured Album
             $featured_Albums = array();
 
-            $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+            $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
 
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $featured_album_Query);
@@ -674,7 +674,7 @@ class Handler
             //get featured Dj mixes
             $featured_dj_mixes = array();
 
-            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE available = 1 AND tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
 
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $featured_album_Query);
@@ -780,7 +780,7 @@ class Handler
             //get the latest album Release less than 14 days old
             $featured_albums = array();
             $featuredAlbums = array();
-            $featured_album_Query = "SELECT DISTINCT a.id as id FROM albums a JOIN songs s ON a.id = s.album JOIN artistfollowing af ON s.artist = af.artistid WHERE af.userid = '$libraryUserID' AND a.datecreated > DATE_SUB(NOW(), INTERVAL 2 WEEK) ORDER BY RAND ()";
+            $featured_album_Query = "SELECT DISTINCT a.id as id FROM albums a JOIN songs s ON a.id = s.album JOIN artistfollowing af ON s.artist = af.artistid WHERE a.available = 1 AND af.userid = '$libraryUserID' AND a.datecreated > DATE_SUB(NOW(), INTERVAL 2 WEEK) ORDER BY RAND ()";
             $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
             while ($row = mysqli_fetch_array($featured_album_Query_result)) {
                 array_push($featured_albums, $row['id']);
@@ -809,7 +809,7 @@ class Handler
             ///
             //get unfollowed artist based on followed artist genre
             $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.available = 1 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -867,7 +867,7 @@ class Handler
             ///
             //get Featured Artist
             $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE status = 1 AND af.userid = '$libraryUserID' ORDER BY RAND () LIMIT 10";
+            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE a.available = 1 AND status = 1 AND af.userid = '$libraryUserID' ORDER BY RAND () LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -912,7 +912,7 @@ class Handler
 
         // Set up the prepared statement to retrieve the number of genres
         $tag_music = "live";
-        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT id) as total_live_shows FROM songs WHERE tag != 'ad' AND tag = ?");
+        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT id) as total_live_shows FROM songs WHERE available = 1 AND tag != 'ad' AND tag = ?");
 
         mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
 
@@ -949,7 +949,7 @@ class Handler
             //get live
             $song_ids = array();
             $home_genre_tracks = array();
-            $genre_song_stmt = "SELECT id FROM songs  WHERE  tag != 'ad' AND tag = 'live' ORDER BY `songs`.`plays` DESC LIMIT 4";
+            $genre_song_stmt = "SELECT id FROM songs  WHERE  available = 1 AND tag != 'ad' AND tag = 'live' ORDER BY `songs`.`plays` DESC LIMIT 4";
             $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
 
             while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
@@ -990,7 +990,7 @@ class Handler
         }
 
         // Use a prepared statement and a JOIN clause to get genre and song data in a single query
-        $stmt = $this->conn->prepare("SELECT id FROM songs  WHERE  tag != 'ad' AND tag = 'live' ORDER BY title ASC  LIMIT ?, ?");
+        $stmt = $this->conn->prepare("SELECT id FROM songs  WHERE  available = 1 AND tag != 'ad' AND tag = 'live' ORDER BY title ASC  LIMIT ?, ?");
 
         $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
@@ -1116,7 +1116,7 @@ class Handler
             $no_of_records_per_page = 20;
             $offset = ($this->pageNO - 1) * $no_of_records_per_page;
 
-            $sql = "SELECT COUNT(*) as count FROM songs WHERE album = '" . $this->albumID . "'  limit 1";
+            $sql = "SELECT COUNT(*) as count FROM songs WHERE available = 1 AND album = '" . $this->albumID . "'  limit 1";
             $result = mysqli_query($this->conn, $sql);
             $data = mysqli_fetch_assoc($result);
             $total_rows = floatval($data['count']);
@@ -1232,7 +1232,7 @@ class Handler
 
         //  popular search Begin
         $bestSellingProducts = array();
-        $top_artist = "SELECT artists.name, SUM(frequency.plays) as total_plays, artists.datecreated,artists.id FROM frequency INNER JOIN songs ON frequency.songid = songs.id INNER JOIN artists ON songs.artist = artists.id GROUP BY artists.name ORDER BY total_plays DESC LIMIT 40";
+        $top_artist = "SELECT artists.name, SUM(frequency.plays) as total_plays, artists.datecreated,artists.id FROM frequency INNER JOIN songs ON frequency.songid = songs.id INNER JOIN artists ON songs.artist = artists.id where artists.available = 1 GROUP BY artists.name ORDER BY total_plays DESC LIMIT 40";
         $stmt = mysqli_prepare($this->conn, $top_artist);
 
         // Execute the query
@@ -1268,7 +1268,7 @@ class Handler
         //fetch other categories Begin
         $Search_genreIDs = array();
         $SearchGenreBody = array();
-        $genre_stmt = "SELECT DISTINCT(genre) FROM songs  WHERE tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 10";
+        $genre_stmt = "SELECT DISTINCT(genre) FROM songs  WHERE available = 1 AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT 10";
         $genre_stmt_result = mysqli_query($this->conn, $genre_stmt);
 
         while ($row = mysqli_fetch_array($genre_stmt_result)) {
@@ -1309,7 +1309,7 @@ class Handler
         $notification_user_ID = (isset($_GET['userID']) && $_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'userID';
 
         $noticeString = "
-        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE dateAdded > DATE_SUB(NOW(), INTERVAL 14 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE  (status <> 0 OR ownerID='$notification_user_ID') AND dateCreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) ORDER BY `dateAdded` DESC
+        (SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,tag,dateAdded,lyrics FROM songs WHERE available = 1 AND dateAdded > DATE_SUB(NOW(), INTERVAL 14 DAY) ) UNION (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,tag,datecreated,'lyrics' FROM artists WHERE available = 1 AND datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,tag,datecreated,'lyrics' FROM albums WHERE available = 1 AND datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) UNION (SELECT id,name,ownerID,'path','plays','weekplays',coverurl, 'playlist' as type,'tag',dateCreated,'lyrics' FROM playlists WHERE  (status <> 0 OR ownerID='$notification_user_ID') AND dateCreated > DATE_SUB(NOW(), INTERVAL 14 DAY)) ORDER BY `dateAdded` DESC
         ";
 
         // run the query in the db and search through each of the records returned
@@ -1598,11 +1598,11 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics, releaseDate as date_added FROM songs WHERE title LIKE ? ) 
+        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics, releaseDate as date_added FROM songs WHERE available = 1 AND title LIKE ? ) 
            UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics',datecreated as date_added FROM artists  WHERE name LIKE ? ) 
+           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics',datecreated as date_added FROM artists  WHERE  available = 1 AND name LIKE ? ) 
            UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics',releaseDate as date_added FROM albums  WHERE title LIKE ? ) 
+           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics',releaseDate as date_added FROM albums  WHERE available = 1 AND title LIKE ? ) 
            UNION
            (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics',dateCreated as date_added FROM playlists WHERE name LIKE ? )"; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
@@ -2188,19 +2188,19 @@ class Handler
         $menuCategory = array();
         $itemRecords = array();
 
-        $query_podcast_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='podcast' ORDER BY RAND() LIMIT 8";
-        $query_dj_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='dj' ORDER BY RAND()  LIMIT 8";
-        $query_live_artists = "SELECT id, profilephoto, name FROM artists WHERE tag='live' ORDER BY RAND() LIMIT 8";
+        $query_podcast_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='podcast' ORDER BY RAND() LIMIT 8";
+        $query_dj_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='dj' ORDER BY RAND()  LIMIT 8";
+        $query_live_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='live' ORDER BY RAND() LIMIT 8";
 
-        $query_podcast_albums = "SELECT id FROM albums WHERE tag = 'podcast' ORDER BY RAND() LIMIT 8";
-        $query_dj_albums = "SELECT id FROM albums WHERE tag = 'dj' ORDER BY RAND() LIMIT 8";
-        $query_live_albums = "SELECT id FROM albums WHERE tag = 'live' ORDER BY RAND() LIMIT 8";
+        $query_podcast_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'podcast' ORDER BY RAND() LIMIT 8";
+        $query_dj_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'dj' ORDER BY RAND() LIMIT 8";
+        $query_live_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'live' ORDER BY RAND() LIMIT 8";
 
 
         // get_podcast_dj_live_Sliders
         $song_ids = array();
         $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs WHERE tag IN ('podcast', 'dj', 'live') ORDER BY RAND() LIMIT 8";
+        $genre_song_stmt = "SELECT id FROM songs WHERE available = 1 AND tag IN ('podcast', 'dj', 'live') ORDER BY RAND() LIMIT 8";
         $genre_song_stmt_result = mysqli_query($this->conn, $genre_song_stmt);
 
         while ($row = mysqli_fetch_array($genre_song_stmt_result)) {

@@ -28,7 +28,7 @@ class Artist
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified` FROM artists WHERE id='$this->id'");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified` FROM artists WHERE available = 1 AND id='$this->id' ");
         $artistfetched = mysqli_fetch_array($query);
 
 
@@ -214,14 +214,14 @@ class Artist
 
     public function getTotalSongs()
     {
-        $query = mysqli_query($this->con, "SELECT COUNT(*) as totalsongs FROM songs WHERE artist ='$this->id'");
+        $query = mysqli_query($this->con, "SELECT COUNT(*) as totalsongs FROM songs WHERE available = 1 and  artist ='$this->id'");
         $row = mysqli_fetch_array($query);
         return $row['totalsongs'];
     }
 
     public function getTotalablums()
     {
-        $query = mysqli_query($this->con, "SELECT COUNT(*) as totalalbum FROM albums WHERE artist ='$this->id'");
+        $query = mysqli_query($this->con, "SELECT COUNT(*) as totalalbum FROM albums WHERE available = 1 and artist ='$this->id'");
         $row = mysqli_fetch_array($query);
         return $row['totalalbum'];
     }
@@ -229,7 +229,7 @@ class Artist
 
     public function getTotalPlays()
     {
-        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs WHERE `artist` = '$this->id' AND tag != 'ad'");
+        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs WHERE available = 1 and `artist` = '$this->id' AND tag != 'ad'");
         $row = mysqli_fetch_array($query);
         $totalPlays = $row['totalplays'];
         $formattedTotalPlays = number_format($totalPlays);
@@ -240,7 +240,7 @@ class Artist
 
     public function getLatestRelease()
     {
-        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' AND a.tag != 'ad' GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 1");
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND  a.artist='$this->id' AND a.tag != 'ad' GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 1");
 
         if ($query && mysqli_num_rows($query) > 0) {
             $row = mysqli_fetch_array($query);
@@ -255,9 +255,9 @@ class Artist
     {
 
         if ($this->tag !== 'music') {
-            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
+            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE  available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
         } else {
-            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0 AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
+            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
 
         }
         $array = array();
@@ -281,7 +281,7 @@ class Artist
 
     public function getRelatedArtists()
     {
-        $rel_array_query = mysqli_query($this->con, "SELECT id FROM artists WHERE genre='$this->genre' AND id != '$this->id'  ORDER BY overalplays DESC Limit 8");
+        $rel_array_query = mysqli_query($this->con, "SELECT id FROM artists WHERE available = 1 AND genre='$this->genre' AND id != '$this->id'  ORDER BY overalplays DESC Limit 8");
         $rel_array = array();
 
         while ($rel_array_row = mysqli_fetch_array($rel_array_query)) {
@@ -293,7 +293,7 @@ class Artist
 
     public function getArtistAlbums()
     {
-        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8");
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 and a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
