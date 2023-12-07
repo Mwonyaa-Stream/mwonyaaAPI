@@ -396,14 +396,14 @@ class Handler
 
             // end weekly
 
-            $text_temp1 = array();
-            $text_temp1['ad_title'] = "Swangz Avenue - Event";
-            $text_temp1['type'] = "text_ad";
-            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
-            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
-            $text_temp1['ad_type'] = "link";
-            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
-            array_push($menuCategory, $text_temp1);
+//            $text_temp1 = array();
+//            $text_temp1['ad_title'] = "Swangz Avenue - Event";
+//            $text_temp1['type'] = "text_ad";
+//            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
+//            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
+//            $text_temp1['ad_type'] = "link";
+//            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
+//            array_push($menuCategory, $text_temp1);
 
             // recently played array
             $recently_played = array();
@@ -416,47 +416,47 @@ class Handler
 
 
 //             Trending Now
-//            $featured_trending = array();
-//            $tracks_trending = array();
-//            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
-//            // Set up the prepared statement
-//            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
-//            // Execute the query
-//            mysqli_stmt_execute($stmt);
-//            // Bind the result variables
-//            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
-//            // Fetch the results
-//            while (mysqli_stmt_fetch($stmt)) {
-//                array_push($featured_trending, $song_id);
-//            }
-//            mysqli_stmt_close($stmt);
-//
-//            foreach ($featured_trending as $track) {
-//                $song = new Song($this->conn, $track);
-//                $temp = array();
-//                $temp['id'] = $song->getId();
-//                $temp['title'] = $song->getTitle();
-//                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-//                $temp['artistID'] = $song->getArtistId();
-//                $temp['album'] = $song->getAlbum()->getTitle();
-//                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-//                $temp['genre'] = $song->getGenre()->getGenre();
-//                $temp['genreID'] = $song->getGenre()->getGenreid();
-//                $temp['duration'] = $song->getDuration();
-//                $temp['lyrics'] = $song->getLyrics();
-//                $temp['path'] = $song->getPath();
-//                $temp['totalplays'] = $song->getPlays();
-//                $temp['albumID'] = $song->getAlbumId();
-//                array_push($tracks_trending, $temp);
-//
-//            }
-//
-//            // Close the prepared statement
-//            $feat_trend = array();
-//            $feat_trend['heading'] = "Trending Now";
-//            $feat_trend['type'] = "trend";
-//            $feat_trend['Tracks'] = $tracks_trending;
-//            array_push($menuCategory, $feat_trend);
+            $featured_trending = array();
+            $tracks_trending = array();
+            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                array_push($featured_trending, $song_id);
+            }
+            mysqli_stmt_close($stmt);
+
+            foreach ($featured_trending as $track) {
+                $song = new Song($this->conn, $track);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['albumID'] = $song->getAlbumId();
+                array_push($tracks_trending, $temp);
+
+            }
+
+            // Close the prepared statement
+            $feat_trend = array();
+            $feat_trend['heading'] = "Trending Now";
+            $feat_trend['type'] = "trend";
+            $feat_trend['Tracks'] = $tracks_trending;
+            array_push($menuCategory, $feat_trend);
 
 
 
