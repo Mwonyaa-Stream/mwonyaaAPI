@@ -317,8 +317,9 @@ class Artist
         $stmt->bind_param("ss", $this->id, $user_ID);
         $stmt->execute();
         $result = $stmt->get_result();
-        $stmt->close();
         $count = $result->fetch_row()[0];
+        $stmt->close();
+
         if ($count > 0) {
             return true;
         } else {
