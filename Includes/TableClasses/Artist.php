@@ -229,12 +229,20 @@ class Artist
 
     public function getTotalPlays()
     {
-        $query = mysqli_query($this->con, "SELECT SUM(`plays`) AS totalplays FROM songs WHERE available = 1 and `artist` = '$this->id' AND tag != 'ad'");
-        $row = mysqli_fetch_array($query);
-        $totalPlays = $row['totalplays'];
-        $formattedTotalPlays = number_format($totalPlays);
 
-        return "$formattedTotalPlays Listeners.";
+        $query = mysqli_query($this->con, "CALL GetTotalListeners('$this->id')");
+
+        if (!$query) {
+            die("Error executing stored procedure: " . mysqli_error($this->con));
+        }
+
+        $row = mysqli_fetch_array($query);
+
+        $totalListeners = $row['listeners'];
+
+        $formattedTotalListeners = number_format($totalListeners);
+
+        return "$formattedTotalListeners Listeners.";
 
     }
 
