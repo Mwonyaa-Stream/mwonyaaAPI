@@ -229,22 +229,36 @@ class Artist
 
     public function getTotalPlays()
     {
+        // Assuming $this->con is your database connection
 
-        $query = mysqli_query($this->con, "CALL GetTotalListeners('$this->id')");
+        // Prepare the statement
+        $stmt = mysqli_prepare($this->con, "CALL GetTotalListeners(?)");
 
-        if (!$query) {
-            die("Error executing stored procedure: " . mysqli_error($this->con));
+        if (!$stmt) {
+            die("Error preparing statement: " . mysqli_error($this->con));
         }
 
-        $row = mysqli_fetch_array($query);
+        // Bind the parameter
+        mysqli_stmt_bind_param($stmt, "s", $this->id);
 
-        $totalListeners = $row['listeners'];
+        // Execute the statement
+        mysqli_stmt_execute($stmt);
 
+        // Bind the result variable
+        mysqli_stmt_bind_result($stmt, $totalListeners);
+
+        // Fetch the result
+        mysqli_stmt_fetch($stmt);
+
+        // Close the statement
+        mysqli_stmt_close($stmt);
+
+        // Format the total listeners
         $formattedTotalListeners = number_format($totalListeners);
 
         return "$formattedTotalListeners Listeners.";
-
     }
+
 
     public function getLatestRelease()
     {
