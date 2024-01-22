@@ -336,6 +336,34 @@ class Handler
             $feat_Cat_temps['featuredArtists'] = $featuredCategory;
             array_push($menuCategory, $feat_Cat_temps);
             ///end featuredArtist
+            ///
+            ///
+
+            //get genres
+            $featured_genres = array();
+            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $genre, $name, $tag);
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $genre;
+                $temp['name'] = $name;
+                $temp['tag'] = $tag;
+                array_push($featured_genres, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+            $feat_genres = array();
+            $feat_genres['heading'] = "Featured genres";
+            $feat_genres['type'] = "genre";
+            $feat_genres['featuredGenres'] = $featured_genres;
+            array_push($menuCategory, $feat_genres);
 
 
             // get_Slider_banner
@@ -519,31 +547,6 @@ class Handler
             $feat_recommended['Tracks'] = $R_trackListArray;
             array_push($menuCategory, $feat_recommended);
 
-            //get genres
-            $featured_genres = array();
-            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $genre, $name, $tag);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $genre;
-                $temp['name'] = $name;
-                $temp['tag'] = $tag;
-                array_push($featured_genres, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-            $feat_genres = array();
-            $feat_genres['heading'] = "Featured genres";
-            $feat_genres['type'] = "genre";
-            $feat_genres['featuredGenres'] = $featured_genres;
-            array_push($menuCategory, $feat_genres);
 
             // recommemded
 
