@@ -64,7 +64,7 @@ class Genre
         //fetch other categories Begin
         $song_ids = array();
         $home_genre_tracks = array();
-        $genre_song_stmt = "SELECT id FROM songs  WHERE available = 1 AND genre = '$this->genreid' AND tag != 'ad' ORDER BY `songs`.`plays` DESC LIMIT $limit";
+        $genre_song_stmt = "SELECT s.id FROM songs s JOIN frequency f ON s.id = f.songid WHERE s.available = 1 AND s.genre = '$this->genreid' AND s.tag != 'ad' GROUP BY s.id ORDER BY COUNT(DISTINCT f.userid) DESC LIMIT $limit";
         $genre_song_stmt_result = mysqli_query($this->con, $genre_song_stmt);
 
         while ($row = mysqli_fetch_array($genre_song_stmt_result)) {
