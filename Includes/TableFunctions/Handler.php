@@ -1234,17 +1234,17 @@ class Handler
 
 
         $image_temp = array();
-        $image_temp['ad_title'] = "Interest";
+        $image_temp['ad_title'] = "BeePee Music Playlist";
         $image_temp['type'] = "image_ad";
-        $image_temp['ad_description'] = "Kavali King • Timothy Dylan New Banger is setting trends. Listen Now.";
-        $image_temp['ad_link'] = "1787";
+        $image_temp['ad_description'] = "Remembering the extraordinary life and music of Bee Pee. His talent, passion, and soulful melodies will forever echo in our hearts.";
+        $image_temp['ad_link'] = "mwP_mobile65b0e4cbe61bd";
 //            $image_temp['ad_type'] = "collection";
-        $image_temp['ad_type'] = "track";
+//            $image_temp['ad_type'] = "track";
 //            $image_temp['ad_type'] = "event";
 //            $image_temp['ad_type'] = "artist";
-//            $image_temp['ad_type'] = "playlist";
+        $image_temp['ad_type'] = "playlist";
 //            $image_temp['ad_type'] = "link";
-        $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/VXX.jpg";
+        $image_temp['ad_image'] = "https://assets.mwonya.com/images/beepee_app.png";
         array_push($menuCategory, $image_temp);
 
 
