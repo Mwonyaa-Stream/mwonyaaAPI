@@ -766,20 +766,19 @@ class Handler
 
             }
 
-            $this->redis->set($key, serialize($menuCategory));
+            $itemRecords["version"] = $this->version;
+            $itemRecords["page"] = $page;
+            $itemRecords['source'] = $source;
+            $itemRecords["featured"] = $menuCategory;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_genres;
+
+            $this->redis->set($key, serialize($itemRecords));
             $this->redis->expire($key, 10);
         } else {
-            $source = 'Redis Server';
-            $menuCategory = unserialize($this->redis->get($key));
+            $source = 'Cache Server';
+            $itemRecords = unserialize($this->redis->get($key));
         }
-
-
-        $itemRecords["version"] = $this->version;
-        $itemRecords["page"] = $page;
-        $itemRecords['source'] = $source;
-        $itemRecords["featured"] = $menuCategory;
-        $itemRecords["total_pages"] = $total_pages;
-        $itemRecords["total_results"] = $total_genres;
 
         return $itemRecords;
     }
