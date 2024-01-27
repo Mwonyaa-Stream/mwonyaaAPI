@@ -774,10 +774,12 @@ class Handler
             $itemRecords["total_results"] = $total_genres;
 
             $this->redis->set($key, serialize($itemRecords));
-            $this->redis->expire($key, 10);
+            $this->redis->expire($key, 60);
         } else {
             $source = 'Cache Server';
             $itemRecords = unserialize($this->redis->get($key));
+            $itemRecords['source'] = $source;
+
         }
 
         return $itemRecords;
