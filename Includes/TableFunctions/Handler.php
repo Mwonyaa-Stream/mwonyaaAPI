@@ -13,12 +13,14 @@ class Handler
     public $liteRecentTrackList;
     public $liteLikedTrackList;
     public $update_date;
+    public $redis;
 
     // track update info
 
-    public function __construct($con)
+    public function __construct($con, $redis_con)
     {
         $this->conn = $con;
+        $this->redis = $redis_con;
         $this->version = 9; // VersionCode
     }
 
@@ -126,14 +128,13 @@ class Handler
                     $temp = [
                         'id' => $arry->getId(),
                         'type' => $arry->getArtist()->getName(),
-                        'out_now' => "Date: ". $arry->getReleaseDate(),
+                        'out_now' => "Date: " . $arry->getReleaseDate(),
                         'coverimage' => $arry->getArtworkPath(),
                         'song_title' => $arry->getTitle(),
                         'song_cover' => $arry->getArtworkPath(),
                     ];
                     array_push($ArtistPick, $temp);
                 }
-
             }
 
 
@@ -250,8 +251,6 @@ class Handler
 
             $itemRecords["total_pages"] = 1;
             $itemRecords["total_results"] = 1;
-
-
         }
         return $itemRecords;
     }
@@ -259,516 +258,525 @@ class Handler
 
     function allCombined(): array
     {
+        $key = 'home_feed';
 
-        // Set up the prepared statement to retrieve the number of genres
-        $tag_music = "music";
-        $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.available = 1 AND s.tag = ?");
+        if (!$this->redis->get($key)) {
+            $source = 'MySQL Server';
 
-        mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
+            // Set up the prepared statement to retrieve the number of genres
+            $tag_music = "music";
+            $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.available = 1 AND s.tag = ?");
 
-        mysqli_stmt_execute($genre_count_stmt);
+            mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
 
-        mysqli_stmt_bind_result($genre_count_stmt, $total_genres);
+            mysqli_stmt_execute($genre_count_stmt);
 
-        mysqli_stmt_fetch($genre_count_stmt);
+            mysqli_stmt_bind_result($genre_count_stmt, $total_genres);
 
-        mysqli_stmt_close($genre_count_stmt);
+            mysqli_stmt_fetch($genre_count_stmt);
 
-        // Calculate the total number of pages
-        $no_of_records_per_page = 10;
-        $total_pages = ceil($total_genres / $no_of_records_per_page);
+            mysqli_stmt_close($genre_count_stmt);
 
-        // Retrieve the "page" parameter from the GET request
-        $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
-        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : null;
+            // Calculate the total number of pages
+            $no_of_records_per_page = 10;
+            $total_pages = ceil($total_genres / $no_of_records_per_page);
 
-
-        // Validate the "page" parameter
-        if ($page < 1 || $page > $total_pages) {
-            $page = 1;
-        }
-
-        // Calculate the offset
-        $offset = ($page - 1) * $no_of_records_per_page;
+            // Retrieve the "page" parameter from the GET request
+            $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+            $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : null;
 
 
-        $menuCategory = array();
-        $itemRecords = array();
-
-
-        if ($page == 1) {
-
-
-            // recently played array
-            $home_hero = array();
-            $home_hero['heading'] = "Home";
-            $home_hero['type'] = "hero";
-            $home_hero['subheading'] = "Mwonya vibes";
-            array_push($menuCategory, $home_hero);
-
-
-            $image_temp = array();
-            $image_temp['ad_title'] = "BeePee Music Playlist";
-            $image_temp['type'] = "image_ad";
-            $image_temp['ad_description'] = "Remembering the extraordinary life and music of Bee Pee. His talent, passion, and soulful melodies will forever echo in our hearts.";
-            $image_temp['ad_link'] = "mwP_mobile65b0e4cbe61bd";
-//            $image_temp['ad_type'] = "collection";
-//            $image_temp['ad_type'] = "track";
-//            $image_temp['ad_type'] = "event";
-//            $image_temp['ad_type'] = "artist";
-            $image_temp['ad_type'] = "playlist";
-//            $image_temp['ad_type'] = "link";
-            $image_temp['ad_image'] = "https://assets.mwonya.com/images/beepee_app.png";
-            array_push($menuCategory, $image_temp);
-
-
-
-            //get Featured Artist
-            $featuredCategory = array();
-            $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
-
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['profilephoto'] = $profilephoto;
-                $temp['name'] = $name;
-                array_push($featuredCategory, $temp);
+            // Validate the "page" parameter
+            if ($page < 1 || $page > $total_pages) {
+                $page = 1;
             }
 
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
+            // Calculate the offset
+            $offset = ($page - 1) * $no_of_records_per_page;
 
-            $feat_Cat_temps = array();
-            $feat_Cat_temps['heading'] = "Featured Artists";
-            $feat_Cat_temps['type'] = "artist";
-            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
-            array_push($menuCategory, $feat_Cat_temps);
-            ///end featuredArtist
-            ///
-            ///
 
-            //get genres
-            $featured_genres = array();
-            $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $genre, $name, $tag);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $genre;
-                $temp['name'] = $name;
-                $temp['tag'] = $tag;
-                array_push($featured_genres, $temp);
+            $menuCategory = array();
+            $itemRecords = array();
+
+
+            if ($page == 1) {
+
+                // recently played array
+                $home_hero = array();
+                $home_hero['heading'] = "Home";
+                $home_hero['type'] = "hero";
+                $home_hero['subheading'] = "Mwonya vibes";
+                array_push($menuCategory, $home_hero);
+
+
+                $image_temp = array();
+                $image_temp['ad_title'] = "BeePee Music Playlist";
+                $image_temp['type'] = "image_ad";
+                $image_temp['ad_description'] = "Remembering the extraordinary life and music of Bee Pee. His talent, passion, and soulful melodies will forever echo in our hearts.";
+                $image_temp['ad_link'] = "mwP_mobile65b0e4cbe61bd";
+                //            $image_temp['ad_type'] = "collection";
+                //            $image_temp['ad_type'] = "track";
+                //            $image_temp['ad_type'] = "event";
+                //            $image_temp['ad_type'] = "artist";
+                $image_temp['ad_type'] = "playlist";
+                //            $image_temp['ad_type'] = "link";
+                $image_temp['ad_image'] = "https://assets.mwonya.com/images/beepee_app.png";
+                array_push($menuCategory, $image_temp);
+
+
+
+                //get Featured Artist
+                $featuredCategory = array();
+                $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    $temp = array();
+                    $temp['id'] = $id;
+                    $temp['profilephoto'] = $profilephoto;
+                    $temp['name'] = $name;
+                    array_push($featuredCategory, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_Cat_temps = array();
+                $feat_Cat_temps['heading'] = "Featured Artists";
+                $feat_Cat_temps['type'] = "artist";
+                $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+                array_push($menuCategory, $feat_Cat_temps);
+                ///end featuredArtist
+                ///
+                ///
+
+                //get genres
+                $featured_genres = array();
+                $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $top_genre_stmt);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $genre, $name, $tag);
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    $temp = array();
+                    $temp['id'] = $genre;
+                    $temp['name'] = $name;
+                    $temp['tag'] = $tag;
+                    array_push($featured_genres, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+                $feat_genres = array();
+                $feat_genres['heading'] = "Featured genres";
+                $feat_genres['type'] = "genre";
+                $feat_genres['featuredGenres'] = $featured_genres;
+                array_push($menuCategory, $feat_genres);
+
+
+                // get_Slider_banner
+                //            $sliders = array();
+                //            // Set up the prepared statement
+                //            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
+                //            $stmt = mysqli_prepare($this->conn, $slider_query);
+                //            // Execute the query
+                //            mysqli_stmt_execute($stmt);
+                //            // Bind the result variables
+                //            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+                //            // Fetch the results
+                //            while (mysqli_stmt_fetch($stmt)) {
+                //                $temp = array();
+                //                $temp['id'] = $id;
+                //                $temp['playlistID'] = $playlistID;
+                //                $temp['imagepath'] = $imagepath;
+                //                array_push($sliders, $temp);
+                //            }
+                //
+                //            // Close the prepared statement
+                //            mysqli_stmt_close($stmt);
+                //
+                //            $slider_temps = array();
+                //            $slider_temps['heading'] = "Discover";
+                //            $slider_temps['type'] = "slider";
+                //            $slider_temps['featured_sliderBanners'] = $sliders;
+                //            array_push($menuCategory, $slider_temps);
+                // end get_Slider_banner
+
+                //            $image_temp = array();
+                //            $image_temp['ad_title'] = "BOUNCE";
+                //            $image_temp['type'] = "image_ad";
+                //            $image_temp['ad_description'] = "Selecta Jeff  •  Kanyere New Banger is setting trends. Listen Now.";
+                //            $image_temp['ad_link'] = "1796";
+                ////            $image_temp['ad_type'] = "collection";
+                //            $image_temp['ad_type'] = "track";
+                ////            $image_temp['ad_type'] = "event";
+                ////            $image_temp['ad_type'] = "artist";
+                ////            $image_temp['ad_type'] = "playlist";
+                ////            $image_temp['ad_type'] = "link";
+                //            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bounce_cover.jpg";
+                //            array_push($menuCategory, $image_temp);
+
+
+                //            $text_temp = array();
+                //            $text_temp['ad_title'] = "New Music Friday";
+                //            $text_temp['type'] = "text_ad";
+                //            $text_temp['ad_description'] = "Immerse yourself in the latest beats. #FreshFridays #WeeklySoundtrack";
+                //            $text_temp['ad_link'] = "mwP_mobile6b2496c8fe";
+                //            $text_temp['ad_type'] = "playlist";
+                //            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newmusic_designtwo.png";
+                //            array_push($menuCategory, $text_temp);
+
+                // weekly Now
+                $weeklyTracks_data = new WeeklyTopTracks($this->conn);
+                array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+
+                // end weekly
+
+                //            $text_temp1 = array();
+                //            $text_temp1['ad_title'] = "Swangz Avenue - Event";
+                //            $text_temp1['type'] = "text_ad";
+                //            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
+                //            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
+                //            $text_temp1['ad_type'] = "link";
+                //            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
+                //            array_push($menuCategory, $text_temp1);
+
+                // recently played array
+                $recently_played = array();
+                $recently_played['heading'] = "Recently Played";
+                $recently_played['type'] = "recently";
+                $recently_played['subheading'] = "Tracks Last Listened to";
+                array_push($menuCategory, $recently_played);
+
+
+
+
+                //             Trending Now
+                $featured_trending = array();
+                $tracks_trending = array();
+                $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $trending_now_sql);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $song_id, $play_count);
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    array_push($featured_trending, $song_id);
+                }
+                mysqli_stmt_close($stmt);
+
+                foreach ($featured_trending as $track) {
+                    $song = new Song($this->conn, $track);
+                    $temp = array();
+                    $temp['id'] = $song->getId();
+                    $temp['title'] = $song->getTitle();
+                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                    $temp['artistID'] = $song->getArtistId();
+                    $temp['album'] = $song->getAlbum()->getTitle();
+                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['genre'] = $song->getGenre()->getGenre();
+                    $temp['genreID'] = $song->getGenre()->getGenreid();
+                    $temp['duration'] = $song->getDuration();
+                    $temp['lyrics'] = $song->getLyrics();
+                    $temp['path'] = $song->getPath();
+                    $temp['totalplays'] = $song->getPlays();
+                    $temp['albumID'] = $song->getAlbumId();
+                    array_push($tracks_trending, $temp);
+                }
+
+                // Close the prepared statement
+                $feat_trend = array();
+                $feat_trend['heading'] = "Trending Now";
+                $feat_trend['type'] = "trend";
+                $feat_trend['Tracks'] = $tracks_trending;
+                array_push($menuCategory, $feat_trend);
+
+
+
+
+                // Recommended
+                $recommendedSongs = array();
+
+                // Query to fetch recommended songs for the given user ID
+                $recommendation_table_Query = "SELECT `id`, `user_id`, `recommended_songs`, `created_at` FROM `recommendations` WHERE `user_id` =  '$userID'";
+                $table_data = mysqli_query($this->conn, $recommendation_table_Query);
+
+                while ($row = mysqli_fetch_array($table_data)) {
+                    $songs = explode(',', $row['recommended_songs']);
+                    $recommendedSongs = array_merge($recommendedSongs, $songs);
+                }
+
+                // Pagination
+                $itemsPerPage = 10; // Number of items to display per page
+                $totalItems = count($recommendedSongs); // Total number of recommended songs
+
+
+                // Shuffle the array for the first page
+                shuffle($recommendedSongs);
+
+                // Calculate the starting and ending indexes for the current page
+                $startIndex = ($page - 1) * $itemsPerPage;
+                $endIndex = min($startIndex + $itemsPerPage - 1, $totalItems - 1);
+
+                // Get the recommended songs for the current page
+                $songsForPage = array_slice($recommendedSongs, $startIndex, $endIndex - $startIndex + 1);
+
+                //trackList
+                $R_trackListArray = array();
+
+
+                foreach ($songsForPage as $track) {
+                    $song = new Song($this->conn, $track);
+                    $temp = array();
+                    $temp['id'] = $song->getId();
+                    $temp['title'] = $song->getTitle();
+                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                    $temp['artistID'] = $song->getArtistId();
+                    $temp['album'] = $song->getAlbum()->getTitle();
+                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                    $temp['genre'] = $song->getGenre()->getGenre();
+                    $temp['genreID'] = $song->getGenre()->getGenreid();
+                    $temp['duration'] = $song->getDuration();
+                    $temp['lyrics'] = $song->getLyrics();
+                    $temp['path'] = $song->getPath();
+                    $temp['totalplays'] = $song->getPlays();
+                    $temp['albumID'] = $song->getAlbumId();
+                    array_push($R_trackListArray, $temp);
+                }
+
+                // Close the prepared statement
+                $feat_recommended = array();
+                $feat_recommended['heading'] = "You Might Like";
+                $feat_recommended['type'] = "trend";
+                $feat_recommended['Tracks'] = $R_trackListArray;
+                array_push($menuCategory, $feat_recommended);
+
+
+                // recommemded
+
+
+                ///
+                ///
+                ///
+
+
+                //            $text_temp = array();
+                //            $text_temp['ad_title'] = "Mwonya Artist Program";
+                //            $text_temp['type'] = "text_ad";
+                //            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+                //            $text_temp['ad_link'] = "https://artist.mwonya.com/";
+                //            $text_temp['ad_type'] = "link";
+                //            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
+                //            array_push($menuCategory, $text_temp);
+
+
+                //get the latest album Release less than 14 days old
+                $featured_albums = array();
+                $featuredAlbums = array();
+                $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
+                $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+                while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+                    array_push($featured_albums, $row['id']);
+                }
+
+                foreach ($featured_albums as $row) {
+                    $al = new Album($this->conn, $row);
+                    $temp = array();
+                    $temp['id'] = $al->getId();
+                    $temp['heading'] = "New Release From";
+                    $temp['title'] = $al->getTitle();
+                    $temp['artworkPath'] = $al->getArtworkPath();
+                    $temp['tag'] = $al->getReleaseDate() . ' - ' . $al->getTag();
+                    $temp['artistId'] = $al->getArtistId();
+                    $temp['artist'] = $al->getArtist()->getName();
+                    $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
+                    $temp['Tracks'] = $al->getTracks();
+                    array_push($featuredAlbums, $temp);
+                }
+
+                $feat_albums_temps = array();
+                $feat_albums_temps['heading'] = "New Release on Mwonya";
+                $feat_albums_temps['type'] = "newRelease";
+                $feat_albums_temps['HomeRelease'] = $featuredAlbums;
+                array_push($menuCategory, $feat_albums_temps);
+                ///end latest Release 14 days
+
+
+                //get Featured Playlist
+                $featuredPlaylist = array();
+                $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $name, $owner, $coverurl);
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    $temp = array();
+                    $temp['id'] = $id;
+                    $temp['name'] = $name;
+                    $temp['owner'] = $owner;
+                    $temp['coverurl'] = $coverurl;
+                    array_push($featuredPlaylist, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_playlist_temps = array();
+                $feat_playlist_temps['heading'] = "Featured Playlists";
+                $feat_playlist_temps['type'] = "playlist";
+                $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
+                array_push($menuCategory, $feat_playlist_temps);
+                ///end featuredPlaylist
+
+
+                //get featured Album
+                $featured_Albums = array();
+
+                $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $featured_album_Query);
+
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
+
+                $featured_album_ids = array();
+
+                while (mysqli_stmt_fetch($stmt)) {
+                    array_push($featured_album_ids, $id);
+                }
+
+                // Fetch the results
+                foreach ($featured_album_ids as $row) {
+                    $pod = new Album($this->conn, $row);
+                    $temp = array();
+                    $temp['id'] = $pod->getId();
+                    $temp['title'] = $pod->getTitle();
+                    $temp['description'] = $pod->getDescription();
+                    $temp['artworkPath'] = $pod->getArtworkPath();
+                    $temp['artist'] = $pod->getArtist()->getName();
+                    $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+                    $temp['genre'] = $pod->getGenre()->getGenre();
+                    $temp['tag'] = $pod->getTag();
+                    array_push($featured_Albums, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_albums_temps = array();
+                $feat_albums_temps['heading'] = "Featured Albums";
+                $feat_albums_temps['type'] = "albums";
+                $feat_albums_temps['featuredAlbums'] = $featured_Albums;
+                array_push($menuCategory, $feat_albums_temps);
+                ///end featuredAlbums
+
+
+                //get featured Dj mixes
+                $featured_dj_mixes = array();
+
+                $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE available = 1 AND tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $featured_album_Query);
+
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
+
+                $featured_dj_ids = array();
+
+                while (mysqli_stmt_fetch($stmt)) {
+                    array_push($featured_dj_ids, $id);
+                }
+
+                // Fetch the results
+                foreach ($featured_dj_ids as $row) {
+                    $pod = new Album($this->conn, $row);
+                    $temp = array();
+                    $temp['id'] = $pod->getId();
+                    $temp['title'] = $pod->getTitle();
+                    $temp['description'] = $pod->getDescription();
+                    $temp['artworkPath'] = $pod->getArtworkPath();
+                    $temp['artist'] = $pod->getArtist()->getName();
+                    $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+                    $temp['genre'] = $pod->getGenre()->getGenre();
+                    $temp['tag'] = $pod->getTag();
+                    array_push($featured_dj_mixes, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_dj_temps = array();
+                $feat_dj_temps['heading'] = "Featured Mixtapes";
+                $feat_dj_temps['type'] = "djs";
+                $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
+                array_push($menuCategory, $feat_dj_temps);
+                ///end featuredAlbums
+                ///
+
+                //            $text_temp1 = array();
+                //            $text_temp1['ad_title'] = "Swangz Avenue - Event";
+                //            $text_temp1['type'] = "text_ad";
+                //            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
+                //            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
+                //            $text_temp1['ad_type'] = "link";
+                //            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
+                //            array_push($menuCategory, $text_temp1);
+
+
+                //            $text_temp1 = array();
+                //            $text_temp1['ad_title'] = "Drillz The Rapper";
+                //            $text_temp1['type'] = "text_ad";
+                //            $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
+                //            $text_temp1['ad_link'] = "1463";
+                //            $text_temp1['ad_type'] = "track";
+                //            $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
+                //            array_push($menuCategory, $text_temp1);
+
+                //            $text_temp2 = array();
+                //            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
+                //            $text_temp2['type'] = "text_ad";
+                //            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
+                //            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
+                //            $text_temp2['ad_type'] = "link";
+                //            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
+                //            array_push($menuCategory, $text_temp2);
+
+
             }
 
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-            $feat_genres = array();
-            $feat_genres['heading'] = "Featured genres";
-            $feat_genres['type'] = "genre";
-            $feat_genres['featuredGenres'] = $featured_genres;
-            array_push($menuCategory, $feat_genres);
-
-
-            // get_Slider_banner
-//            $sliders = array();
-//            // Set up the prepared statement
-//            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
-//            $stmt = mysqli_prepare($this->conn, $slider_query);
-//            // Execute the query
-//            mysqli_stmt_execute($stmt);
-//            // Bind the result variables
-//            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
-//            // Fetch the results
-//            while (mysqli_stmt_fetch($stmt)) {
-//                $temp = array();
-//                $temp['id'] = $id;
-//                $temp['playlistID'] = $playlistID;
-//                $temp['imagepath'] = $imagepath;
-//                array_push($sliders, $temp);
-//            }
-//
-//            // Close the prepared statement
-//            mysqli_stmt_close($stmt);
-//
-//            $slider_temps = array();
-//            $slider_temps['heading'] = "Discover";
-//            $slider_temps['type'] = "slider";
-//            $slider_temps['featured_sliderBanners'] = $sliders;
-//            array_push($menuCategory, $slider_temps);
-            // end get_Slider_banner
-
-//            $image_temp = array();
-//            $image_temp['ad_title'] = "BOUNCE";
-//            $image_temp['type'] = "image_ad";
-//            $image_temp['ad_description'] = "Selecta Jeff  •  Kanyere New Banger is setting trends. Listen Now.";
-//            $image_temp['ad_link'] = "1796";
-////            $image_temp['ad_type'] = "collection";
-//            $image_temp['ad_type'] = "track";
-////            $image_temp['ad_type'] = "event";
-////            $image_temp['ad_type'] = "artist";
-////            $image_temp['ad_type'] = "playlist";
-////            $image_temp['ad_type'] = "link";
-//            $image_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bounce_cover.jpg";
-//            array_push($menuCategory, $image_temp);
-
-
-//            $text_temp = array();
-//            $text_temp['ad_title'] = "New Music Friday";
-//            $text_temp['type'] = "text_ad";
-//            $text_temp['ad_description'] = "Immerse yourself in the latest beats. #FreshFridays #WeeklySoundtrack";
-//            $text_temp['ad_link'] = "mwP_mobile6b2496c8fe";
-//            $text_temp['ad_type'] = "playlist";
-//            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newmusic_designtwo.png";
-//            array_push($menuCategory, $text_temp);
-
-            // weekly Now
-            $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-            array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
-
-            // end weekly
-
-//            $text_temp1 = array();
-//            $text_temp1['ad_title'] = "Swangz Avenue - Event";
-//            $text_temp1['type'] = "text_ad";
-//            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
-//            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
-//            $text_temp1['ad_type'] = "link";
-//            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
-//            array_push($menuCategory, $text_temp1);
-
-            // recently played array
-            $recently_played = array();
-            $recently_played['heading'] = "Recently Played";
-            $recently_played['type'] = "recently";
-            $recently_played['subheading'] = "Tracks Last Listened to";
-            array_push($menuCategory, $recently_played);
-
-
-
-
-//             Trending Now
-            $featured_trending = array();
-            $tracks_trending = array();
-            $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $trending_now_sql);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $song_id, $play_count);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                array_push($featured_trending, $song_id);
-            }
-            mysqli_stmt_close($stmt);
-
-            foreach ($featured_trending as $track) {
-                $song = new Song($this->conn, $track);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
-                array_push($tracks_trending, $temp);
-
-            }
-
-            // Close the prepared statement
-            $feat_trend = array();
-            $feat_trend['heading'] = "Trending Now";
-            $feat_trend['type'] = "trend";
-            $feat_trend['Tracks'] = $tracks_trending;
-            array_push($menuCategory, $feat_trend);
-
-
-
-
-            // Recommended
-            $recommendedSongs = array();
-
-            // Query to fetch recommended songs for the given user ID
-            $recommendation_table_Query = "SELECT `id`, `user_id`, `recommended_songs`, `created_at` FROM `recommendations` WHERE `user_id` =  '$userID'";
-            $table_data = mysqli_query($this->conn, $recommendation_table_Query);
-
-            while ($row = mysqli_fetch_array($table_data)) {
-                $songs = explode(',', $row['recommended_songs']);
-                $recommendedSongs = array_merge($recommendedSongs, $songs);
-            }
-
-            // Pagination
-            $itemsPerPage = 10; // Number of items to display per page
-            $totalItems = count($recommendedSongs); // Total number of recommended songs
-
-
-            // Shuffle the array for the first page
-            shuffle($recommendedSongs);
-
-            // Calculate the starting and ending indexes for the current page
-            $startIndex = ($page - 1) * $itemsPerPage;
-            $endIndex = min($startIndex + $itemsPerPage - 1, $totalItems - 1);
-
-            // Get the recommended songs for the current page
-            $songsForPage = array_slice($recommendedSongs, $startIndex, $endIndex - $startIndex + 1);
-
-            //trackList
-            $R_trackListArray = array();
-
-
-            foreach ($songsForPage as $track) {
-                $song = new Song($this->conn, $track);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
-                array_push($R_trackListArray, $temp);
-
-            }
-
-            // Close the prepared statement
-            $feat_recommended = array();
-            $feat_recommended['heading'] = "You Might Like";
-            $feat_recommended['type'] = "trend";
-            $feat_recommended['Tracks'] = $R_trackListArray;
-            array_push($menuCategory, $feat_recommended);
-
-
-            // recommemded
-
-
-            ///
-            ///
-            ///
-
-
-//            $text_temp = array();
-//            $text_temp['ad_title'] = "Mwonya Artist Program";
-//            $text_temp['type'] = "text_ad";
-//            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-//            $text_temp['ad_link'] = "https://artist.mwonya.com/";
-//            $text_temp['ad_type'] = "link";
-//            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-//            array_push($menuCategory, $text_temp);
-
-
-            //get the latest album Release less than 14 days old
-            $featured_albums = array();
-            $featuredAlbums = array();
-            $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
-            $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
-            while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-                array_push($featured_albums, $row['id']);
-            }
-
-            foreach ($featured_albums as $row) {
-                $al = new Album($this->conn, $row);
-                $temp = array();
-                $temp['id'] = $al->getId();
-                $temp['heading'] = "New Release From";
-                $temp['title'] = $al->getTitle();
-                $temp['artworkPath'] = $al->getArtworkPath();
-                $temp['tag'] = $al->getReleaseDate() . ' - ' . $al->getTag();
-                $temp['artistId'] = $al->getArtistId();
-                $temp['artist'] = $al->getArtist()->getName();
-                $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
-                $temp['Tracks'] = $al->getTracks();
-                array_push($featuredAlbums, $temp);
-            }
-
-            $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "New Release on Mwonya";
-            $feat_albums_temps['type'] = "newRelease";
-            $feat_albums_temps['HomeRelease'] = $featuredAlbums;
-            array_push($menuCategory, $feat_albums_temps);
-            ///end latest Release 14 days
-
-
-            //get Featured Playlist
-            $featuredPlaylist = array();
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $name, $owner, $coverurl);
-            // Fetch the results
-            while (mysqli_stmt_fetch($stmt)) {
-                $temp = array();
-                $temp['id'] = $id;
-                $temp['name'] = $name;
-                $temp['owner'] = $owner;
-                $temp['coverurl'] = $coverurl;
-                array_push($featuredPlaylist, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_playlist_temps = array();
-            $feat_playlist_temps['heading'] = "Featured Playlists";
-            $feat_playlist_temps['type'] = "playlist";
-            $feat_playlist_temps['featuredPlaylists'] = $featuredPlaylist;
-            array_push($menuCategory, $feat_playlist_temps);
-            ///end featuredPlaylist
-
-
-            //get featured Album
-            $featured_Albums = array();
-
-            $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
-
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $featured_album_Query);
-
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
-
-            $featured_album_ids = array();
-
-            while (mysqli_stmt_fetch($stmt)) {
-                array_push($featured_album_ids, $id);
-            }
-
-            // Fetch the results
-            foreach ($featured_album_ids as $row) {
-                $pod = new Album($this->conn, $row);
-                $temp = array();
-                $temp['id'] = $pod->getId();
-                $temp['title'] = $pod->getTitle();
-                $temp['description'] = $pod->getDescription();
-                $temp['artworkPath'] = $pod->getArtworkPath();
-                $temp['artist'] = $pod->getArtist()->getName();
-                $temp['artistImage'] = $pod->getArtist()->getProfilePath();
-                $temp['genre'] = $pod->getGenre()->getGenre();
-                $temp['tag'] = $pod->getTag();
-                array_push($featured_Albums, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_albums_temps = array();
-            $feat_albums_temps['heading'] = "Featured Albums";
-            $feat_albums_temps['type'] = "albums";
-            $feat_albums_temps['featuredAlbums'] = $featured_Albums;
-            array_push($menuCategory, $feat_albums_temps);
-            ///end featuredAlbums
-
-
-            //get featured Dj mixes
-            $featured_dj_mixes = array();
-
-            $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE available = 1 AND tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
-
-            // Set up the prepared statement
-            $stmt = mysqli_prepare($this->conn, $featured_album_Query);
-
-            // Execute the query
-            mysqli_stmt_execute($stmt);
-
-            // Bind the result variables
-            mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
-
-            $featured_dj_ids = array();
-
-            while (mysqli_stmt_fetch($stmt)) {
-                array_push($featured_dj_ids, $id);
-            }
-
-            // Fetch the results
-            foreach ($featured_dj_ids as $row) {
-                $pod = new Album($this->conn, $row);
-                $temp = array();
-                $temp['id'] = $pod->getId();
-                $temp['title'] = $pod->getTitle();
-                $temp['description'] = $pod->getDescription();
-                $temp['artworkPath'] = $pod->getArtworkPath();
-                $temp['artist'] = $pod->getArtist()->getName();
-                $temp['artistImage'] = $pod->getArtist()->getProfilePath();
-                $temp['genre'] = $pod->getGenre()->getGenre();
-                $temp['tag'] = $pod->getTag();
-                array_push($featured_dj_mixes, $temp);
-            }
-
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-
-            $feat_dj_temps = array();
-            $feat_dj_temps['heading'] = "Featured Mixtapes";
-            $feat_dj_temps['type'] = "djs";
-            $feat_dj_temps['FeaturedDjMixes'] = $featured_dj_mixes;
-            array_push($menuCategory, $feat_dj_temps);
-            ///end featuredAlbums
-            ///
-
-//            $text_temp1 = array();
-//            $text_temp1['ad_title'] = "Swangz Avenue - Event";
-//            $text_temp1['type'] = "text_ad";
-//            $text_temp1['ad_description'] = "Roast and Rhyme set for return in 19 edition this November";
-//            $text_temp1['ad_link'] = "https://mbu.ug/2023/11/13/swangz-avenue-roast-and-rhyme/";
-//            $text_temp1['ad_type'] = "link";
-//            $text_temp1['ad_image'] = "https://i0.wp.com/mbu.ug/wp-content/uploads/2023/11/0O8A0661-edited-scaled.jpg?resize=1200%2C750&ssl=1";
-//            array_push($menuCategory, $text_temp1);
-
-
-//            $text_temp1 = array();
-//            $text_temp1['ad_title'] = "Drillz The Rapper";
-//            $text_temp1['type'] = "text_ad";
-//            $text_temp1['ad_description'] = "Pretend is a song I write to address the bullying that I faced while in school. I was forced to pretend to be someone I wasn't as a way of coping with the bullying and trying to fit in. Unfortunately, many people are bullied and have to continue living with the traumatic experiences. I just want to let you know that you're not alone. It's time to step into your power and tell the bullies to get lost. Pretend (Official Video) out now 🫶🏽 ";
-//            $text_temp1['ad_link'] = "1463";
-//            $text_temp1['ad_type'] = "track";
-//            $text_temp1['ad_image'] = "https://assets.mwonya.com/images/artistprofiles/drillzprofile.png";
-//            array_push($menuCategory, $text_temp1);
-
-//            $text_temp2 = array();
-//            $text_temp2['ad_title'] = "New Music: Underwater by Nsokwa";
-//            $text_temp2['type'] = "text_ad";
-//            $text_temp2['ad_description'] = "Dive into the new music from Nsokwa.!";
-//            $text_temp2['ad_link'] = "https://mwonya.com/song?id=1732";
-//            $text_temp2['ad_type'] = "link";
-//            $text_temp2['ad_image'] = "https://assets.mwonya.com/images/artwork/photo_2023-09-28_23-10-16.jpg";
-//            array_push($menuCategory, $text_temp2);
-
-
+            $this->redis->set($key, serialize($menuCategory));
+            $this->redis->expire($key, 10);
+        } else {
+            $source = 'Redis Server';
+            $menuCategory = unserialize($this->redis->get($key));
         }
 
 
         $itemRecords["version"] = $this->version;
         $itemRecords["page"] = $page;
+        $itemRecords['source'] = $source;
         $itemRecords["featured"] = $menuCategory;
         $itemRecords["total_pages"] = $total_pages;
         $itemRecords["total_results"] = $total_genres;
@@ -1003,8 +1011,6 @@ class Handler
             $feat_albums_temps['coverImage'] = "https://restream.io/blog/content/images/2020/10/broadcast-interviews-and-qas-online-tw-fb.png";
             $feat_albums_temps['liveshows'] = $home_genre_tracks;
             array_push($menuCategory, $feat_albums_temps);
-
-
         }
 
         // Use a prepared statement and a JOIN clause to get genre and song data in a single query
@@ -1078,9 +1084,7 @@ class Handler
                     $temp['user_name'] = $user->getFirstname();
                     $temp['user_profile'] = $user->getProfilePic();
                     array_push($itemRecords["UserLikedTracks"], $temp);
-
                 }
-
             }
 
             // get products id from the same cat
@@ -1106,14 +1110,11 @@ class Handler
                     $temp['albumID'] = $songLiked->getAlbumId();
                     array_push($allProducts, $temp);
                 }
-
             }
 
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['UserLikedTracks'], $slider_temps);
-
-
         }
 
         return $itemRecords;
@@ -1166,9 +1167,7 @@ class Handler
                     $temp['trackPath'] = $album->getSongPaths();
 
                     array_push($itemRecords["Album"], $temp);
-
                 }
-
             }
 
 
@@ -1200,8 +1199,6 @@ class Handler
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['Album'], $slider_temps);
-
-
         }
 
 
@@ -1222,14 +1219,14 @@ class Handler
         array_push($menuCategory, $slider_temps);
         // end get_Slider_banner
 
-//        $text_temp = array();
-//        $text_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
-//        $text_temp['type'] = "text_ad";
-//        $text_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
-//        $text_temp['ad_link'] = "m_allncqhp9a1002";
-//        $text_temp['ad_type'] = "collection";
-//        $text_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
-//        array_push($menuCategory, $text_temp);
+        //        $text_temp = array();
+        //        $text_temp['ad_title'] = "Differently ft. SOUNDLYKBB";
+        //        $text_temp['type'] = "text_ad";
+        //        $text_temp['ad_description'] = "Joka just dropped his latest release and it is now available for you. he is not telling nobody!👽👐";
+        //        $text_temp['ad_link'] = "m_allncqhp9a1002";
+        //        $text_temp['ad_type'] = "collection";
+        //        $text_temp['ad_image'] = "https://assets.mwonya.com/images/artwork/bbdiff.png";
+        //        array_push($menuCategory, $text_temp);
 
 
 
@@ -1238,12 +1235,12 @@ class Handler
         $image_temp['type'] = "image_ad";
         $image_temp['ad_description'] = "Remembering the extraordinary life and music of Bee Pee. His talent, passion, and soulful melodies will forever echo in our hearts.";
         $image_temp['ad_link'] = "mwP_mobile65b0e4cbe61bd";
-//            $image_temp['ad_type'] = "collection";
-//            $image_temp['ad_type'] = "track";
-//            $image_temp['ad_type'] = "event";
-//            $image_temp['ad_type'] = "artist";
+        //            $image_temp['ad_type'] = "collection";
+        //            $image_temp['ad_type'] = "track";
+        //            $image_temp['ad_type'] = "event";
+        //            $image_temp['ad_type'] = "artist";
         $image_temp['ad_type'] = "playlist";
-//            $image_temp['ad_type'] = "link";
+        //            $image_temp['ad_type'] = "link";
         $image_temp['ad_image'] = "https://assets.mwonya.com/images/beepee_app.png";
         array_push($menuCategory, $image_temp);
 
@@ -1401,8 +1398,6 @@ class Handler
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
-
-
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
@@ -1418,8 +1413,6 @@ class Handler
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
-
-
                 }
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
@@ -1436,8 +1429,6 @@ class Handler
                     $temp['tag'] = $row['tag'];
                     $temp['date'] = $row['dateAdded'];
                     $temp['lyrics'] = $row['lyrics'];
-
-
                 }
 
                 array_push($menuCategory, $temp);
@@ -1478,8 +1469,6 @@ class Handler
             $itemRecords["notice_home"] = $groupedNotifications;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
-
-
         } else {
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
@@ -1607,12 +1596,10 @@ class Handler
                 $shq_count = floatval($shq_data['count']);
                 $shq_count += 1;
                 mysqli_query($this->conn, "UPDATE `searches` SET `count`= '$shq_count' WHERE id = '$sh_id'");
-
             } else {
                 //insert data
                 mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $this->conn->real_escape_string($search_query) . "',1)");
             }
-
         }
         $search = "%{$search_query}%";
 
@@ -1647,7 +1634,7 @@ class Handler
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
         $relevanceScores = array();
-//        echo json_encode($data);
+        //        echo json_encode($data);
         // Loop through the search results
         foreach ($data as $row) {
             $temp = array();
@@ -1659,7 +1646,7 @@ class Handler
         // Sort the results based on the relevance scores
         array_multisort($relevanceScores, SORT_DESC, $data);
 
-//        echo json_encode($data);
+        //        echo json_encode($data);
 
         $total_results_got = count($data);
 
@@ -1691,7 +1678,6 @@ class Handler
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
                     $temp['relevance_score'] = $relevanceScore;
-
                 }
                 if ($row['type'] == "album") {
                     $temp['id'] = $row['id'];
@@ -1712,7 +1698,6 @@ class Handler
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
                     $temp['relevance_score'] = $relevanceScore;
-
                 }
                 if ($row['type'] == "artist") {
                     $temp['id'] = $row['id'];
@@ -1733,7 +1718,6 @@ class Handler
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = $artist_instance->getVerified();
                     $temp['relevance_score'] = $relevanceScore;
-
                 }
                 if ($row['type'] == "playlist") {
                     $temp['id'] = $row['id'];
@@ -1753,7 +1737,6 @@ class Handler
                     $temp['lyrics'] = $row['lyrics'];
                     $temp['verified'] = false;
                     $temp['relevance_score'] = $relevanceScore;
-
                 }
 
                 array_push($menuCategory, $temp);
@@ -1764,8 +1747,6 @@ class Handler
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
-
-
         } else {
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
@@ -1858,7 +1839,8 @@ class Handler
 
 
 
-    function searchFullText() {
+    function searchFullText()
+    {
         $page = intval(htmlspecialchars(strip_tags($_GET["page"])));
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "fulltext";
@@ -1970,9 +1952,7 @@ class Handler
                     $temp['status'] = $playlist->getStatus();
                     $temp['total'] = $total_rows;
                     array_push($itemRecords["Playlists"], $temp);
-
                 }
-
             }
 
 
@@ -2004,8 +1984,6 @@ class Handler
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['Playlists'], $slider_temps);
-
-
         }
 
 
@@ -2051,9 +2029,7 @@ class Handler
                     $temp['status'] = "2";
                     $temp['total'] = $total_rows;
                     array_push($itemRecords["Playlists"], $temp);
-
                 }
-
             }
 
 
@@ -2085,8 +2061,6 @@ class Handler
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['Playlists'], $slider_temps);
-
-
         }
 
 
@@ -2124,7 +2098,7 @@ class Handler
             $temp['path'] = $song->getPath();
             $temp['totalplays'] = $song->getPlays();
             $temp['albumID'] = $song->getAlbumId();
-            $temp['metaData'] = "Plays: ".$song->getPlays()." • Genre: ".$song->getGenre()->getGenre()." • Album: ".$song->getAlbum()->getTitle()." • Duration: ".$song->getDuration()." • Release Date: ".$song->getReleasedDate();
+            $temp['metaData'] = "Plays: " . $song->getPlays() . " • Genre: " . $song->getGenre()->getGenre() . " • Album: " . $song->getAlbum()->getTitle() . " • Duration: " . $song->getDuration() . " • Release Date: " . $song->getReleasedDate();
 
             array_push($itemRecords['Song'], $temp);
 
@@ -2162,8 +2136,6 @@ class Handler
 
             $itemRecords["total_pages"] = 1;
             $itemRecords["total_results"] = 1;
-
-
         }
         return $itemRecords;
     }
@@ -2194,7 +2166,6 @@ class Handler
             $trackInfo['path'] = $song->getPath();
             $trackInfo['totalplays'] = $song->getPlays();
             $trackInfo['albumID'] = $song->getAlbumId();
-
         }
         return $trackInfo;
     }
@@ -2700,7 +2671,6 @@ class Handler
             // email & password combination
             $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE password = ? AND email = ? limit 1");
             $stmt->bind_param("ss", $m_password, $m_username);
-
         } else {
             // username & password combination
             $stmt = $this->conn->prepare("SELECT `id`, `username`, `firstName`, `email`,`phone`,`password`, `signUpDate`, `profilePic`, `status`, `mwRole` FROM users WHERE password = ? AND phone = ? limit 1");
@@ -2837,7 +2807,6 @@ class Handler
             $response['error'] = true;
             $response['message'] = 'Invalid Email Address';
             return $response;
-
         }
 
         // Validate phone (if provided)
@@ -2929,7 +2898,7 @@ class Handler
     {
 
         //getting the values
-//      $m_id = password_hash($data->id, PASSWORD_DEFAULT);
+        //      $m_id = password_hash($data->id, PASSWORD_DEFAULT);
         $m_id = "mw" . $data->id;
         $m_username = $data->username;
         $m_full_name = $data->full_name;
@@ -3169,13 +3138,11 @@ class Handler
             }
 
             return $itemRecords;
-
-
         } elseif ($playlistName !== null && $trackID !== null && $userID !== null) {
             // Generate a unique playlist ID
             $playlistID = "mwP_mobile" . uniqid();
 
-// Check if the playlist already exists for the user
+            // Check if the playlist already exists for the user
             $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
             $checkStmt = mysqli_prepare($this->conn, $checkQuery);
             mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
@@ -3229,13 +3196,11 @@ class Handler
                 mysqli_stmt_close($insertPlaylistStmt);
                 mysqli_stmt_close($insertSongsStmt);
             }
-
-
         } elseif ($playlistName !== null && $userID !== null) {
             // Generate a unique playlist ID
             $playlistID = "mwP_mobile" . uniqid();
 
-// Check if the playlist already exists for the user
+            // Check if the playlist already exists for the user
             $checkQuery = "SELECT 1 FROM `playlists` WHERE `name` = ? AND `ownerID` = ?";
             $checkStmt = mysqli_prepare($this->conn, $checkQuery);
             mysqli_stmt_bind_param($checkStmt, "ss", $playlistName, $userID);
@@ -3281,7 +3246,6 @@ class Handler
 
                 mysqli_stmt_close($insertPlaylistStmt);
             }
-
         } else {
             $itemRecords['message'] = "Invalid parameters provided";
         }
@@ -3322,11 +3286,9 @@ class Handler
                     // echo "song and user Id Already Exists";
                     $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
                     $stmt_RecentPlays->bind_param("isssi", $total_plays, $update_date, $trackLastPlayed, $user_id, $id);
-
                 } else {
                     $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,lastPlayed) VALUES (?,?,?,?)");
                     $stmt_RecentPlays->bind_param("isis", $id, $user_id, $total_plays, $trackLastPlayed);
-
                 }
 
                 if ($stmt_RecentPlays->execute()) {
@@ -3352,12 +3314,10 @@ class Handler
                     // echo "song and user Id Already Exists";
                     $stmt_LikedSongs = $this->conn->prepare("UPDATE likedsongs SET songId = ?, userID = ?, dateUpdated = ? WHERE songId= ? AND userID= ?");
                     $stmt_LikedSongs->bind_param("issis", $trackID, $user_id, $update_date, $trackID, $user_id);
-
                 } else {
 
                     $stmt_LikedSongs = $this->conn->prepare("INSERT INTO likedsongs(`songId`,`userID`,`dateUpdated`) VALUES (?,?,?)");
                     $stmt_LikedSongs->bind_param("iss", $trackID, $user_id, $update_date);
-
                 }
 
                 if ($stmt_LikedSongs->execute()) {
@@ -3366,8 +3326,6 @@ class Handler
                 } else {
                     $this->exe_status = "failure";
                 }
-
-
             }
         }
 
@@ -3376,7 +3334,6 @@ class Handler
             $itemRecords['error'] = false;
             $itemRecords['message'] = "updated successfully";
             $itemRecords['trackIds'] = $updateIDs;
-
         } else {
             $itemRecords['error'] = true;
             $itemRecords['message'] = "update failed";
@@ -3405,7 +3362,6 @@ class Handler
                     if ($result == true) {
                         $usernameFromemail = $account->getEmailtousername($username);
                         $feedback['success'] = $usernameFromemail;
-
                     }
                 }
             } catch (\Throwable $th) {
@@ -3498,6 +3454,4 @@ class Handler
 
         return $sliders;
     }
-
-
 }
