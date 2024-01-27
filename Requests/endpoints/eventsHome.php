@@ -5,7 +5,7 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once 'includedFiles.php';
 
 if (!empty($db)) {
-    $category = new Handler($db);
+    $handler = new Handler($db,$redis_con);
     $result = $category->EventsHome();
 
     if($result){

@@ -18,7 +18,7 @@ if (!empty($db)) {
     $data = json_decode(file_get_contents("php://input"));
 //
     if (!empty($data->user_id)) {
-        $handler = new Handler($db);
+        $handler = new Handler($db,$redis_con);
 
         $current_Time_InSeconds = time();
         $update_date = date('Y-m-d H:i:s', $current_Time_InSeconds);

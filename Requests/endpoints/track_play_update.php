@@ -10,7 +10,7 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 include_once 'includedFiles.php';
 if (!empty($db)) {
-    $handler = new Handler($db);
+    $handler = new Handler($db,$redis_con);
     $result = $handler->UpdateTrackPlay();
 
     if($result){

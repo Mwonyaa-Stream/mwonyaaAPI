@@ -4,7 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once 'includedFiles.php';
 
 if (!empty($db)) {
-    $handler = new Handler($db);
+    $handler = new Handler($db,$redis_con);
     $result = $handler->getSongRadio();
 
     if($result){

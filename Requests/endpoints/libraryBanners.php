@@ -5,8 +5,8 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once 'includedFiles.php';
 
 if (!empty($db)) {
-    $category = new Handler($db);
-    $result = $category->LibraryBanners();
+    $handler = new Handler($db,$redis_con);
+    $result = $handler->LibraryBanners();
 
     if($result){
         http_response_code(200);

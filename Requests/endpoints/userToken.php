@@ -17,7 +17,7 @@ if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
     if (!empty($data->token) || !empty($data->userId)) {
-        $handler = new Handler($db);
+        $handler = new Handler($db,$redis_con);
         $result = $handler->addOrUpdateToken($data);
         if ($result) {
             http_response_code(200);
