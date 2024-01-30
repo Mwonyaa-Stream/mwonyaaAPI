@@ -772,9 +772,8 @@ class Handler
             $itemRecords["featured"] = $menuCategory;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_genres;
-
             $this->redis->set($key, serialize($itemRecords));
-            $this->redis->expire($key, 60);
+            $this->redis->expire($key, 3600);
         } else {
             $source = 'Cache Server';
             $itemRecords = unserialize($this->redis->get($key));
