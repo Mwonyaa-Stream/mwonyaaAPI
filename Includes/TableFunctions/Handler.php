@@ -24,6 +24,51 @@ class Handler
         $this->version = 9; // VersionCode
     }
 
+    function readArtistDiscography(): array {
+        $itemRecords = array();
+
+        $artistID = htmlspecialchars(strip_tags($_GET["artistID"]));
+        $user_ID = htmlspecialchars(strip_tags($_GET["user_ID"]));
+        $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
+
+        if ($artistID) {
+            $this->pageNO = floatval($this->pageNO);
+            $artist_instance = new Artist($this->conn, $artistID);
+
+            $itemRecords["page"] = $this->pageNO;
+            $itemRecords["Artist"] = array();
+
+
+            $albumsIDs = $artist_instance->getArtistAlbums();
+            $popular_release = array();
+            foreach ($albumsIDs as $Id) {
+                $album = new Album($this->conn, $Id);
+                $temp = array();
+                $temp['id'] = $album->getId();
+                $temp['title'] = $album->getTitle();
+                $temp['artist'] = $album->getArtist()->getName();
+                $temp['genre'] = $album->getGenre()->getGenre();
+                $temp['artworkPath'] = $album->getArtworkPath();
+                $temp['tag'] = $album->getTag();
+                $temp['description'] = $album->getDescription();
+                $temp['datecreated'] = $album->getReleaseDate();
+                $temp['totalsongplays'] = $album->getTotaltrackplays();
+
+
+                array_push($popular_release, $temp);
+            }
+
+            $popular_temps = array();
+            $popular_temps['heading'] = "Discography";
+            $popular_temps['Type'] = "release";
+            $popular_temps['ArtistAlbum'] = $popular_release;
+            array_push($itemRecords["Artist"], $popular_temps);
+
+        }
+
+        return $itemRecords;
+    }
+
 
     function readArtistProfile(): array
     {
