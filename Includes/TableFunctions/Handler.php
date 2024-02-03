@@ -57,7 +57,8 @@ class Handler
 
                 array_push($itemRecords['discography'], $temp);
             }
-
+            $itemRecords["total_pages"] = 1;
+            $itemRecords["total_results"] = 1;
 
 
         }
