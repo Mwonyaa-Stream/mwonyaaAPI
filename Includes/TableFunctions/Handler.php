@@ -36,7 +36,7 @@ class Handler
             $artist_instance = new Artist($this->conn, $artistID);
 
             $itemRecords["page"] = $this->pageNO;
-            $itemRecords["album"] = array();
+            $itemRecords["discography"] = array();
 
 
             $albumsIDs = $artist_instance->getArtistDiscography();
@@ -52,11 +52,11 @@ class Handler
                 $temp['exclusive'] = $album->getExclusive();
                 $temp['AES_code'] = $album->getAESCode();
                 $temp['description'] = $album->getDescription();
-                $temp['datecreated'] = $album->getReleaseDate();
+                $temp['release_date'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
 
 
-                array_push($itemRecords['album'], $temp);
+                array_push($itemRecords['discography'], $temp);
             }
 
 
