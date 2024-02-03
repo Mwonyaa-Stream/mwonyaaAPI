@@ -14,6 +14,8 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         private $artworkPath;
         private $releaseDate;
         private $description;
+        private $exclusive;
+        private $AES_code;
 
       
 
@@ -34,6 +36,8 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $this->artworkPath = null;
                 $this->description = null;
                 $this->releaseDate = null;
+                $this->exclusive = null;
+                $this->AES_code = null;
             
             } else{                            
                 $this->title = $album['title'];
@@ -45,6 +49,8 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $this->description = $album['description'];
                 $this->tag = $album['tag'];
                 $this->totaltrackplays = $album['totalsongplays'];
+                $this->exclusive = $album['exclusive'];
+                $this->AES_code = $album['AES_code'];
             }
 
 
@@ -54,6 +60,24 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
             return $this->title;
         }
+
+        /**
+         * @return mixed|null
+         */
+        public function getExclusive(): mixed
+        {
+            return $this->exclusive;
+        }
+
+        /**
+         * @return mixed|null
+         */
+        public function getAESCode(): mixed
+        {
+            return $this->AES_code;
+        }
+
+
 
         public function getId(){
             return $this->id;

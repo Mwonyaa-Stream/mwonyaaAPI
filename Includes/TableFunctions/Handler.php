@@ -49,6 +49,8 @@ class Handler
                 $temp['genre'] = $album->getGenre()->getGenre();
                 $temp['artworkPath'] = $album->getArtworkPath();
                 $temp['tag'] = $album->getTag();
+                $temp['exclusive'] = $album->getExclusive();
+                $temp['AES_code'] = $album->getAESCode();
                 $temp['description'] = $album->getDescription();
                 $temp['datecreated'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
