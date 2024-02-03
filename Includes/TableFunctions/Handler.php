@@ -39,8 +39,7 @@ class Handler
             $itemRecords["Artist"] = array();
 
 
-            $albumsIDs = $artist_instance->getArtistAlbums();
-            $popular_release = array();
+            $albumsIDs = $artist_instance->getArtistDiscography();
             foreach ($albumsIDs as $Id) {
                 $album = new Album($this->conn, $Id);
                 $temp = array();
@@ -55,14 +54,10 @@ class Handler
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
 
 
-                array_push($popular_release, $temp);
+                array_push($itemRecords, $temp);
             }
 
-            $popular_temps = array();
-            $popular_temps['heading'] = "Discography";
-            $popular_temps['Type'] = "release";
-            $popular_temps['ArtistAlbum'] = $popular_release;
-            array_push($itemRecords["Artist"], $popular_temps);
+
 
         }
 

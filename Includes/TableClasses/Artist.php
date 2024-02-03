@@ -325,6 +325,18 @@ class Artist
         return $array;
     }
 
+    public function getArtistDiscography(): array
+    {
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 and a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated");
+        $array = array();
+
+        while ($row = mysqli_fetch_array($query)) {
+            array_push($array, $row['id']);
+        }
+
+        return $array;
+    }
+
     public function getFollowStatus(string $user_ID)
     {
         $stmt = $this->con->prepare("SELECT COUNT(*) FROM artistfollowing WHERE artistid = ? AND userid = ?");
