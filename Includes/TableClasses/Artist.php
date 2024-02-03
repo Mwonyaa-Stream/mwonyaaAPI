@@ -327,7 +327,7 @@ class Artist
 
     public function getArtistDiscography(): array
     {
-        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 and a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated");
+        $query = mysqli_query($this->con, "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 and a.artist='$this->id' and a.tag != 'ad'GROUP BY a.id ORDER BY a.datecreated desc ");
         $array = array();
 
         while ($row = mysqli_fetch_array($query)) {
