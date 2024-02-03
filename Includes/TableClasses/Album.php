@@ -61,18 +61,14 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             return $this->title;
         }
 
-        /**
-         * @return mixed|null
-         */
-        public function getExclusive(): mixed
+
+        public function getExclusive()
         {
             return $this->exclusive;
         }
 
-        /**
-         * @return mixed|null
-         */
-        public function getAESCode(): mixed
+
+        public function getAESCode()
         {
             return $this->AES_code;
         }
