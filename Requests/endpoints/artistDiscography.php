@@ -4,8 +4,8 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once 'includedFiles.php';
 
 if (!empty($db)) {
-    $handler = new Handler($db,$redis_con);
-    $result = $handler->readSelectedAlbum();
+    $handler = new Handler($db,$rtedis_con);
+    $result = $handler->readArtistDiscography();
 
     if($result){
         http_response_code(200);
