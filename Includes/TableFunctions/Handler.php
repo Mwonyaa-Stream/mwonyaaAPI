@@ -36,7 +36,7 @@ class Handler
             $artist_instance = new Artist($this->conn, $artistID);
 
             $itemRecords["page"] = $this->pageNO;
-            $itemRecords["Artist"] = array();
+            $itemRecords["album"] = array();
 
 
             $albumsIDs = $artist_instance->getArtistDiscography();
@@ -54,7 +54,7 @@ class Handler
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
 
 
-                array_push($itemRecords, $temp);
+                array_push($itemRecords['album'], $temp);
             }
 
 
