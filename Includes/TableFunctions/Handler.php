@@ -28,7 +28,6 @@ class Handler
         $itemRecords = array();
 
         $artistID = htmlspecialchars(strip_tags($_GET["artistID"]));
-        $user_ID = htmlspecialchars(strip_tags($_GET["user_ID"]));
         $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
 
         if ($artistID) {
