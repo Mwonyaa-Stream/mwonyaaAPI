@@ -277,9 +277,12 @@ class Artist
     {
 
         if ($this->tag !== 'music') {
-            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE  available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
+//            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE  available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
+            $query = mysqli_query($this->con,"select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
         } else {
-            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
+//            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
+            $query = mysqli_query($this->con,"select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
+
 
         }
         $array = array();
