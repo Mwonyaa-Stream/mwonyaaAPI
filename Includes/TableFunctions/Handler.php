@@ -347,7 +347,7 @@ class Handler
                 $home_hero = array();
                 $home_hero['heading'] = "Home";
                 $home_hero['type'] = "hero";
-                $home_hero['subheading'] = "Mwonya vibes";
+                $home_hero['subheading'] = "Find Your Favourite Music";
                 array_push($menuCategory, $home_hero);
 
 
