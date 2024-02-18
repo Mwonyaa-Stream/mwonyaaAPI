@@ -297,6 +297,19 @@ class Handler
         return $itemRecords;
     }
 
+    function clearCache(): array {
+        $key = 'home_feed';
+        $itemRecords = array();
+        if ($this->redis->get($key)) {
+            $this->redis->del($key);
+            $itemRecords['message'] = 'cache cleared successfully';
+        } else {
+            $itemRecords['message'] = 'unsuccessful';
+        }
+
+        return $itemRecords;
+    }
+
 
     function allCombined(): array
     {
