@@ -53,7 +53,10 @@ class Caption
 
     public function getCaptions()
     {
-        return $this->captions;
+        // Extract lyrics from the LRC data
+        preg_match_all('/\[\d+:\d+\.\d+\](.*?)\n/s', $this->captions, $matches);
+        $lyrics = implode(' ', $matches[1]);
+        return trim($lyrics);
     }
 
 
