@@ -54,17 +54,18 @@ class Caption
     public function getCaptions()
     {
         $lyricsArray = array();
+        // Normalize line endings to \n
+        $lyrics = str_replace("\r\n", "\n", $this->captions);
+
         // Extract valid timestamped lines
-        $lines = explode("\n", $this->captions);
+        $lines = explode("\n", $lyrics);
         foreach ($lines as $line) {
             if (preg_match('/^\[\d+:\d+\.\d+\]/', $line)) {
                 $lyricsArray[] = $line;
             }
         }
 
-        $processedLyrics = implode("\n", $lyricsArray);
-
-        return $processedLyrics;
+        return implode("\n", $lyricsArray);
     }
 
 
