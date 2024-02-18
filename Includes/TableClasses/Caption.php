@@ -53,10 +53,18 @@ class Caption
 
     public function getCaptions()
     {
-        // Extract lyrics from the LRC data
-        preg_match_all('/\[\d+:\d+\.\d+\](.*?)\n/s', $this->captions, $matches);
-        $lyrics = implode("\n", $matches[0]);
-        return trim($lyrics);
+        $lyricsArray = array();
+        // Extract valid timestamped lines
+        $lines = explode("\n", $this->captions);
+        foreach ($lines as $line) {
+            if (preg_match('/^\[\d+:\d+\.\d+\]/', $line)) {
+                $lyricsArray[] = $line;
+            }
+        }
+
+        $processedLyrics = implode("\n", $lyricsArray);
+
+        return $processedLyrics;
     }
 
 
