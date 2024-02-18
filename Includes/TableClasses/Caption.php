@@ -65,8 +65,14 @@ class Caption
             }
         }
 
-        return implode("\n", $lyricsArray);
+        // Check if there are valid timestamped lines
+        if (empty($lyricsArray)) {
+            return null;
+        } else {
+            return implode("\n", $lyricsArray);
+        }
     }
+
 
 
     public function getDateCreated()
