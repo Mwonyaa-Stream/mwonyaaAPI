@@ -91,7 +91,9 @@
          */
         public function getLyrics()
         {
-            return $this->lyrics;
+            //            return $this->lyrics;
+            $caption = new Caption($this->con, $this->id);
+            return $caption->getCaptions();
         }
 
         public function getFeaturing() {
