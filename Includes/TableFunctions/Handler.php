@@ -368,14 +368,14 @@ class Handler
                 $image_temp['ad_title'] = "Editors' Pick";
                 $image_temp['type'] = "image_ad";
                 $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
-                $image_temp['ad_link'] = "mwP_mobile65bf3e49b10d5";
+                $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
                 //            $image_temp['ad_type'] = "collection";
                 //            $image_temp['ad_type'] = "track";
                 //            $image_temp['ad_type'] = "event";
                 //            $image_temp['ad_type'] = "artist";
                 $image_temp['ad_type'] = "playlist";
                 //            $image_temp['ad_type'] = "link";
-                $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/editorspick.png";
+                $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/thatsound.png";
                 array_push($menuCategory, $image_temp);
 
 
