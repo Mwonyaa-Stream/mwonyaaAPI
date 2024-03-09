@@ -2144,6 +2144,7 @@ class Handler
             $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
             $temp['artistID'] = $song->getArtistId();
             $temp['album'] = $song->getAlbum()->getTitle();
+            $temp['artistImage'] = $song->getArtist()->getProfilePath();
             $temp['albumID'] = $song->getAlbumId();
             $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
             $temp['genre'] = $song->getGenre()->getGenre();
