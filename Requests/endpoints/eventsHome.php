@@ -6,7 +6,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db,$redis_con);
-    $result = $category->EventsHome();
+    $result = $handler->EventsHome();
 
     if($result){
         http_response_code(200);
