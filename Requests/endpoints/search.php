@@ -6,6 +6,7 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
     $handler = new Handler($db,$redis_con);
     $result = $handler->searchNormal();
+//    $result = $handler->searchFullText();
 
     if($result){
         http_response_code(200);
