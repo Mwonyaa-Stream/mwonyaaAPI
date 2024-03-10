@@ -2235,9 +2235,9 @@ class Handler
         $menuCategory = array();
         $itemRecords = array();
 
-        $query_podcast_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='podcast' ORDER BY RAND() LIMIT 8";
-        $query_dj_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='dj' ORDER BY RAND()  LIMIT 8";
-        $query_live_artists = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND  tag='live' ORDER BY RAND() LIMIT 8";
+        $query_podcast_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='podcast' ORDER BY RAND() LIMIT 8";
+        $query_dj_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='dj' ORDER BY RAND()  LIMIT 8";
+        $query_live_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='live' ORDER BY RAND() LIMIT 8";
 
         $query_podcast_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'podcast' ORDER BY RAND() LIMIT 8";
         $query_dj_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'dj' ORDER BY RAND() LIMIT 8";
@@ -2293,6 +2293,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
+            $temp['verified'] =  (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
@@ -2342,6 +2343,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
+            $temp['verified'] =  (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
@@ -2391,6 +2393,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
+            $temp['verified'] =  (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
