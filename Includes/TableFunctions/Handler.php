@@ -382,13 +382,13 @@ class Handler
 
                 //get Featured Artist
                 $featuredCategory = array();
-                $musicartistQuery = "SELECT id, profilephoto, name FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+                $musicartistQuery = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $musicartistQuery);
                 // Execute the query
                 mysqli_stmt_execute($stmt);
                 // Bind the result variables
-                mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+                mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name, $verified);
 
                 // Fetch the results
                 while (mysqli_stmt_fetch($stmt)) {
@@ -396,6 +396,7 @@ class Handler
                     $temp['id'] = $id;
                     $temp['profilephoto'] = $profilephoto;
                     $temp['name'] = $name;
+                    $temp['verified'] =  (int)$verified === 1;
                     array_push($featuredCategory, $temp);
                 }
 
