@@ -1783,7 +1783,6 @@ class Handler
         }
 
         // Step 4: Sort the closest words array by Levenshtein distance in ascending order
-        asort($closest_words);
 
         // Get the top 4 closest words
         $top_closest_words = array_slice($closest_words, 0, 4);
