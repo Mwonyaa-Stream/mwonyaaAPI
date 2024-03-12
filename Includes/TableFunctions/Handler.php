@@ -1657,7 +1657,7 @@ class Handler
 
         $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST (?) as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST (?) "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
-        $stmt->bind_param("s", $search);
+        $stmt->bind_param("ss", $search);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -1670,7 +1670,7 @@ class Handler
         $search_query_sql = $search_query_top . " ORDER BY relTitle*1.14  DESC LIMIT ?,?";
         echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
-        $stmt->bind_param("sii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
+        $stmt->bind_param("ssii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
