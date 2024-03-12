@@ -1655,7 +1655,7 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST (`?`) as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST (`?`) "; // SQL with parameters
+        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST ('?') as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST ('?') "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
         $stmt->bind_param("ss", $search);
         $stmt->execute();
@@ -1671,11 +1671,12 @@ class Handler
         echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
         $stmt->bind_param("sii", $search, $offset, $no_of_records_per_page);
+        echo json_encode($stmt);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
-        echo json_encode($data);
+
 
 
         $total_results_got = count($data);
