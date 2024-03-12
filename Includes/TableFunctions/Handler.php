@@ -1746,7 +1746,7 @@ class Handler
                 $temp['type'] = $row['type'];
                 $temp['lyrics'] = $row['lyrics'];
                 $temp['verified'] = isset($temp['verified']) ? $temp['verified'] : false;
-                $temp['relevance_score'] = $relevanceScore;
+                $temp['relevance_score'] = 1;
 
                 array_push($menuCategory, $temp);
             }
