@@ -1738,7 +1738,6 @@ class Handler
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
-            $itemRecords["closest"] = $this->getTopClosest($search_query);
             $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
@@ -1746,7 +1745,6 @@ class Handler
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
-            $itemRecords["closest"] = $this->getTopClosest($search_query);
             $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = [];
@@ -1766,6 +1764,8 @@ class Handler
 
         // Step 3: Calculate Levenshtein distance for each word in the table
         $closest_words = array();
+        $min_distance = PHP_INT_MAX; // Initialize with a large value
+        $closest_word = ""; // Variable to store the word with the smallest Levenshtein distance
 
         // Assuming you have a table named "words_table" with columns "word" and "metaphone"
         $query = "SELECT word, metaphone_key FROM word_bag";
@@ -1779,38 +1779,6 @@ class Handler
 
                 // Store the word and its distance in the array
                 $closest_words[$row['word']] = $distance;
-            }
-        }
-
-        // Step 4: Sort the closest words array by Levenshtein distance in ascending order
-        asort($closest_words);
-
-        // Get the top 4 closest words
-        $top_closest_words = array_slice($closest_words, 0, 4);
-
-        // Return array of top 4 closest words
-        return $top_closest_words;
-    }
-
-
-    function getTopClosest($searched_keyword)
-    {
-        // Step 2: Determine metaphone of the searched keyword
-        $searched_metaphone = metaphone($searched_keyword);
-
-        // Step 3: Calculate Levenshtein distance for each word in the table
-        $min_distance = PHP_INT_MAX; // Initialize with a large value
-        $closest_word = ""; // Variable to store the word with the smallest Levenshtein distance
-
-        // Assuming you have a table named "words_table" with columns "word" and "metaphone"
-        $query = "SELECT word,metaphone_key FROM word_bag";
-        $result = $this->conn->query($query);
-
-        if ($result->num_rows > 0) {
-            // Iterate through each word in the table
-            while ($row = $result->fetch_assoc()) {
-                // Calculate Levenshtein distance between the metaphone of the searched keyword and the metaphone of the current word
-                $distance = levenshtein($searched_metaphone, $row['metaphone_key']);
 
                 // Check if the current word has a smaller Levenshtein distance
                 if ($distance < $min_distance) {
@@ -1820,10 +1788,16 @@ class Handler
             }
         }
 
-// Step 4: The word with the smallest Levenshtein distance is chosen
-        return "Closest word to '$searched_keyword' is: $closest_word";
+        // Step 4: Sort the closest words array by Levenshtein distance in ascending order
+        asort($closest_words);
 
+        // Get the top 4 closest words
+        $top_closest_words = array_slice($closest_words, 0, 4);
+
+        // Return array of top 4 closest words and the closest word
+        return array('top_closest_words' => $top_closest_words, 'closest_word' => $closest_word);
     }
+
 
 
     function searchFullText()
