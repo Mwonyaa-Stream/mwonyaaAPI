@@ -1720,16 +1720,19 @@ class Handler
                         $temp['album_name'] = $song->getAlbum()->getTitle();
                         $temp['genre_name'] = $song->getGenre()->getGenre();
                         $temp['track_duration'] = $song->getDuration();
+                        $temp['genre_id'] = $song->getGenreID();
                         break;
                     case "album":
                         $album = new Album($this->conn, $row['id']);
                         $temp['artist'] = $album->getArtist()->getName();
                         $temp['album_name'] = $row['title'];
+                        $temp['genre_id'] = $album->getGenre()->getGenreid();
                         break;
                     case "artist":
                         $artist_instance = new Artist($this->conn, $row['id']);
                         $temp['artist'] = $row['title'];
                         $temp['verified'] = $artist_instance->getVerified();
+                        $temp['genre_id'] = $artist_instance->getGenre();
                         break;
                     case "playlist":
                         $temp['title'] = $row['title'];
