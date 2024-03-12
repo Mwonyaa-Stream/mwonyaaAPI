@@ -1711,7 +1711,7 @@ class Handler
 
             foreach ($data as $row) {
                 $temp = array();
-                $relevanceScore = $this->calculateRelevanceScore($row);
+//                $relevanceScore = $this->calculateRelevanceScore($row);
 
                 switch ($row['type']) {
                     case "song":
