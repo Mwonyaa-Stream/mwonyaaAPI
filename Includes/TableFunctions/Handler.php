@@ -1739,7 +1739,7 @@ class Handler
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["closest"] = $this->getTopClosest($search_query);
-            $itemRecords["suggested_words"] = $this->getClosedWordSearched($search_query);
+            $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
         } else {
@@ -1747,7 +1747,7 @@ class Handler
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
             $itemRecords["closest"] = $this->getTopClosest($search_query);
-            $itemRecords["suggested_words"] = $this->getClosedWordSearched($search_query);
+            $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = [];
         }
