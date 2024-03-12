@@ -1703,7 +1703,7 @@ class Handler
                     case "song":
                         $song = new Song($this->conn, $row['entity_id']);
                         $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                        $temp['title'] = $row['title'];
+                        $temp['title'] = $row['entity_title'];
                         $temp['plays'] = $song->getPlays();
                         $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                         $temp['album_name'] = $song->getAlbum()->getTitle();
@@ -1716,18 +1716,18 @@ class Handler
                     case "album":
                         $album = new Album($this->conn, $row['entity_id']);
                         $temp['artist'] = $album->getArtist()->getName();
-                        $temp['title'] = $row['title'];
+                        $temp['title'] = $row['entity_title'];
                         $temp['artworkPath'] = $album->getArtworkPath();
                         break;
 
                     case "artist":
                         $artist_instance = new Artist($this->conn, $row['entity_id']);
-                        $temp['artist'] = $row['title'];
+                        $temp['artist'] = $row['entity_title'];
                         $temp['verified'] = $artist_instance->getVerified();
                         break;
 
                     case "playlist":
-                        $temp['title'] = $row['title'];
+                        $temp['title'] = $row['entity_title'];
                         break;
                 }
 
@@ -1738,7 +1738,7 @@ class Handler
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
-            $itemRecords["closest"] = $this->getClosedWordSearched($search_query);
+//            $itemRecords["closest"] = $this->getClosedWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
         } else {
