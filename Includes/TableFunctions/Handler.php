@@ -1679,89 +1679,61 @@ class Handler
         if ($total_results_got > 0) {
 
             foreach ($data as $row) {
-                $temp = array();
-                if ($row['type'] == "song") {
-                    $temp['id'] = $row['entity_id'];
-//                    $song = new Song($this->conn, $row['id']);
-//                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-//                    $temp['artistID'] = $row['artist'];
-//                    $temp['title'] = $row['title'];
-//                    $temp['path'] = $row['path'];
-//                    $temp['plays'] = $song->getPlays();
-//                    $temp['weekplays'] = $row['weekplays'];
-//                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-//                    $temp['album_name'] = $song->getAlbum()->getTitle();
-//                    $temp['genre_name'] = $song->getGenre()->getGenre();
-//                    $temp['genre_id'] = $song->getGenreID();
-//                    $temp['track_duration'] = $song->getDuration();
-//                    $temp['track_albumID'] = $song->getAlbumId();
-//                    $temp['type'] = $row['type'];
-//                    $temp['lyrics'] = $row['lyrics'];
-//                    $temp['verified'] = false;
-//                    $temp['relevance_score'] = 1;
-                }
-                if ($row['type'] == "album") {
-                    $temp['id'] = $row['entity_id'];
-//                    $album = new Album($this->conn, $row['id']);
-//                    $temp['artist'] = $album->getArtist()->getName();
-//                    $temp['artistID'] = $row['artist'];
-//                    $temp['title'] = $row['title'];
-//                    $temp['path'] = $row['path'];
-//                    $temp['plays'] = $row['plays'];
-//                    $temp['weekplays'] = $row['weekplays'];
-//                    $temp['artworkPath'] = $row['artworkPath'];
-//                    $temp['album_name'] = '';
-//                    $temp['genre_name'] = '';
-//                    $temp['genre_id'] = '';
-//                    $temp['track_duration'] = '';
-//                    $temp['track_albumID'] = '';
-//                    $temp['type'] = $row['type'];
-//                    $temp['lyrics'] = $row['lyrics'];
-//                    $temp['verified'] = false;
-//                    $temp['relevance_score'] = 1;
-                }
-                if ($row['type'] == "artist") {
-                    $temp['id'] = $row['entity_id'];
-//                    $artist_instance = new Artist($this->conn, $row['id']);
-//                    $temp['artist'] = $row['title'];
-//                    $temp['artistID'] = '';
-//                    $temp['title'] = '';
-//                    $temp['path'] = $row['path'];
-//                    $temp['plays'] = $row['plays'];
-//                    $temp['weekplays'] = $row['weekplays'];
-//                    $temp['artworkPath'] = $row['artworkPath'];
-//                    $temp['album_name'] = '';
-//                    $temp['genre_name'] = '';
-//                    $temp['genre_id'] = '';
-//                    $temp['track_duration'] = '';
-//                    $temp['track_albumID'] = '';
-//                    $temp['type'] = $row['type'];
-//                    $temp['lyrics'] = $row['lyrics'];
-//                    $temp['verified'] = $artist_instance->getVerified();
-//                    $temp['relevance_score'] = 1;
-                }
-                if ($row['type'] == "playlist") {
-                    $temp['id'] = $row['entity_id'];
-//                    $temp['artist'] = '';
-//                    $temp['artistID'] = '';
-//                    $temp['title'] = $row['title'];
-//                    $temp['path'] = $row['path'];
-//                    $temp['plays'] = $row['plays'];
-//                    $temp['weekplays'] = $row['weekplays'];
-//                    $temp['artworkPath'] = $row['artworkPath'];
-//                    $temp['album_name'] = '';
-//                    $temp['genre_name'] = '';
-//                    $temp['genre_id'] = '';
-//                    $temp['track_duration'] = '';
-//                    $temp['track_albumID'] = '';
-//                    $temp['type'] = $row['type'];
-//                    $temp['lyrics'] = $row['lyrics'];
-//                    $temp['verified'] = false;
-//                    $temp['relevance_score'] = 1;
+                $temp = array(
+                    'id' => $row['entity_id'],
+                    'artist' => '',
+                    'artistID' => '',
+                    'title' => '',
+                    'path' => '',
+                    'plays' => '',
+                    'weekplays' => '',
+                    'artworkPath' => '',
+                    'album_name' => '',
+                    'genre_name' => '',
+                    'genre_id' => '',
+                    'track_duration' => '',
+                    'track_albumID' => '',
+                    'type' => $row['type'],
+                    'lyrics' => '',
+                    'verified' => false,
+                    'relevance_score' => 1
+                );
+
+                switch ($row['type']) {
+                    case "song":
+                        $song = new Song($this->conn, $row['entity_id']);
+                        $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                        $temp['title'] = $row['title'];
+                        $temp['plays'] = $song->getPlays();
+                        $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                        $temp['album_name'] = $song->getAlbum()->getTitle();
+                        $temp['genre_name'] = $song->getGenre()->getGenre();
+                        $temp['genre_id'] = $song->getGenreID();
+                        $temp['track_duration'] = $song->getDuration();
+                        $temp['track_albumID'] = $song->getAlbumId();
+                        break;
+
+                    case "album":
+                        $album = new Album($this->conn, $row['entity_id']);
+                        $temp['artist'] = $album->getArtist()->getName();
+                        $temp['title'] = $row['title'];
+                        $temp['artworkPath'] = $album->getArtworkPath();
+                        break;
+
+                    case "artist":
+                        $artist_instance = new Artist($this->conn, $row['entity_id']);
+                        $temp['artist'] = $row['title'];
+                        $temp['verified'] = $artist_instance->getVerified();
+                        break;
+
+                    case "playlist":
+                        $temp['title'] = $row['title'];
+                        break;
                 }
 
                 array_push($menuCategory, $temp);
             }
+
 
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
