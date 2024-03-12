@@ -1689,18 +1689,18 @@ class Handler
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
-        $relevanceScores = array();
-        //        echo json_encode($data);
-        // Loop through the search results
-        foreach ($data as $row) {
-            $temp = array();
-
-            // Calculate and store the relevance score for the current result
-            $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
-        }
-
-        // Sort the results based on the relevance scores
-        array_multisort($relevanceScores, SORT_DESC, $data);
+//        $relevanceScores = array();
+//        //        echo json_encode($data);
+//        // Loop through the search results
+//        foreach ($data as $row) {
+//            $temp = array();
+//
+//            // Calculate and store the relevance score for the current result
+//            $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
+//        }
+//
+//        // Sort the results based on the relevance scores
+//        array_multisort($relevanceScores, SORT_DESC, $data);
 
         //        echo json_encode($data);
 
