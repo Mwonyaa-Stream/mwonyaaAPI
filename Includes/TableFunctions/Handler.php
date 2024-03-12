@@ -1670,7 +1670,7 @@ class Handler
         $search_query_sql = $search_query_top . " ORDER BY relTitle*1.14  DESC LIMIT ?,?";
         echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
-        $stmt->bind_param("ssii", $search, $search, $offset, $no_of_records_per_page);
+        $stmt->bind_param("sii", $search, $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
