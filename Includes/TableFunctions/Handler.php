@@ -1766,7 +1766,7 @@ class Handler
         $closest_word = ""; // Variable to store the word with the smallest Levenshtein distance
 
         // Assuming you have a table named "words_table" with columns "word" and "metaphone"
-        $query = "SELECT word FROM word_bag";
+        $query = "SELECT word,metaphone_key FROM word_bag";
         $result = $this->conn->query($query);
 
         if ($result->num_rows > 0) {
