@@ -1655,7 +1655,7 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST (?) as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST (?) "; // SQL with parameters
+        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST ('?') as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST ('?') "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
         $stmt->bind_param("ss", $search);
         $stmt->execute();
@@ -1668,6 +1668,7 @@ class Handler
         // check if the search query returned any results
         $menuCategory = array();
         $search_query_sql = $search_query_top . " ORDER BY relTitle*1.14  DESC LIMIT ?,?";
+        echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
         $stmt->bind_param("ssii", $search, $search, $offset, $no_of_records_per_page);
         $stmt->execute();
