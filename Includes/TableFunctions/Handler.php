@@ -1693,13 +1693,13 @@ class Handler
                     'genre_id' => '',
                     'track_duration' => '',
                     'track_albumID' => '',
-                    'type' => $row['type'],
+                    'type' => $row['entity_type'],
                     'lyrics' => '',
                     'verified' => false,
                     'relevance_score' => 1
                 );
 
-                switch ($row['type']) {
+                switch ($row['entity_type']) {
                     case "song":
                         $song = new Song($this->conn, $row['entity_id']);
                         $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
