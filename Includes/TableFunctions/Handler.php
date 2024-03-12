@@ -1671,7 +1671,6 @@ class Handler
         echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
 //        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
-        echo json_encode($stmt);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
