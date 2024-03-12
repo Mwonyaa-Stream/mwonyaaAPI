@@ -1738,7 +1738,7 @@ class Handler
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
-//            $itemRecords["closest"] = $this->getClosedWordSearched($search_query);
+            $itemRecords["closest"] = $this->getClosedWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
         } else {
