@@ -1738,6 +1738,7 @@ class Handler
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
             $itemRecords["searchTerm"] = $search_query;
+            $itemRecords["closest"] = $this->getClosedWordSearched($search_query);
             $itemRecords["algorithm"] = $search_algorithm;
             $itemRecords["search_results"] = $menuCategory;
         } else {
@@ -1755,77 +1756,36 @@ class Handler
     }
 
 
-    function calculateRelevanceScore($result)
+    function getClosedWordSearched($searched_keyword)
     {
-        // Example: Assign weights to different factors
-        $keywordWeight = 2;
-        $popularityWeight = 1;
-        $freshnessWeight = 0.5;
+        // Step 2: Determine metaphone of the searched keyword
+        $searched_metaphone = metaphone($searched_keyword);
 
-        $score = 0;
-        $totalWeight = 0;
+        // Step 3: Calculate Levenshtein distance for each word in the table
+        $min_distance = PHP_INT_MAX; // Initialize with a large value
+        $closest_word = ""; // Variable to store the word with the smallest Levenshtein distance
 
-        // Example: Check keyword match
-        $score += $keywordWeight * $this->keywordMatchScore($result['title'], $result['artist'], $_GET['key_query']);
-        $totalWeight += $keywordWeight;
+        // Assuming you have a table named "words_table" with columns "word" and "metaphone"
+        $query = "SELECT word FROM word_bag";
+        $result = $this->conn->query($query);
 
-        // Example: Add popularity score if 'plays' attribute is available and is a numeric value
-        if (isset($result['plays']) && is_numeric($result['plays'])) {
-            $score += $popularityWeight * $result['plays'];
-            $totalWeight += $popularityWeight;
+        if ($result->num_rows > 0) {
+            // Iterate through each word in the table
+            while ($row = $result->fetch_assoc()) {
+                // Calculate Levenshtein distance between the metaphone of the searched keyword and the metaphone of the current word
+                $distance = levenshtein($searched_metaphone, $row['metaphone_key']);
+
+                // Check if the current word has a smaller Levenshtein distance
+                if ($distance < $min_distance) {
+                    $min_distance = $distance;
+                    $closest_word = $row['word'];
+                }
+            }
         }
 
-        // Example: Add freshness score (consider the date added or updated)
-        $score += $freshnessWeight * $this->calculateFreshnessScore($result['date_added']);
-        $totalWeight += $freshnessWeight;
+// Step 4: The word with the smallest Levenshtein distance is chosen
+        return "Closest word to '$searched_keyword' is: $closest_word";
 
-        // Normalize the score by dividing by the total weight
-        $normalizedScore = ($totalWeight > 0) ? $score / $totalWeight : 0;
-
-        return $normalizedScore;
-    }
-
-
-    function keywordMatchScore($title, $artist, $query)
-    {
-        // Implement a scoring mechanism based on exact word matching
-
-        // Normalize strings to lowercase for case-insensitive matching
-        $title = strtolower($title);
-        $artist = strtolower($artist);
-        $query = strtolower($query);
-
-        // Split the query into individual words
-        $queryWords = explode(' ', $query);
-
-        // Check if each word in the query matches the title or artist completely
-        $titleMatches = array_reduce($queryWords, function ($carry, $word) use ($title) {
-            return $carry && (strpos($title, $word) !== false);
-        }, true);
-
-        $artistMatches = array_reduce($queryWords, function ($carry, $word) use ($artist) {
-            return $carry && (strpos($artist, $word) !== false);
-        }, true);
-
-        // Return a higher score if the entire words match completely
-        return ($titleMatches || $artistMatches) ? 2 : 1;
-    }
-
-
-    function calculateFreshnessScore($dateAdded)
-    {
-
-        // Define constants for freshness scoring
-        $halfLifeInDays = 7; // Adjust this based on your preference
-        $maxScore = 1; // The maximum freshness score
-
-        // Calculate the difference in days from the current date
-        $daysAgo = (strtotime('now') - strtotime($dateAdded)) / (60 * 60 * 24);
-
-        // Use an exponential decay function to calculate freshness score
-        $freshnessScore = $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
-
-        return $freshnessScore;
     }
 
 
