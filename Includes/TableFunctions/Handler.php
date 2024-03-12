@@ -1657,7 +1657,7 @@ class Handler
 
         $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST ('?') as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST ('?') "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
-        $stmt->bind_param("ss", $search);
+        $stmt->bind_param("ss", $search,$search);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
