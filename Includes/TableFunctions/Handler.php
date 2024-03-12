@@ -1713,90 +1713,44 @@ class Handler
                 $temp = array();
                 $relevanceScore = $this->calculateRelevanceScore($row);
 
-                // Add the relevance score to the temporary array
+                switch ($row['type']) {
+                    case "song":
+                        $song = new Song($this->conn, $row['id']);
+                        $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                        $temp['album_name'] = $song->getAlbum()->getTitle();
+                        $temp['genre_name'] = $song->getGenre()->getGenre();
+                        $temp['track_duration'] = $song->getDuration();
+                        break;
+                    case "album":
+                        $album = new Album($this->conn, $row['id']);
+                        $temp['artist'] = $album->getArtist()->getName();
+                        $temp['album_name'] = $row['title'];
+                        break;
+                    case "artist":
+                        $artist_instance = new Artist($this->conn, $row['id']);
+                        $temp['artist'] = $row['title'];
+                        $temp['verified'] = $artist_instance->getVerified();
+                        break;
+                    case "playlist":
+                        $temp['title'] = $row['title'];
+                        break;
+                }
 
-                if ($row['type'] == "song") {
-                    $temp['id'] = $row['id'];
-                    $song = new Song($this->conn, $row['id']);
-                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                    $temp['artistID'] = $row['artist'];
-                    $temp['title'] = $row['title'];
-                    $temp['path'] = $row['path'];
-                    $temp['plays'] = $song->getPlays();
-                    $temp['weekplays'] = $row['weekplays'];
-                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                    $temp['album_name'] = $song->getAlbum()->getTitle();
-                    $temp['genre_name'] = $song->getGenre()->getGenre();
-                    $temp['genre_id'] = $song->getGenreID();
-                    $temp['track_duration'] = $song->getDuration();
-                    $temp['track_albumID'] = $song->getAlbumId();
-                    $temp['type'] = $row['type'];
-                    $temp['lyrics'] = $row['lyrics'];
-                    $temp['verified'] = false;
-                    $temp['relevance_score'] = $relevanceScore;
-                }
-                if ($row['type'] == "album") {
-                    $temp['id'] = $row['id'];
-                    $album = new Album($this->conn, $row['id']);
-                    $temp['artist'] = $album->getArtist()->getName();
-                    $temp['artistID'] = $row['artist'];
-                    $temp['title'] = $row['title'];
-                    $temp['path'] = $row['path'];
-                    $temp['plays'] = $row['plays'];
-                    $temp['weekplays'] = $row['weekplays'];
-                    $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['album_name'] = '';
-                    $temp['genre_name'] = '';
-                    $temp['genre_id'] = '';
-                    $temp['track_duration'] = '';
-                    $temp['track_albumID'] = '';
-                    $temp['type'] = $row['type'];
-                    $temp['lyrics'] = $row['lyrics'];
-                    $temp['verified'] = false;
-                    $temp['relevance_score'] = $relevanceScore;
-                }
-                if ($row['type'] == "artist") {
-                    $temp['id'] = $row['id'];
-                    $artist_instance = new Artist($this->conn, $row['id']);
-                    $temp['artist'] = $row['title'];
-                    $temp['artistID'] = '';
-                    $temp['title'] = '';
-                    $temp['path'] = $row['path'];
-                    $temp['plays'] = $row['plays'];
-                    $temp['weekplays'] = $row['weekplays'];
-                    $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['album_name'] = '';
-                    $temp['genre_name'] = '';
-                    $temp['genre_id'] = '';
-                    $temp['track_duration'] = '';
-                    $temp['track_albumID'] = '';
-                    $temp['type'] = $row['type'];
-                    $temp['lyrics'] = $row['lyrics'];
-                    $temp['verified'] = $artist_instance->getVerified();
-                    $temp['relevance_score'] = $relevanceScore;
-                }
-                if ($row['type'] == "playlist") {
-                    $temp['id'] = $row['id'];
-                    $temp['artist'] = '';
-                    $temp['artistID'] = '';
-                    $temp['title'] = $row['title'];
-                    $temp['path'] = $row['path'];
-                    $temp['plays'] = $row['plays'];
-                    $temp['weekplays'] = $row['weekplays'];
-                    $temp['artworkPath'] = $row['artworkPath'];
-                    $temp['album_name'] = '';
-                    $temp['genre_name'] = '';
-                    $temp['genre_id'] = '';
-                    $temp['track_duration'] = '';
-                    $temp['track_albumID'] = '';
-                    $temp['type'] = $row['type'];
-                    $temp['lyrics'] = $row['lyrics'];
-                    $temp['verified'] = false;
-                    $temp['relevance_score'] = $relevanceScore;
-                }
+                $temp['id'] = $row['id'];
+                $temp['path'] = $row['path'];
+                $temp['plays'] = $row['plays'];
+                $temp['weekplays'] = $row['weekplays'];
+                $temp['artworkPath'] = $row['artworkPath'];
+                $temp['genre_id'] = isset($temp['genre_id']) ? $temp['genre_id'] : '';
+                $temp['track_albumID'] = isset($temp['track_albumID']) ? $temp['track_albumID'] : '';
+                $temp['type'] = $row['type'];
+                $temp['lyrics'] = $row['lyrics'];
+                $temp['verified'] = isset($temp['verified']) ? $temp['verified'] : false;
+                $temp['relevance_score'] = $relevanceScore;
 
                 array_push($menuCategory, $temp);
             }
+
 
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
@@ -1864,11 +1818,11 @@ class Handler
 
         // Check if each word in the query matches the title or artist completely
         $titleMatches = array_reduce($queryWords, function ($carry, $word) use ($title) {
-            return $carry && (strpos($title, $word) !== false);
+            return $carry && (str_contains($title, $word));
         }, true);
 
         $artistMatches = array_reduce($queryWords, function ($carry, $word) use ($artist) {
-            return $carry && (strpos($artist, $word) !== false);
+            return $carry && (str_contains($artist, $word));
         }, true);
 
         // Return a higher score if the entire words match completely
@@ -1887,9 +1841,7 @@ class Handler
         $daysAgo = (strtotime('now') - strtotime($dateAdded)) / (60 * 60 * 24);
 
         // Use an exponential decay function to calculate freshness score
-        $freshnessScore = $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
-
-        return $freshnessScore;
+        return $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
     }
 
 
