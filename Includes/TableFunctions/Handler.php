@@ -1666,10 +1666,10 @@ class Handler
         $total_pages = ceil($total_rows / $no_of_records_per_page);
         // check if the search query returned any results
         $menuCategory = array();
-        $search_query_sql = $search_query_top . " ORDER BY relTitle * 1.14  DESC LIMIT 0,10";
+        $search_query_sql = $search_query_top . " ORDER BY relTitle * 1.14  DESC LIMIT ?,?";
         echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
-//        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
+        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
