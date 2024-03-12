@@ -1703,20 +1703,28 @@ class Handler
                     case "song":
                         $song = new Song($this->conn, $row['entity_id']);
                         $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                        $temp['artistID'] = $song->getArtistId();
                         $temp['title'] = $row['entity_title'];
+                        $temp['path'] = $song->getPath();
                         $temp['plays'] = $song->getPlays();
+                        $temp['weekplays'] = $song->getPlays();
                         $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
                         $temp['album_name'] = $song->getAlbum()->getTitle();
                         $temp['genre_name'] = $song->getGenre()->getGenre();
                         $temp['genre_id'] = $song->getGenreID();
                         $temp['track_duration'] = $song->getDuration();
                         $temp['track_albumID'] = $song->getAlbumId();
+                        $temp['lyrics'] = $song->getLyrics();
                         break;
 
                     case "album":
                         $album = new Album($this->conn, $row['entity_id']);
                         $temp['artist'] = $album->getArtist()->getName();
+                        $temp['artistID'] = $album->getArtistId();
                         $temp['title'] = $row['entity_title'];
+                        $temp['path'] = 'path';
+                        $temp['plays'] = 'plays';
+                        $temp['weekplays'] = 'weekplays';
                         $temp['artworkPath'] = $album->getArtworkPath();
                         break;
 
@@ -1724,6 +1732,7 @@ class Handler
                         $artist_instance = new Artist($this->conn, $row['entity_id']);
                         $temp['artist'] = $row['entity_title'];
                         $temp['verified'] = $artist_instance->getVerified();
+                        $temp['artworkPath'] = $artist_instance->getProfilePath();
                         break;
 
                     case "playlist":
