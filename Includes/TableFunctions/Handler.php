@@ -1666,7 +1666,7 @@ class Handler
         $total_pages = ceil($total_rows / $no_of_records_per_page);
         // check if the search query returned any results
         $menuCategory = array();
-        $search_query_sql = $search_query_top . " ORDER BY relTitle * 1.14  DESC LIMIT ?,?";
+        $search_query_sql = $search_query_top . " ORDER BY relTitle * 0.4  DESC LIMIT ?,?";
         $stmt = $this->conn->prepare($search_query_sql);
         $stmt->bind_param("ii", $offset, $no_of_records_per_page);
         $stmt->execute();
