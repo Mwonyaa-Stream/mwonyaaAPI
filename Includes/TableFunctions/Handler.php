@@ -24,7 +24,8 @@ class Handler
         $this->version = 9; // VersionCode
     }
 
-    function readArtistDiscography(): array {
+    function readArtistDiscography(): array
+    {
         $itemRecords = array();
 
         $artistID = htmlspecialchars(strip_tags($_GET["artistID"]));
@@ -143,7 +144,7 @@ class Handler
             $ArtistPick = [];
 
             if ($row = $result->fetch_assoc()) {
-                $pick_heading =  "Artist Pick";
+                $pick_heading = "Artist Pick";
 
                 $ar_id = $row['id'];
                 $ar_title = $row['tile'];
@@ -163,7 +164,7 @@ class Handler
                 array_push($ArtistPick, $temp);
             } else {
                 // latest release
-                $pick_heading =  "Latest Release";
+                $pick_heading = "Latest Release";
 
                 $arry = $artist_instance->getLatestRelease();
                 if ($arry !== null) {
@@ -297,7 +298,8 @@ class Handler
         return $itemRecords;
     }
 
-    function clearCache(): array {
+    function clearCache(): array
+    {
         $key = 'home_feed';
         $itemRecords = array();
         if ($this->redis->get($key)) {
@@ -379,7 +381,6 @@ class Handler
                 array_push($menuCategory, $image_temp);
 
 
-
                 //get Featured Artist
                 $featuredCategory = array();
                 $musicartistQuery = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
@@ -396,7 +397,7 @@ class Handler
                     $temp['id'] = $id;
                     $temp['profilephoto'] = $profilephoto;
                     $temp['name'] = $name;
-                    $temp['verified'] =  (int)$verified === 1;
+                    $temp['verified'] = (int)$verified === 1;
                     array_push($featuredCategory, $temp);
                 }
 
@@ -514,8 +515,6 @@ class Handler
                 array_push($menuCategory, $recently_played);
 
 
-
-
                 //             Trending Now
                 $featured_trending = array();
                 $tracks_trending = array();
@@ -557,8 +556,6 @@ class Handler
                 $feat_trend['type'] = "trend";
                 $feat_trend['Tracks'] = $tracks_trending;
                 array_push($menuCategory, $feat_trend);
-
-
 
 
                 // Recommended
@@ -1285,7 +1282,6 @@ class Handler
         //        array_push($menuCategory, $text_temp);
 
 
-
         $image_temp = array();
         $image_temp['ad_title'] = "Editors' Pick";
         $image_temp['type'] = "image_ad";
@@ -1659,15 +1655,9 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "(SELECT id,title,artist,path,plays,weekplays,'artworkPath', 'song' as type,lyrics, releaseDate as date_added FROM songs WHERE available = 1 AND title LIKE ? ) 
-           UNION
-           (SELECT id,name,'artist','path','plays','weekplays',profilephoto, 'artist' as type,'lyrics',datecreated as date_added FROM artists  WHERE  available = 1 AND name LIKE ? ) 
-           UNION
-           (SELECT id,title,artist,'path','plays','weekplays',artworkPath, 'album' as type,'lyrics',releaseDate as date_added FROM albums  WHERE available = 1 AND title LIKE ? ) 
-           UNION
-           (SELECT id,name,'artist','path','plays','weekplays',coverurl, 'playlist' as type,'lyrics',dateCreated as date_added FROM playlists WHERE name LIKE ? )"; // SQL with parameters
+        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST (?) as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST (?) "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
-        $stmt->bind_param("ssss", $search, $search, $search, $search);
+        $stmt->bind_param("s", $search);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -1675,34 +1665,18 @@ class Handler
         $total_results_got = count($data);
         $total_rows = floatval(number_format($total_results_got));
         $total_pages = ceil($total_rows / $no_of_records_per_page);
-
-
         // check if the search query returned any results
-
         $menuCategory = array();
-
-
-        $search_query_sql = $search_query_top . " ORDER BY `title` ASC LIMIT ?,?";
+        $search_query_sql = $search_query_top . " ORDER BY relTitle*1.14  DESC LIMIT ?,?";
+        echo json_encode($search_query_sql);
         $stmt = $this->conn->prepare($search_query_sql);
-        $stmt->bind_param("ssssii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
+        $stmt->bind_param("sii", $search, $search, $search, $search, $offset, $no_of_records_per_page);
         $stmt->execute();
         $result = $stmt->get_result(); // get the mysqli result
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
-//        $relevanceScores = array();
-//        //        echo json_encode($data);
-//        // Loop through the search results
-//        foreach ($data as $row) {
-//            $temp = array();
-//
-//            // Calculate and store the relevance score for the current result
-//            $relevanceScores[$row['id']] = $this->calculateRelevanceScore($row);
-//        }
-//
-//        // Sort the results based on the relevance scores
-//        array_multisort($relevanceScores, SORT_DESC, $data);
+        echo json_encode($data);
 
-        //        echo json_encode($data);
 
         $total_results_got = count($data);
 
@@ -1711,49 +1685,88 @@ class Handler
 
             foreach ($data as $row) {
                 $temp = array();
-//                $relevanceScore = $this->calculateRelevanceScore($row);
-
-                switch ($row['type']) {
-                    case "song":
-                        $song = new Song($this->conn, $row['id']);
-                        $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                        $temp['album_name'] = $song->getAlbum()->getTitle();
-                        $temp['genre_name'] = $song->getGenre()->getGenre();
-                        $temp['track_duration'] = $song->getDuration();
-                        $temp['genre_id'] = $song->getGenreID();
-                        break;
-                    case "album":
-                        $album = new Album($this->conn, $row['id']);
-                        $temp['artist'] = $album->getArtist()->getName();
-                        $temp['album_name'] = $row['title'];
-                        $temp['genre_id'] = $album->getGenre()->getGenreid();
-                        break;
-                    case "artist":
-                        $artist_instance = new Artist($this->conn, $row['id']);
-                        $temp['artist'] = $row['title'];
-                        $temp['verified'] = $artist_instance->getVerified();
-                        $temp['genre_id'] = $artist_instance->getGenre();
-                        break;
-                    case "playlist":
-                        $temp['title'] = $row['title'];
-                        break;
+                if ($row['type'] == "song") {
+                    $temp['id'] = $row['entity_id'];
+//                    $song = new Song($this->conn, $row['id']);
+//                    $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+//                    $temp['artistID'] = $row['artist'];
+//                    $temp['title'] = $row['title'];
+//                    $temp['path'] = $row['path'];
+//                    $temp['plays'] = $song->getPlays();
+//                    $temp['weekplays'] = $row['weekplays'];
+//                    $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+//                    $temp['album_name'] = $song->getAlbum()->getTitle();
+//                    $temp['genre_name'] = $song->getGenre()->getGenre();
+//                    $temp['genre_id'] = $song->getGenreID();
+//                    $temp['track_duration'] = $song->getDuration();
+//                    $temp['track_albumID'] = $song->getAlbumId();
+//                    $temp['type'] = $row['type'];
+//                    $temp['lyrics'] = $row['lyrics'];
+//                    $temp['verified'] = false;
+//                    $temp['relevance_score'] = 1;
                 }
-
-                $temp['id'] = $row['id'];
-                $temp['path'] = $row['path'];
-                $temp['plays'] = $row['plays'];
-                $temp['weekplays'] = $row['weekplays'];
-                $temp['artworkPath'] = $row['artworkPath'];
-                $temp['genre_id'] = isset($temp['genre_id']) ? $temp['genre_id'] : '';
-                $temp['track_albumID'] = isset($temp['track_albumID']) ? $temp['track_albumID'] : '';
-                $temp['type'] = $row['type'];
-                $temp['lyrics'] = $row['lyrics'];
-                $temp['verified'] = isset($temp['verified']) ? $temp['verified'] : false;
-                $temp['relevance_score'] = 1;
+                if ($row['type'] == "album") {
+                    $temp['id'] = $row['entity_id'];
+//                    $album = new Album($this->conn, $row['id']);
+//                    $temp['artist'] = $album->getArtist()->getName();
+//                    $temp['artistID'] = $row['artist'];
+//                    $temp['title'] = $row['title'];
+//                    $temp['path'] = $row['path'];
+//                    $temp['plays'] = $row['plays'];
+//                    $temp['weekplays'] = $row['weekplays'];
+//                    $temp['artworkPath'] = $row['artworkPath'];
+//                    $temp['album_name'] = '';
+//                    $temp['genre_name'] = '';
+//                    $temp['genre_id'] = '';
+//                    $temp['track_duration'] = '';
+//                    $temp['track_albumID'] = '';
+//                    $temp['type'] = $row['type'];
+//                    $temp['lyrics'] = $row['lyrics'];
+//                    $temp['verified'] = false;
+//                    $temp['relevance_score'] = 1;
+                }
+                if ($row['type'] == "artist") {
+                    $temp['id'] = $row['entity_id'];
+//                    $artist_instance = new Artist($this->conn, $row['id']);
+//                    $temp['artist'] = $row['title'];
+//                    $temp['artistID'] = '';
+//                    $temp['title'] = '';
+//                    $temp['path'] = $row['path'];
+//                    $temp['plays'] = $row['plays'];
+//                    $temp['weekplays'] = $row['weekplays'];
+//                    $temp['artworkPath'] = $row['artworkPath'];
+//                    $temp['album_name'] = '';
+//                    $temp['genre_name'] = '';
+//                    $temp['genre_id'] = '';
+//                    $temp['track_duration'] = '';
+//                    $temp['track_albumID'] = '';
+//                    $temp['type'] = $row['type'];
+//                    $temp['lyrics'] = $row['lyrics'];
+//                    $temp['verified'] = $artist_instance->getVerified();
+//                    $temp['relevance_score'] = 1;
+                }
+                if ($row['type'] == "playlist") {
+                    $temp['id'] = $row['entity_id'];
+//                    $temp['artist'] = '';
+//                    $temp['artistID'] = '';
+//                    $temp['title'] = $row['title'];
+//                    $temp['path'] = $row['path'];
+//                    $temp['plays'] = $row['plays'];
+//                    $temp['weekplays'] = $row['weekplays'];
+//                    $temp['artworkPath'] = $row['artworkPath'];
+//                    $temp['album_name'] = '';
+//                    $temp['genre_name'] = '';
+//                    $temp['genre_id'] = '';
+//                    $temp['track_duration'] = '';
+//                    $temp['track_albumID'] = '';
+//                    $temp['type'] = $row['type'];
+//                    $temp['lyrics'] = $row['lyrics'];
+//                    $temp['verified'] = false;
+//                    $temp['relevance_score'] = 1;
+                }
 
                 array_push($menuCategory, $temp);
             }
-
 
             $itemRecords["page"] = $page;
             $itemRecords["version"] = 1;
@@ -1806,7 +1819,6 @@ class Handler
     }
 
 
-
     function keywordMatchScore($title, $artist, $query)
     {
         // Implement a scoring mechanism based on exact word matching
@@ -1821,11 +1833,11 @@ class Handler
 
         // Check if each word in the query matches the title or artist completely
         $titleMatches = array_reduce($queryWords, function ($carry, $word) use ($title) {
-            return $carry && (str_contains($title, $word));
+            return $carry && (strpos($title, $word) !== false);
         }, true);
 
         $artistMatches = array_reduce($queryWords, function ($carry, $word) use ($artist) {
-            return $carry && (str_contains($artist, $word));
+            return $carry && (strpos($artist, $word) !== false);
         }, true);
 
         // Return a higher score if the entire words match completely
@@ -1844,10 +1856,10 @@ class Handler
         $daysAgo = (strtotime('now') - strtotime($dateAdded)) / (60 * 60 * 24);
 
         // Use an exponential decay function to calculate freshness score
-        return $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
+        $freshnessScore = $maxScore * exp(-log(2) * $daysAgo / $halfLifeInDays);
+
+        return $freshnessScore;
     }
-
-
 
 
     function searchFullText()
@@ -2248,7 +2260,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
-            $temp['verified'] =  (int)$row['verified'] === 1;
+            $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
@@ -2298,7 +2310,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
-            $temp['verified'] =  (int)$row['verified'] === 1;
+            $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
@@ -2348,7 +2360,7 @@ class Handler
             $temp['id'] = $row['id'];
             $temp['profilephoto'] = $row['profilephoto'];
             $temp['name'] = $row['name'];
-            $temp['verified'] =  (int)$row['verified'] === 1;
+            $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
         }
 
@@ -3064,7 +3076,6 @@ class Handler
 
         return $itemRecords;
     }
-
 
 
     function AddTrackToPlaylist($data): array
