@@ -1655,7 +1655,7 @@ class Handler
         }
         $search = "%{$search_query}%";
 
-        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST (?) as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST (?) "; // SQL with parameters
+        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST ('?') as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST ('?') "; // SQL with parameters
         $stmt = $this->conn->prepare($search_query_top);
         $stmt->bind_param("ss", $search);
         $stmt->execute();
