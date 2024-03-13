@@ -1766,45 +1766,50 @@ class Handler
     }
 
 
-    function getClosestWordSearched($searched_keyword)
+    function getClosestWordSearched($input)
     {
-        // Step 2: Determine metaphone of the searched keyword
-        $searched_metaphone = metaphone($searched_keyword);
-
-        // Step 3: Calculate Levenshtein distance for each word in the table
-        $closest_words = array();
-        $min_distance = PHP_INT_MAX; // Initialize with a large value
-        $closest_word = ""; // Variable to store the word with the smallest Levenshtein distance
-
-        // Assuming you have a table named "words_table" with columns "word" and "metaphone"
-        $query = "SELECT word, metaphone_key FROM word_bag";
+        // Fetch words from the database
+        $words = array();
+        $query = "SELECT word FROM word_bag";
         $result = $this->conn->query($query);
-
         if ($result->num_rows > 0) {
-            // Iterate through each word in the table
             while ($row = $result->fetch_assoc()) {
-                // Calculate Levenshtein distance between the metaphone of the searched keyword and the metaphone of the current word
-                $distance = levenshtein($searched_metaphone, $row['metaphone_key']);
-
-                // Store the word and its distance in the array
-                $closest_words[$row['word']] = $distance;
-
-                // Check if the current word has a smaller Levenshtein distance
-                if ($distance < $min_distance) {
-                    $min_distance = $distance;
-                    $closest_word = $row['word'];
-                }
+                $words[] = $row['word'];
             }
         }
 
-        // Step 4: Sort the closest words array by Levenshtein distance in ascending order
-        asort($closest_words);
+        // Initialize variables
+        $shortest = -1;
+        $closest = '';
 
-        // Get the top 4 closest words
-        $top_closest_words = array_slice($closest_words, 0, 4);
+        // Loop through words to find the closest
+        foreach ($words as $word) {
+            // Calculate the distance between the input word and the current word
+            $lev = levenshtein($input, $word);
 
-        // Return array of top 4 closest words and the closest word
-        return array('top_closest_words' => $top_closest_words, 'closest_word' => $closest_word);
+            // Check for an exact match
+            if ($lev == 0) {
+                // Closest word is an exact match
+                $closest = $word;
+                $shortest = 0;
+                break; // Break out of the loop; we've found an exact match
+            }
+
+            // Check if this distance is less than the next found shortest distance,
+            // or if a next shortest word has not yet been found
+            if ($lev <= $shortest || $shortest < 0) {
+                // Set the closest match and shortest distance
+                $closest = $word;
+                $shortest = $lev;
+            }
+        }
+
+        // Return the result
+        if ($shortest == 0) {
+            return "Exact match found: $closest";
+        } else {
+            return "Did you mean: $closest?";
+        }
     }
 
 
