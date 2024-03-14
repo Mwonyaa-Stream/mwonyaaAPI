@@ -1779,23 +1779,37 @@ class Handler
         }
 
         // Initialize variables
-        $closest_words = array();
+        $shortest = -1;
+        $closest = '';
 
         // Loop through words to find the closest
         foreach ($words as $word) {
             // Calculate the distance between the input word and the current word
             $lev = levenshtein($input, $word);
 
-            // Store the word and its distance in the array
-            $closest_words[$word] = $lev;
+            // Check for an exact match
+            if ($lev == 0) {
+                // Closest word is an exact match
+                $closest = $word;
+                $shortest = 0;
+                break; // Break out of the loop; we've found an exact match
+            }
+
+            // Check if this distance is less than the next found shortest distance,
+            // or if a next shortest word has not yet been found
+            if ($lev <= $shortest || $shortest < 0) {
+                // Set the closest match and shortest distance
+                $closest = $word;
+                $shortest = $lev;
+            }
         }
 
-        // Sort the closest words array by distance in ascending order
-        asort($closest_words);
-
-        // Get the top 3 closest words
         // Return the result
-        return array_slice($closest_words, 0, 3);
+        if ($shortest == 0) {
+            return "Exact match found: $closest";
+        } else {
+            return "Did you mean: $closest?";
+        }
     }
 
 
