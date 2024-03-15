@@ -1765,6 +1765,157 @@ class Handler
         return $itemRecords;
     }
 
+    function searchPagedNormal(): array
+    {
+                                                                $page = htmlspecialchars(strip_tags($_GET["page"]));
+        $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
+        $search_algorithm = "normal";
+        // create the base variables for building the search query
+
+        $page = floatval($page);
+        $no_of_records_per_page = 10;
+        $offset = ($page - 1) * $no_of_records_per_page;
+
+        $itemRecords = array();
+
+        $perform_query = true;
+        // create the base variables for building the search query
+
+        if (strlen($search_query) > 100 || strlen($search_query) < 3) {
+            $perform_query = false;
+        }
+
+        if (empty($search_query)) {
+            $perform_query = false;
+        }
+
+        if ($perform_query == true) {
+            // echo Update Search Table;
+            $sh_result = mysqli_query($this->conn, "SELECT * FROM `searches` WHERE `query`='" . $this->conn->real_escape_string($search_query) . "' LIMIT 1;");
+            $sh_data = mysqli_fetch_assoc($sh_result);
+            if ($sh_data != null) {
+                $sh_id = floatval($sh_data['id']);
+                $countQuery = mysqli_query($this->conn, "SELECT `count` FROM searches WHERE id = '$sh_id'");
+                $shq_data = mysqli_fetch_assoc($countQuery);
+                $shq_count = floatval($shq_data['count']);
+                $shq_count += 1;
+                mysqli_query($this->conn, "UPDATE `searches` SET `count`= '$shq_count' WHERE id = '$sh_id'");
+            } else {
+                //insert data
+                mysqli_query($this->conn, "INSERT INTO `searches`(`query`, `count`) VALUES ('" . $this->conn->real_escape_string($search_query) . "',1)");
+            }
+        }
+        $search = "%{$search_query}%";
+
+        $search_query_top = "SELECT * , MATCH(`entity_title`) AGAINST ('$search') as relTitle FROM `IndexedData` WHERE MATCH(`entity_title`) AGAINST ('$search') "; // SQL with parameters
+        $stmt = $this->conn->prepare($search_query_top);
+        $stmt->execute();
+        $result = $stmt->get_result(); // get the mysqli result
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        $total_results_got = count($data);
+        $total_rows = floatval(number_format($total_results_got));
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+        // check if the search query returned any results
+        $menuCategory = array();
+        $search_query_sql = $search_query_top . " ORDER BY relTitle * 0.4  DESC LIMIT ?,?";
+        $stmt = $this->conn->prepare($search_query_sql);
+        $stmt->bind_param("ii", $offset, $no_of_records_per_page);
+        $stmt->execute();
+        $result = $stmt->get_result(); // get the mysqli result
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        $total_results_got = count($data);
+
+
+        if ($total_results_got > 0) {
+
+            foreach ($data as $row) {
+                $temp = array(
+                    'id' => $row['entity_id'],
+                    'artist' => '',
+                    'artistID' => '',
+                    'title' => '',
+                    'path' => '',
+                    'plays' => '',
+                    'weekplays' => '',
+                    'artworkPath' => '',
+                    'album_name' => '',
+                    'genre_name' => '',
+                    'genre_id' => '',
+                    'track_duration' => '',
+                    'track_albumID' => '',
+                    'type' => $row['entity_type'],
+                    'lyrics' => '',
+                    'verified' => false,
+                    'relevance_score' => 1
+                );
+
+                switch ($row['entity_type']) {
+                    case "song":
+                        $song = new Song($this->conn, $row['entity_id']);
+                        $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                        $temp['artistID'] = $song->getArtistId();
+                        $temp['title'] = $row['entity_title'];
+                        $temp['path'] = $song->getPath();
+                        $temp['plays'] = $song->getPlays();
+                        $temp['weekplays'] = $song->getPlays();
+                        $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                        $temp['album_name'] = $song->getAlbum()->getTitle();
+                        $temp['genre_name'] = $song->getGenre()->getGenre();
+                        $temp['genre_id'] = $song->getGenreID();
+                        $temp['track_duration'] = $song->getDuration();
+                        $temp['track_albumID'] = $song->getAlbumId();
+                        $temp['lyrics'] = $song->getLyrics();
+                        break;
+
+                    case "album":
+                        $album = new Album($this->conn, $row['entity_id']);
+                        $temp['artist'] = $album->getArtist()->getName();
+                        $temp['artistID'] = $album->getArtistId();
+                        $temp['title'] = $row['entity_title'];
+                        $temp['path'] = 'path';
+                        $temp['plays'] = 'plays';
+                        $temp['weekplays'] = 'weekplays';
+                        $temp['artworkPath'] = $album->getArtworkPath();
+                        break;
+
+                    case "artist":
+                        $artist_instance = new Artist($this->conn, $row['entity_id']);
+                        $temp['artist'] = $row['entity_title'];
+                        $temp['verified'] = $artist_instance->getVerified();
+                        $temp['artworkPath'] = $artist_instance->getProfilePath();
+                        break;
+
+                    case "playlist":
+                        $temp['title'] = $row['entity_title'];
+                        break;
+                }
+
+                array_push($menuCategory, $temp);
+            }
+
+
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
+            $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["search_results"] = $menuCategory;
+        } else {
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["searchTerm"] = $search_query;
+            $itemRecords["suggested_words"] = $this->getClosestWordSearched($search_query);
+            $itemRecords["algorithm"] = $search_algorithm;
+            $itemRecords["search_results"] = [];
+        }
+        $itemRecords["total_pages"] = $total_pages;
+        $itemRecords["total_results"] = $total_rows;
+
+
+        return $itemRecords;
+    }
 
     function getClosestWordSearched($input)
     {
