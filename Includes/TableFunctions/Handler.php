@@ -1767,7 +1767,7 @@ class Handler
 
     function searchPagedNormal(): array
     {
-                                                                $page = htmlspecialchars(strip_tags($_GET["page"]));
+        $page = htmlspecialchars(strip_tags($_GET["page"]));
         $search_query = htmlspecialchars(strip_tags($_GET["key_query"]));
         $search_algorithm = "normal";
         // create the base variables for building the search query
@@ -1962,7 +1962,6 @@ class Handler
             return "Did you mean: $closest?";
         }
     }
-
 
 
     function searchFullText()

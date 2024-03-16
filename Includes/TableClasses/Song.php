@@ -190,7 +190,8 @@
         }
 
         public function getSongRadio(){
-            $sql_query = "SELECT s.id, s.title, s.artist, s.genre, s.duration FROM ( SELECT * FROM songs WHERE available = 1 AND genre = '$this->genre' AND id != '$this->id' ORDER BY RAND() LIMIT 12 ) s LEFT JOIN track_plays f ON s.id = f.songid LEFT JOIN likedsongs l ON s.id = l.songId GROUP BY s.id ORDER BY COALESCE(f.total_plays, 0) DESC, COALESCE(l.dateAdded, 0) DESC";
+//            $sql_query = "SELECT s.id, s.title, s.artist, s.genre, s.duration FROM ( SELECT * FROM songs WHERE available = 1 AND genre = '$this->genre' AND id != '$this->id' ORDER BY RAND() LIMIT 12 ) s LEFT JOIN track_plays f ON s.id = f.songid LEFT JOIN likedsongs l ON s.id = l.songId GROUP BY s.id ORDER BY COALESCE(f.total_plays, 0) DESC, COALESCE(l.dateAdded, 0) DESC";
+            $sql_query = "select DISTINCT(songId) as id from playlistsongs where playlistId IN (SELECT id FROM `playlists` WHERE STATUS = 1 and featuredplaylist = 'yes') ORDER BY RAND() limit 20";
             $query = mysqli_query($this->con, $sql_query);
             $array = array();
 
