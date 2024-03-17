@@ -362,7 +362,7 @@ class Handler
                 $home_hero = array();
                 $home_hero['heading'] = "Home";
                 $home_hero['type'] = "hero";
-                $home_hero['subheading'] = "Discover new music,podcast & online radio";
+                $home_hero['subheading'] = "Discover new music, podcast & online radio";
                 array_push($menuCategory, $home_hero);
 
                 //                 get_Slider_banner
