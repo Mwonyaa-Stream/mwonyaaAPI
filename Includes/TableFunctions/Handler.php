@@ -362,23 +362,51 @@ class Handler
                 $home_hero = array();
                 $home_hero['heading'] = "Home";
                 $home_hero['type'] = "hero";
-                $home_hero['subheading'] = "Find Your Favourite Music";
+                $home_hero['subheading'] = "Discover new music,podcast & online radio";
                 array_push($menuCategory, $home_hero);
 
+                //                 get_Slider_banner
+                $sliders = array();
+                // Set up the prepared statement
+                $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 6;";
+                $stmt = mysqli_prepare($this->conn, $slider_query);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    $temp = array();
+                    $temp['id'] = $id;
+                    $temp['playlistID'] = $playlistID;
+                    $temp['imagepath'] = $imagepath;
+                    array_push($sliders, $temp);
+                }
 
-                $image_temp = array();
-                $image_temp['ad_title'] = "Editors' Pick";
-                $image_temp['type'] = "image_ad";
-                $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
-                $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
-                //            $image_temp['ad_type'] = "collection";
-                //            $image_temp['ad_type'] = "track";
-                //            $image_temp['ad_type'] = "event";
-                //            $image_temp['ad_type'] = "artist";
-                $image_temp['ad_type'] = "playlist";
-                //            $image_temp['ad_type'] = "link";
-                $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/thatsound.png";
-                array_push($menuCategory, $image_temp);
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $slider_temps = array();
+                $slider_temps['heading'] = "Discover";
+                $slider_temps['type'] = "slider";
+                $slider_temps['featured_sliderBanners'] = $sliders;
+                array_push($menuCategory, $slider_temps);
+//                 end get_Slider_banner
+
+
+//                $image_temp = array();
+//                $image_temp['ad_title'] = "Editors' Pick";
+//                $image_temp['type'] = "image_ad";
+//                $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
+//                $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
+//                //            $image_temp['ad_type'] = "collection";
+//                //            $image_temp['ad_type'] = "track";
+//                //            $image_temp['ad_type'] = "event";
+//                //            $image_temp['ad_type'] = "artist";
+//                $image_temp['ad_type'] = "playlist";
+//                //            $image_temp['ad_type'] = "link";
+//                $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/thatsound.png";
+//                array_push($menuCategory, $image_temp);
 
 
                 //get Featured Artist
@@ -440,33 +468,7 @@ class Handler
                 array_push($menuCategory, $feat_genres);
 
 
-                // get_Slider_banner
-                //            $sliders = array();
-                //            // Set up the prepared statement
-                //            $slider_query = "SELECT ps.id, ps.playlistID, ps.imagepath FROM playlist_sliders ps WHERE status = 1 ORDER BY RAND () LIMIT 10;";
-                //            $stmt = mysqli_prepare($this->conn, $slider_query);
-                //            // Execute the query
-                //            mysqli_stmt_execute($stmt);
-                //            // Bind the result variables
-                //            mysqli_stmt_bind_result($stmt, $id, $playlistID, $imagepath);
-                //            // Fetch the results
-                //            while (mysqli_stmt_fetch($stmt)) {
-                //                $temp = array();
-                //                $temp['id'] = $id;
-                //                $temp['playlistID'] = $playlistID;
-                //                $temp['imagepath'] = $imagepath;
-                //                array_push($sliders, $temp);
-                //            }
-                //
-                //            // Close the prepared statement
-                //            mysqli_stmt_close($stmt);
-                //
-                //            $slider_temps = array();
-                //            $slider_temps['heading'] = "Discover";
-                //            $slider_temps['type'] = "slider";
-                //            $slider_temps['featured_sliderBanners'] = $sliders;
-                //            array_push($menuCategory, $slider_temps);
-                // end get_Slider_banner
+
 
                 //            $image_temp = array();
                 //            $image_temp['ad_title'] = "BOUNCE";
