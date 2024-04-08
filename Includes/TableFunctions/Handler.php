@@ -315,7 +315,7 @@ class Handler
 
     function allCombined(): array
     {
-        $key = 'home_feed';
+        $key = 'v1_home_feed';
 
         if (!$this->redis->get($key)) {
             $source = 'MySQL Server';
