@@ -365,6 +365,40 @@ class Handler
                 $home_hero['subheading'] = "Discover new music, podcast & online radio";
                 array_push($menuCategory, $home_hero);
 
+
+                //get the latest album Release less than 14 days old
+                $featured_albums = array();
+                $featuredAlbums = array();
+                $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
+                $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
+                while ($row = mysqli_fetch_array($featured_album_Query_result)) {
+                    array_push($featured_albums, $row['id']);
+                }
+
+                foreach ($featured_albums as $row) {
+                    $al = new Album($this->conn, $row);
+                    $temp = array();
+                    $temp['id'] = $al->getId();
+                    $temp['heading'] = "New Release From";
+                    $temp['title'] = $al->getTitle();
+                    $temp['artworkPath'] = $al->getArtworkPath();
+                    $temp['tag'] = $al->getReleaseDate() . ' - ' . $al->getTag();
+                    $temp['artistId'] = $al->getArtistId();
+                    $temp['artist'] = $al->getArtist()->getName();
+                    $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
+                    $temp['Tracks'] = $al->getTracks();
+                    array_push($featuredAlbums, $temp);
+                }
+
+                $feat_albums_temps = array();
+                $feat_albums_temps['heading'] = "New Release on Mwonya";
+                $feat_albums_temps['type'] = "newRelease";
+                $feat_albums_temps['HomeRelease'] = $featuredAlbums;
+                array_push($menuCategory, $feat_albums_temps);
+                ///end latest Release 14 days
+
+
+
                 //                 get_Slider_banner
                 $sliders = array();
                 // Set up the prepared statement
@@ -636,36 +670,7 @@ class Handler
                 //            array_push($menuCategory, $text_temp);
 
 
-                //get the latest album Release less than 14 days old
-                $featured_albums = array();
-                $featuredAlbums = array();
-                $featured_album_Query = "SELECT a.id as id FROM albums a INNER JOIN songs s ON a.id = s.album WHERE a.available = 1 AND a.datecreated > DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY a.id ORDER BY a.datecreated DESC LIMIT 8";
-                $featured_album_Query_result = mysqli_query($this->conn, $featured_album_Query);
-                while ($row = mysqli_fetch_array($featured_album_Query_result)) {
-                    array_push($featured_albums, $row['id']);
-                }
 
-                foreach ($featured_albums as $row) {
-                    $al = new Album($this->conn, $row);
-                    $temp = array();
-                    $temp['id'] = $al->getId();
-                    $temp['heading'] = "New Release From";
-                    $temp['title'] = $al->getTitle();
-                    $temp['artworkPath'] = $al->getArtworkPath();
-                    $temp['tag'] = $al->getReleaseDate() . ' - ' . $al->getTag();
-                    $temp['artistId'] = $al->getArtistId();
-                    $temp['artist'] = $al->getArtist()->getName();
-                    $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
-                    $temp['Tracks'] = $al->getTracks();
-                    array_push($featuredAlbums, $temp);
-                }
-
-                $feat_albums_temps = array();
-                $feat_albums_temps['heading'] = "New Release on Mwonya";
-                $feat_albums_temps['type'] = "newRelease";
-                $feat_albums_temps['HomeRelease'] = $featuredAlbums;
-                array_push($menuCategory, $feat_albums_temps);
-                ///end latest Release 14 days
 
 
                 //get Featured Playlist
