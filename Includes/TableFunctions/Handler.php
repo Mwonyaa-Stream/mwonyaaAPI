@@ -1644,7 +1644,6 @@ class Handler
             $itemRecords["thread_name"] = $row['thread_name'];
             $itemRecords["date_created"] = $row['date_created'];
         }
-
         return $itemRecords;
 
     }
