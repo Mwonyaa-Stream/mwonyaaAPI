@@ -1625,15 +1625,47 @@ class Handler
         return $prefix . substr($hash, 0, $length - strlen($prefix) - strlen($hash)) . $randomString;
     }
 
+//    public function postMediaComment($data): array
+//    {
+//        // Getting the values
+//        $comment_ID = $this->generateUniqueID();
+//        $userId = isset($data->userId) ? trim($data->userId) : null;
+//        $commentThreadID = isset($data->commentThreadID) ? trim($data->commentThreadID) : null;
+//        $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : $comment_ID;
+//        $comment = isset($data->comment) ? trim($data->comment) : null;
+//
+//
+//        $response = [
+//            'error' => false,
+//            'message' => 'Comment Default'
+//        ];
+//
+//        try {
+//            // Check if the token already exists for this user
+//            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
+//            $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID,$userId,$comment);
+//            $operation = 'posted';
+//
+//            if ($stmt->execute()) {
+//                $response['message'] = "Comment $operation successfully.";
+//            } else {
+//                $response['error'] = true;
+//                $response['message'] = 'Failed, Try again';
+//            }
+//        } catch (Exception $e) {
+//            $response['error'] = true;
+//            $response['message'] = "Error Posting, Try again";
+//        }
+//
+//        return $response;
+//    }
+
     public function postMediaComment($data): array
     {
         // Getting the values
-        $comment_ID = $this->generateUniqueID();
-        $userId = isset($data->userId) ? trim($data->userId) : null;
-        $commentThreadID = isset($data->commentThreadID) ? trim($data->commentThreadID) : null;
-        $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : $comment_ID;
-        $comment = isset($data->comment) ? trim($data->comment) : null;
-
+        $media_id = isset($data->media_id) ? trim($data->media_id) : null;
+        $user_id = isset($data->userId) ? trim($data->userId) : null;
+        $comment_text = isset($data->comment) ? trim($data->comment) : null;
 
         $response = [
             'error' => false,
@@ -1641,24 +1673,40 @@ class Handler
         ];
 
         try {
-            // Check if the token already exists for this user
-            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID,$userId,$comment);
-            $operation = 'posted';
+            // Start transaction
+            $this->conn->beginTransaction();
 
-            if ($stmt->execute()) {
-                $response['message'] = "Comment $operation successfully.";
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'Failed, Try again';
-            }
+            // Generate unique IDs
+            $comment_thread_id = $this->generateUniqueID();
+            $comment_id = $this->generateUniqueID();
+            $parent_comment_id = $comment_id; // For the first comment, parent_comment_id will be the same as comment_id
+
+            // Step 1: Insert into comment_threads table
+            $stmt1 = $this->conn->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, NOW())");
+            $stmt1->execute([$comment_thread_id, 'Media Comment']);
+
+            // Step 2: Insert into join_tracks_comments table
+            $stmt2 = $this->conn->prepare("INSERT INTO join_tracks_comments (id, track_id, comment_thread_id, datecreated, status) VALUES (?, ?, ?, NOW())");
+            $stmt2->execute([$comment_id, $media_id, $comment_thread_id]);
+
+            // Step 3: Insert into comments table
+            $stmt3 = $this->conn->prepare("INSERT INTO comments (id, comment_id, comment_thread_id, parent_comment_id, user_id, comment, created, status) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt3->execute([$comment_id, $comment_id, $comment_thread_id, $parent_comment_id, $user_id, $comment_text]);
+
+            // Commit transaction
+            $this->conn->commit();
+
+            $response['message'] = "Comment posted successfully.";
         } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->conn->rollback();
             $response['error'] = true;
-            $response['message'] = "Error Posting, Try again";
+            $response['message'] = "Error posting comment: " . $e->getMessage();
         }
 
         return $response;
     }
+
 
 
     public function CommentThread(): array
