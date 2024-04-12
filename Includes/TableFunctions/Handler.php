@@ -398,7 +398,6 @@ class Handler
                 ///end latest Release 14 days
 
 
-
                 //                 get_Slider_banner
                 $sliders = array();
                 // Set up the prepared statement
@@ -500,8 +499,6 @@ class Handler
                 $feat_genres['type'] = "genre";
                 $feat_genres['featuredGenres'] = $featured_genres;
                 array_push($menuCategory, $feat_genres);
-
-
 
 
                 //            $image_temp = array();
@@ -668,9 +665,6 @@ class Handler
                 //            $text_temp['ad_type'] = "link";
                 //            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
                 //            array_push($menuCategory, $text_temp);
-
-
-
 
 
                 //get Featured Playlist
@@ -1617,6 +1611,43 @@ class Handler
         }
 
         return $UserPlaylist_Parent;
+    }
+
+
+    public function CommentThread(): array
+    {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET['userID'])) : null;
+        $mediaID = isset($_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET['mediaID'])) : null;
+
+        $CommentThread_Parent = [];
+        $query = "SELECT jtc.track_id, ct.thread_id, COUNT(c.comment_id) AS total_comments, ct.thread_name, ct.created AS date_created FROM join_tracks_comments AS jtc JOIN comments AS c ON jtc.comment_thread_id = c.comment_thread_id JOIN comment_threads AS ct ON jtc.comment_thread_id = ct.thread_id WHERE jtc.track_id = ? GROUP BY jtc.track_id, ct.thread_id, ct.thread_name, ct.created";
+
+        // Prepare the statement
+        $stmt = mysqli_prepare($this->conn, $query);
+
+        if ($stmt === false) {
+            // Handle error if the statement preparation fails
+            return [];
+        }
+
+        // Bind parameters and execute the statement
+        mysqli_stmt_bind_param($stmt, "s", $mediaID);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        // Fetch data if a row is found
+        if ($row = mysqli_fetch_array($result)) {
+            $CommentThread_Parent[] = [
+                'media_id' => $row['track_id'],
+                'thread_id' => $row['thread_id'],
+                'total_comments' => $row['total_comments'],
+                'thread_name' => $row['thread_name'],
+                'date_created' => $row['date_created']
+            ];
+        }
+
+        return $CommentThread_Parent;
     }
 
 
