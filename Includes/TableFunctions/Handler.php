@@ -1678,7 +1678,7 @@ class Handler
         try {
             // Check if thread already exists for this media_id
             $stmt_check_thread = $this->conn->prepare("SELECT comment_thread_id FROM join_tracks_comments WHERE track_id = ? LIMIT 1");
-            $stmt_check_thread->bind_param("i", $media_id);
+            $stmt_check_thread->bind_param("s", $media_id);
             $stmt_check_thread->execute();
             $existing_thread_result = $stmt_check_thread->get_result();
 
