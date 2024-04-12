@@ -1643,7 +1643,6 @@ class Handler
             $itemRecords["total_comments"] = $row['total_comments'];
             $itemRecords["thread_name"] = $row['thread_name'];
             $itemRecords["date_created"] = $row['date_created'];
-
         }
 
         return $itemRecords;
