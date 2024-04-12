@@ -1642,7 +1642,7 @@ class Handler
 
         try {
             // Check if the token already exists for this user
-            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?,?, ?, ?, ?)");
+            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID,$userId,$comment);
             $operation = 'posted';
 
