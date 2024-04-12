@@ -1637,7 +1637,7 @@ class Handler
 
         $response = [
             'error' => false,
-            'message' => 'Token Default'
+            'message' => 'Comment Default'
         ];
 
         try {
