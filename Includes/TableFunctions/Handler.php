@@ -1654,7 +1654,7 @@ class Handler
             }
         } catch (Exception $e) {
             $response['error'] = true;
-            $response['message'] = 'An error has occurred';
+            $response['message'] = $e->getMessage();
         }
 
         return $response;
