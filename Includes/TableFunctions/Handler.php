@@ -1650,11 +1650,11 @@ class Handler
                 $response['message'] = "Comment $operation successfully.";
             } else {
                 $response['error'] = true;
-                $response['message'] = 'Unable to post comment';
+                $response['message'] = 'Failed, Try again';
             }
         } catch (Exception $e) {
             $response['error'] = true;
-            $response['message'] = 'An error occurred during posting.';
+            $response['message'] = 'An error has occurred';
         }
 
         return $response;
