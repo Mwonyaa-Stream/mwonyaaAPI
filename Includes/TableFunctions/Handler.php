@@ -1613,6 +1613,53 @@ class Handler
         return $UserPlaylist_Parent;
     }
 
+    function generateUniqueID($length = 14)
+    {
+        $prefix = "mw_com_";
+        $randomString = uniqid(mt_rand(), true); // Generating a unique identifier based on the current time in microseconds
+
+        // Generating a unique hash to ensure uniqueness
+        $hash = sha1(uniqid(mt_rand(), true));
+
+        // Combining prefix, hash, and random string
+        return $prefix . substr($hash, 0, $length - strlen($prefix) - strlen($hash)) . $randomString;
+    }
+
+    public function postMediaComment()
+    {
+        // Getting the values
+        $comment_ID = $this->generateUniqueID();
+        $userId = isset($data->userId) ? trim($data->userId) : null;
+        $commentThreadID = isset($data->commentThreadID) ? trim($data->commentThreadID) : null;
+        $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : $comment_ID;
+        $comment = isset($data->comment) ? trim($data->comment) : null;
+
+
+        $response = [
+            'error' => false,
+            'message' => 'Token Default'
+        ];
+
+        try {
+            // Check if the token already exists for this user
+            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?,?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID,$userId,$comment);
+            $operation = 'posted';
+
+            if ($stmt->execute()) {
+                $response['message'] = "Comment $operation successfully.";
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'Unable to post comment';
+            }
+        } catch (Exception $e) {
+            $response['error'] = true;
+            $response['message'] = 'An error occurred during posting.';
+        }
+
+        return $response;
+    }
+
 
     public function CommentThread(): array
     {
