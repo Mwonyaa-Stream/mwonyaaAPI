@@ -1667,6 +1667,9 @@ class Handler
         $user_id = isset($data->userId) ? trim($data->userId) : null;
         $comment_text = isset($data->comment) ? trim($data->comment) : null;
 
+        $pdo = new PDO("mysql:host=178.79.148.46;dbname=mwonya", "mobile", "PBWuyqRPtjfq13GB");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         $response = [
             'error' => false,
             'message' => 'Comment Default'
@@ -1674,7 +1677,7 @@ class Handler
 
         try {
             // Start transaction
-            $this->conn->beginTransaction();
+            $pdo-->beginTransaction();
 
             // Generate unique IDs
             $comment_thread_id = $this->generateUniqueID();
@@ -1682,24 +1685,24 @@ class Handler
             $parent_comment_id = $comment_id; // For the first comment, parent_comment_id will be the same as comment_id
 
             // Step 1: Insert into comment_threads table
-            $stmt1 = $this->conn->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, NOW())");
+            $stmt1 = $pdo->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, NOW())");
             $stmt1->execute([$comment_thread_id, 'Media Comment']);
 
             // Step 2: Insert into join_tracks_comments table
-            $stmt2 = $this->conn->prepare("INSERT INTO join_tracks_comments (id, track_id, comment_thread_id, datecreated, status) VALUES (?, ?, ?, NOW())");
+            $stmt2 = $pdo->prepare("INSERT INTO join_tracks_comments (id, track_id, comment_thread_id, datecreated, status) VALUES (?, ?, ?, NOW())");
             $stmt2->execute([$comment_id, $media_id, $comment_thread_id]);
 
             // Step 3: Insert into comments table
-            $stmt3 = $this->conn->prepare("INSERT INTO comments (id, comment_id, comment_thread_id, parent_comment_id, user_id, comment, created, status) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt3 = $pdo->prepare("INSERT INTO comments (id, comment_id, comment_thread_id, parent_comment_id, user_id, comment, created, status) VALUES (?, ?, ?, ?, ?, ?, NOW())");
             $stmt3->execute([$comment_id, $comment_id, $comment_thread_id, $parent_comment_id, $user_id, $comment_text]);
 
             // Commit transaction
-            $this->conn->commit();
+            $pdo->commit();
 
             $response['message'] = "Comment posted successfully.";
         } catch (Exception $e) {
             // Rollback transaction on error
-            $this->conn->rollback();
+            $pdo->rollback();
             $response['error'] = true;
             $response['message'] = "Error posting comment: " . $e->getMessage();
         }
