@@ -1616,7 +1616,6 @@ class Handler
 
     public function CommentThread(): array
     {
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET['userID'])) : null;
         $mediaID = isset($_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET['mediaID'])) : null;
 
@@ -1635,19 +1634,20 @@ class Handler
         mysqli_stmt_bind_param($stmt, "s", $mediaID);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
+        $itemRecords = array();
 
         // Fetch data if a row is found
         if ($row = mysqli_fetch_array($result)) {
-            $CommentThread_Parent[] = [
-                'media_id' => $row['track_id'],
-                'thread_id' => $row['thread_id'],
-                'total_comments' => $row['total_comments'],
-                'thread_name' => $row['thread_name'],
-                'date_created' => $row['date_created']
-            ];
+            $itemRecords["media_id"] = $row['track_id'];
+            $itemRecords["thread_id"] = $row['thread_id'];
+            $itemRecords["total_comments"] = $row['total_comments'];
+            $itemRecords["thread_name"] = $row['thread_name'];
+            $itemRecords["date_created"] = $row['date_created'];
+
         }
 
-        return $CommentThread_Parent;
+        return $itemRecords;
+
     }
 
 
