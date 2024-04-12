@@ -16,7 +16,7 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
-    if (!empty($data->token) || !empty($data->userId)) {
+    if (!empty($data->commentThreadID) || !empty($data->userId)) {
         $handler = new Handler($db,$redis_con);
         $result = $handler->postMediaComment($data);
         if ($result) {

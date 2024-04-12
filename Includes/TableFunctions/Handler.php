@@ -1625,7 +1625,7 @@ class Handler
         return $prefix . substr($hash, 0, $length - strlen($prefix) - strlen($hash)) . $randomString;
     }
 
-    public function postMediaComment()
+    public function postMediaComment($data): array
     {
         // Getting the values
         $comment_ID = $this->generateUniqueID();
