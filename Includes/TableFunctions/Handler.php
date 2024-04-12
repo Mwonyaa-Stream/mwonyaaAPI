@@ -1694,7 +1694,7 @@ class Handler
 
                 // Insert into join_tracks_comments table for the first comment only
                 $comment_id = $this->generateUniqueID();
-                $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (id, track_id, comment_thread_id, datecreated) VALUES (?, ?, ?, NOW())");
+                $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, ?, NOW())");
                 $stmt_insert_track_comment->bind_param("sis", $comment_id, $media_id, $comment_thread_id);
                 $stmt_insert_track_comment->execute();
             }
@@ -1703,7 +1703,7 @@ class Handler
             $comment_id = $this->generateUniqueID();
 
             // Insert into comments table
-            $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (id, comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, ?, NOW())");
             $stmt_insert_comment->bind_param("sssss", $comment_id, $comment_id, $comment_thread_id, $parent_comment_id, $user_id, $comment_text);
             $stmt_insert_comment->execute();
 
