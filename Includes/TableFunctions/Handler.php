@@ -1654,7 +1654,7 @@ class Handler
             }
         } catch (Exception $e) {
             $response['error'] = true;
-            $response['message'] = $e->getMessage();
+            $response['message'] = "$comment_ID '--' $userId '--'  $commentThreadID '--'  $parentCommentID '--' $comment";
         }
 
         return $response;
