@@ -1630,6 +1630,8 @@ class Handler
         // Getting the values
         $comment_ID = $this->generateUniqueID();
         $userId = isset($data->userId) ? trim($data->userId) : null;
+        $mediaID = isset($data->mediaID) ? trim($data->mediaID) : null;
+        $commentType = isset($data->commentType) ? trim($data->commentType) : null;
         $commentThreadID = isset($data->commentThreadID) ? trim($data->commentThreadID) : null;
         $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : $comment_ID;
         $comment = isset($data->comment) ? trim($data->comment) : null;
@@ -1640,21 +1642,28 @@ class Handler
             'message' => 'Comment Default'
         ];
 
-        try {
-            // Check if the token already exists for this user
-            $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID,$userId,$comment);
-            $operation = 'posted';
-
-            if ($stmt->execute()) {
-                $response['message'] = "Comment $operation successfully.";
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'Failed, Try again';
-            }
-        } catch (Exception $e) {
+        if ($commentType == 1) {
             $response['error'] = true;
-            $response['message'] = "Error Posting, Try again";
+            $response['message'] = "New Comment, OTW";
+        }
+        if ($commentType == 2) {
+
+            try {
+                // Check if the token already exists for this user
+                $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
+                $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID, $userId, $comment);
+                $operation = 'posted';
+
+                if ($stmt->execute()) {
+                    $response['message'] = "Comment $operation successfully.";
+                } else {
+                    $response['error'] = true;
+                    $response['message'] = 'Failed, Try again';
+                }
+            } catch (Exception $e) {
+                $response['error'] = true;
+                $response['message'] = "Error Posting, Try again";
+            }
         }
 
         return $response;
@@ -1720,8 +1729,6 @@ class Handler
 //
 //        return $response;
 //    }
-
-
 
 
     public function CommentThread(): array
