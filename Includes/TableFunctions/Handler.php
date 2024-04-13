@@ -1726,7 +1726,7 @@ class Handler
     }
 
 
-    public function CommentThread(): array
+    public function CommentThreadSummary(): array
     {
         $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET['userID'])) : null;
         $mediaID = isset($_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET['mediaID'])) : null;

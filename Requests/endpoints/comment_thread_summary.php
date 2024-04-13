@@ -5,7 +5,7 @@ include_once 'includedFiles.php';
 
 if (!empty($db)) {
     $handler = new Handler($db,$redis_con);
-    $result = $handler->CommentThread();
+    $result = $handler->CommentThreadSummary();
 
     if($result){
         http_response_code(200);
