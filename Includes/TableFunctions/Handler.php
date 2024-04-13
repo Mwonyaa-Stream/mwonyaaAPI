@@ -1678,7 +1678,7 @@ class Handler
                 echo $comment_id. $comment_thread_id, $parent_comment_id, $userId, $comment;
 
                 // Insert into comments table
-                $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ? NOW())");
+                $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, NOW())");
                 $stmt_insert_comment->bind_param("sssss", $comment_id, $comment_thread_id, $parent_comment_id, $userId, $comment);
                 $stmt_insert_comment->execute();
 
