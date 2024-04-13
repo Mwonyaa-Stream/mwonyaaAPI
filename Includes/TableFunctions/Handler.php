@@ -1658,6 +1658,7 @@ class Handler
                     $existing_thread = $existing_thread_result->fetch_assoc();
                     $comment_thread_id = $existing_thread['comment_thread_id'];
                     $parent_comment_id = null; // For consecutive comments, there's no parent_comment_id
+                    echo "done*_".$comment_thread_id;
                 } else {
                     // If thread doesn't exist, generate new comment_thread_id
                     $comment_thread_id = $this->generateUniqueID();
@@ -1668,11 +1669,13 @@ class Handler
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, NOW())");
                     $stmt_insert_track_comment->bind_param("ss", $mediaID, $comment_thread_id);
                     $stmt_insert_track_comment->execute();
+                    echo "doneee_".$mediaID . $comment_thread_id;
 
                 }
 
                 // Generate unique comment_id
                 $comment_id = $this->generateUniqueID();
+                echo $comment_id. $comment_thread_id, $parent_comment_id, $userId, $comment;
 
                 // Insert into comments table
                 $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ? NOW())");
