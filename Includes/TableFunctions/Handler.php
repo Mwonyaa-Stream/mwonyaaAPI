@@ -1615,7 +1615,7 @@ class Handler
 
     function generateUniqueID($length = 18): string
     {
-        $prefix = "mw_com_";
+        $prefix = "mw_";
         // Generating a unique identifier based on the current time in microseconds
         $uniqueID = uniqid(mt_rand(), true);
 
@@ -1641,66 +1641,90 @@ class Handler
         $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : null;
         $comment = isset($data->comment) ? trim($data->comment) : null;
 
-
         $response = [
             'error' => false,
             'message' => 'Comment Default'
         ];
 
-        if ($commentType == 1) {
-            // Start transaction
-            $this->conn->begin_transaction();
+        // Start transaction
+        $this->conn->begin_transaction();
 
-            try {
-                // Check if thread already exists for this media_id
+        try {
+            // Attempt to insert the comment directly into the comments table
+            $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, NOW())");
+            $stmt_insert_comment->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID, $userId, $comment);
+            $stmt_insert_comment->execute();
+
+            if ($stmt_insert_comment->errno === 0) {
+                // Comment insertion successful
+                $this->conn->commit();
+                $response['message'] = "Comment posted successfully.";
+            } else {
+                // Comment insertion failed, likely due to missing thread
+                $stmt_insert_comment->close();
+
+                // Check if a thread exists for the media ID
                 $stmt_check_thread = $this->conn->prepare("SELECT comment_thread_id FROM join_tracks_comments WHERE track_id = ? LIMIT 1");
                 $stmt_check_thread->bind_param("s", $mediaID);
                 $stmt_check_thread->execute();
                 $existing_thread_result = $stmt_check_thread->get_result();
 
                 if ($existing_thread_result->num_rows > 0) {
-                    // If thread already exists, use its comment_thread_id as well as the existing comment_id as parent_comment_id
+                    // If thread exists, use its comment_thread_id as well as the existing comment_id as parent_comment_id
                     $existing_thread = $existing_thread_result->fetch_assoc();
-                    $comment_thread_id = $existing_thread['comment_thread_id'];
+                    $commentThreadID = $existing_thread['comment_thread_id'];
+
+                    // Reattempt comment insertion
+                    $stmt_insert_comment->execute();
+
+                    if ($stmt_insert_comment->errno === 0) {
+                        // Comment insertion successful after thread check
+                        $this->conn->commit();
+                        $response['message'] = "Comment posted successfully.";
+                    } else {
+                        // Comment insertion failed even after thread check
+                        $response['error'] = true;
+                        $response['message'] = "Error posting comment after thread check.";
+                    }
                 } else {
-                    // If thread doesn't exist, generate new comment_thread_id
-                    $comment_thread_id = $this->generateUniqueID();
-                    $thread_name = "Thread_".$mediaID;
+                    // If thread doesn't exist, generate new thread and reattempt comment insertion
+                    $commentThreadID = $this->generateUniqueID();
+                    $thread_name = "Thread_" . $mediaID;
 
-                    // Insert into join_tracks_comments table for the first comment only
+                    // Insert into comment_threads table
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, NOW())");
-                    $stmt_insert_track_comment->bind_param("ss", $comment_thread_id, $thread_name);
+                    $stmt_insert_track_comment->bind_param("ss", $commentThreadID, $thread_name);
                     $stmt_insert_track_comment->execute();
 
-                    // Insert into join_tracks_comments table for the first comment only
+                    // Insert into join_tracks_comments table
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, NOW())");
-                    $stmt_insert_track_comment->bind_param("ss", $mediaID, $comment_thread_id);
+                    $stmt_insert_track_comment->bind_param("ss", $mediaID, $commentThreadID);
                     $stmt_insert_track_comment->execute();
 
+                    // Reattempt comment insertion
+                    $stmt_insert_comment->execute();
+
+                    if ($stmt_insert_comment->errno === 0) {
+                        // Comment insertion successful after creating new thread
+                        $this->conn->commit();
+                        $response['message'] = "Comment posted successfully.";
+                    } else {
+                        // Comment insertion failed even after creating new thread
+                        $response['error'] = true;
+                        $response['message'] = "Error posting comment after creating new thread.";
+                    }
                 }
-
-                // Generate unique comment_id
-
-                // Insert into comments table
-                $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, NOW())");
-                $stmt_insert_comment->bind_param("sssss", $comment_ID, $comment_thread_id, $parentCommentID, $userId, $comment);
-                $stmt_insert_comment->execute();
-
-                // Commit transaction
-                $this->conn->commit();
-
-                $response['message'] = "Comment posted successfully.";
-            } catch (Exception $e) {
-                // Rollback transaction on error
-                $this->conn->rollback();
-                $response['error'] = true;
-                $response['message'] = "Error posting comment: " . $e->getMessage();
             }
-            return $response;
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->conn->rollback();
+            $response['error'] = true;
+            $response['message'] = "Error posting comment: " . $e->getMessage();
         }
 
         return $response;
     }
+
 
 
     public function CommentThread(): array
