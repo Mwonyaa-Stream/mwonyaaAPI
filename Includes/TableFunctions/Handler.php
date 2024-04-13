@@ -1662,10 +1662,8 @@ class Handler
                 } else {
                     // If thread doesn't exist, generate new comment_thread_id
                     $comment_thread_id = $this->generateUniqueID();
-                    $parent_comment_id = $comment_thread_id;
 
                     // Insert into join_tracks_comments table for the first comment only
-                    $comment_id = $this->generateUniqueID();
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, NOW())");
                     $stmt_insert_track_comment->bind_param("ss", $mediaID, $comment_thread_id);
                     $stmt_insert_track_comment->execute();
@@ -1674,12 +1672,10 @@ class Handler
                 }
 
                 // Generate unique comment_id
-                $comment_id = $this->generateUniqueID();
-                echo $comment_id. $comment_thread_id, $parent_comment_id, $userId, $comment;
 
                 // Insert into comments table
                 $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ?, NOW())");
-                $stmt_insert_comment->bind_param("sssss", $comment_id, $comment_thread_id, $parent_comment_id, $userId, $comment);
+                $stmt_insert_comment->bind_param("sssss", $comment_ID, $comment_thread_id, $parentCommentID, $userId, $comment);
                 $stmt_insert_comment->execute();
 
                 // Commit transaction
