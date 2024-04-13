@@ -1657,16 +1657,20 @@ class Handler
                     // If thread already exists, use its comment_thread_id as well as the existing comment_id as parent_comment_id
                     $existing_thread = $existing_thread_result->fetch_assoc();
                     $comment_thread_id = $existing_thread['comment_thread_id'];
-                    echo "done*_".$comment_thread_id;
                 } else {
                     // If thread doesn't exist, generate new comment_thread_id
                     $comment_thread_id = $this->generateUniqueID();
+                    $thread_name = "Thread_".$mediaID;
+
+                    // Insert into join_tracks_comments table for the first comment only
+                    $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, NOW())");
+                    $stmt_insert_track_comment->bind_param("ss", $comment_thread_id, $thread_name);
+                    $stmt_insert_track_comment->execute();
 
                     // Insert into join_tracks_comments table for the first comment only
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, NOW())");
                     $stmt_insert_track_comment->bind_param("ss", $mediaID, $comment_thread_id);
                     $stmt_insert_track_comment->execute();
-                    echo "doneee_".$mediaID . $comment_thread_id;
 
                 }
 
