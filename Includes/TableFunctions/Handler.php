@@ -1613,17 +1613,22 @@ class Handler
         return $UserPlaylist_Parent;
     }
 
-    function generateUniqueID($length = 14)
+    function generateUniqueID($length = 18): string
     {
         $prefix = "mw_com_";
-        $randomString = uniqid(mt_rand(), true); // Generating a unique identifier based on the current time in microseconds
+        // Generating a unique identifier based on the current time in microseconds
+        $uniqueID = uniqid(mt_rand(), true);
 
         // Generating a unique hash to ensure uniqueness
         $hash = sha1(uniqid(mt_rand(), true));
 
-        // Combining prefix, hash, and random string
-        return $prefix . substr($hash, 0, $length - strlen($prefix) - strlen($hash)) . $randomString;
+        // Calculate the maximum length for the combined unique ID
+        $maxLength = $length - strlen($prefix);
+
+        // Combine the unique ID, hash, and prefix, and truncate to desired length
+        return $prefix . substr($uniqueID . $hash, 0, $maxLength);
     }
+
 
     public function postMediaComment($data): array
     {
@@ -1692,25 +1697,6 @@ class Handler
                 $response['message'] = "Error posting comment: " . $e->getMessage();
             }
             return $response;
-        }
-        if ($commentType == 2) {
-
-            try {
-                // Check if the token already exists for this user
-                $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment) VALUES (?, ?, ?, ?, ?)");
-                $stmt->bind_param("sssss", $comment_ID, $commentThreadID, $parentCommentID, $userId, $comment);
-                $operation = 'posted';
-
-                if ($stmt->execute()) {
-                    $response['message'] = "Comment $operation successfully.";
-                } else {
-                    $response['error'] = true;
-                    $response['message'] = 'Failed, Try again';
-                }
-            } catch (Exception $e) {
-                $response['error'] = true;
-                $response['message'] = "Error Posting, Try again";
-            }
         }
 
         return $response;
