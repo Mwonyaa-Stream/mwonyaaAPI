@@ -174,7 +174,8 @@
         public function getPlays(){
             // get plays in a month
             $track_plays = new TrackTotalPlay($this->con, $this->id);
-            return number_format($track_plays->getTotalPays());
+//            return number_format($track_plays->getTotalPays());
+            return $track_plays->getTotalPays();
         }
 
 
