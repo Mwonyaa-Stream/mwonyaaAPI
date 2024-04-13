@@ -1668,6 +1668,7 @@ class Handler
                     $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, NOW())");
                     $stmt_insert_track_comment->bind_param("ss", $mediaID, $comment_thread_id);
                     $stmt_insert_track_comment->execute();
+
                 }
 
                 // Generate unique comment_id
@@ -1675,7 +1676,7 @@ class Handler
 
                 // Insert into comments table
                 $stmt_insert_comment = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment, created) VALUES (?, ?, ?, ?, ? NOW())");
-                $stmt_insert_comment->bind_param("sssss", $comment_id, $comment_thread_id, $parent_comment_id, $user_id, $comment_text);
+                $stmt_insert_comment->bind_param("sssss", $comment_id, $comment_thread_id, $parent_comment_id, $userId, $comment);
                 $stmt_insert_comment->execute();
 
                 // Commit transaction
