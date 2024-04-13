@@ -1667,8 +1667,7 @@ class Handler
                     $response['message'] = "Error Posting, Try again";
                 }
 
-            }
-            {
+            } else {
 
 
                 // Start transaction
