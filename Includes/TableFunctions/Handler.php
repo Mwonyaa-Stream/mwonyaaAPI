@@ -1633,7 +1633,7 @@ class Handler
         $mediaID = isset($data->mediaID) ? trim($data->mediaID) : null;
         $commentType = isset($data->commentType) ? trim($data->commentType) : null;
         $commentThreadID = isset($data->commentThreadID) ? trim($data->commentThreadID) : null;
-        $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : $comment_ID;
+        $parentCommentID = isset($data->parentCommentID) ? trim($data->parentCommentID) : null;
         $comment = isset($data->comment) ? trim($data->comment) : null;
 
 
@@ -1657,7 +1657,6 @@ class Handler
                     // If thread already exists, use its comment_thread_id as well as the existing comment_id as parent_comment_id
                     $existing_thread = $existing_thread_result->fetch_assoc();
                     $comment_thread_id = $existing_thread['comment_thread_id'];
-                    $parent_comment_id = null; // For consecutive comments, there's no parent_comment_id
                     echo "done*_".$comment_thread_id;
                 } else {
                     // If thread doesn't exist, generate new comment_thread_id
