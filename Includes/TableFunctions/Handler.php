@@ -1379,7 +1379,7 @@ class Handler
         $mediaID = (isset($_GET['mediaID']) && $_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET["mediaID"])) : null;
         $user_ID = (isset($_GET['user_ID']) && $_GET['user_ID']) ? htmlspecialchars(strip_tags($_GET["user_ID"])) : null;
 
-        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id as thread_id,c.user_id, CONCAT(u.firstName,' ', u.lastName) AS full_name, u.profilePic as profile_image, c.comment, c.created FROM `comments` c join users u on u.id = c.user_id WHERE c.comment_thread_id = '$comment_thread_ID'";
+        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM `comments` c JOIN users u ON u.id = c.user_id WHERE c.comment_thread_id = '$comment_thread_ID' ORDER BY CASE WHEN c.user_id = '$user_ID' THEN 0 ELSE 1 END, c.created DESC";
 
         $query = mysqli_query($this->conn, $commentsSQLString);
         $result_count = mysqli_num_rows($query);
@@ -1414,6 +1414,7 @@ class Handler
                 $temp['full_name'] = $row['full_name'];
                 $temp['profile_image'] = $row['profile_image'];
                 $temp['comment'] = $row['comment'];
+                $temp['user_verified'] = (int)$row['verified'] === 1;
 
                 $date_posted = $row['created'];
                 $date_posted_seconds = $this->getTimespanInSeconds($date_posted);
