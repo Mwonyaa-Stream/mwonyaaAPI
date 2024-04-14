@@ -1371,6 +1371,76 @@ class Handler
     }
 
 
+
+    public function MediaComments(): array
+    {
+        $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+        $comment_thread_ID = (isset($_GET['thread_ID']) && $_GET['thread_ID']) ? htmlspecialchars(strip_tags($_GET["thread_ID"])) : null;
+        $mediaID = (isset($_GET['mediaID']) && $_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET["mediaID"])) : null;
+        $user_ID = (isset($_GET['user_ID']) && $_GET['user_ID']) ? htmlspecialchars(strip_tags($_GET["user_ID"])) : null;
+
+        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id as thread_id,c.user_id, CONCAT(u.firstName,' ', u.lastName) AS full_name, u.profilePic as profile_image, c.comment, c.created FROM `comments` c join users u on u.id = c.user_id WHERE c.comment_thread_id = '$comment_thread_ID'";
+
+        $query = mysqli_query($this->conn, $commentsSQLString);
+        $result_count = mysqli_num_rows($query);
+        $page = floatval($page);
+        $no_of_records_per_page = 30;
+        $offset = ($page - 1) * $no_of_records_per_page;
+        $total_rows = floatval(number_format($result_count));
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+        $itemRecords = array();
+
+
+        // check if the search query returned any results
+        if ($result_count > 0) {
+
+            $comments_result = array();
+            $processed_comments_main = array();
+
+
+            $category_stmt = $commentsSQLString . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+            $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
+
+            while ($row = mysqli_fetch_array($menu_type_id_result)) {
+                $comments_result[] = $row;
+            }
+
+            foreach ($comments_result as $row) {
+                $temp = array();
+                $temp['comment_id'] = $row['comment_id'];
+                $temp['comment_thread_id'] = $row['thread_id'];
+                $temp['full_name'] = $row['full_name'];
+                $temp['profile_image'] = $row['profile_image'];
+                $temp['comment'] = $row['comment'];
+
+                $date_posted = $row['created'];
+                $date_posted_seconds = $this->getTimespanInSeconds($date_posted);
+                $processed_date_posted = $this->getHeadingForTimeSpan($date_posted_seconds);
+
+                $temp['created'] = $date_posted;
+                $temp['posted_date'] = $processed_date_posted;
+
+                $processed_comments_main[] = $temp;
+            }
+
+
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["MediaCommentsList"] = $processed_comments_main;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        } else {
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["MediaCommentsList"] = [];
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        }
+        return $itemRecords;
+    }
+
     public function Notifications(): array
     {
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
@@ -1551,6 +1621,55 @@ class Handler
                 $weeksAgo = ceil($daysAgo / 7);
                 return "{$weeksAgo} weeks ago";
         }
+    }
+
+
+    function getTimespanInSeconds($datetimeString): int
+    {
+        // Convert the datetime string to a Unix timestamp
+        $datetimeTimestamp = strtotime($datetimeString);
+
+        // Get the current Unix timestamp
+        $currentTimestamp = time();
+
+        // Calculate the time difference in seconds
+        return $currentTimestamp - $datetimeTimestamp;
+    }
+
+    private function getHeadingForTimeSpan($timeSpanInSeconds): string
+    {
+        // If within the same minute, return "just now"
+        if ($timeSpanInSeconds < 60) {
+            return "Just now";
+        }
+
+        // If within the same hour, return the number of minutes
+        if ($timeSpanInSeconds < 3600) {
+            $minutes = floor($timeSpanInSeconds / 60);
+            return $minutes > 1 ? "{$minutes}m" : "1m";
+        }
+
+        // If within the same day, return the number of hours
+        if ($timeSpanInSeconds < 86400) {
+            $hours = floor($timeSpanInSeconds / 3600);
+            return $hours > 1 ? "{$hours}h" : "1h";
+        }
+
+        // If within one week, return the number of days
+        if ($timeSpanInSeconds < 604800) {
+            $days = floor($timeSpanInSeconds / 86400);
+            return $days > 1 ? "{$days}d" : "1d";
+        }
+
+        // If within one month, return the number of weeks
+        if ($timeSpanInSeconds < 2592000) {
+            $weeks = ceil($timeSpanInSeconds / 604800);
+            return $weeks > 1 ? "{$weeks}w" : "1w";
+        }
+
+        // For longer time spans, return the number of months
+        $months = ceil($timeSpanInSeconds / 2592000);
+        return $months > 1 ? "{$months}m" : "1m";
     }
 
 
