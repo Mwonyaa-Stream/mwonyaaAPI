@@ -1384,7 +1384,7 @@ class Handler
         $query = mysqli_query($this->conn, $commentsSQLString);
         $result_count = mysqli_num_rows($query);
         $page = floatval($page);
-        $no_of_records_per_page = 30;
+        $no_of_records_per_page = 18;
         $offset = ($page - 1) * $no_of_records_per_page;
         $total_rows = floatval(number_format($result_count));
         $total_pages = ceil($total_rows / $no_of_records_per_page);
