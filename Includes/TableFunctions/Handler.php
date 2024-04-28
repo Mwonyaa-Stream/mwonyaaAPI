@@ -1444,6 +1444,76 @@ class Handler
         return $itemRecords;
     }
 
+
+    public function MediaCommentReplies(): array
+    {
+        $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
+        $parent_comment_ID = (isset($_GET['parent_comment_ID']) && $_GET['parent_comment_ID']) ? htmlspecialchars(strip_tags($_GET["parent_comment_ID"])) : null;
+
+        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM comments c JOIN users u ON u.id = c.user_id  WHERE c.parent_comment_id = '$parent_comment_ID' ORDER BY c.created DESC";
+
+        $query = mysqli_query($this->conn, $commentsSQLString);
+        $result_count = mysqli_num_rows($query);
+        $page = floatval($page);
+        $no_of_records_per_page = 18;
+        $offset = ($page - 1) * $no_of_records_per_page;
+        $total_rows = floatval(number_format($result_count));
+        $total_pages = ceil($total_rows / $no_of_records_per_page);
+
+        $itemRecords = array();
+
+
+        // check if the search query returned any results
+        if ($result_count > 0) {
+
+            $comments_result = array();
+            $processed_comments_main = array();
+
+
+            $category_stmt = $commentsSQLString . " LIMIT " . $offset . "," . $no_of_records_per_page . "";
+
+            $menu_type_id_result = mysqli_query($this->conn, $category_stmt);
+
+            while ($row = mysqli_fetch_array($menu_type_id_result)) {
+                $comments_result[] = $row;
+            }
+
+            foreach ($comments_result as $row) {
+                $temp = array();
+                $temp['comment_id'] = $row['comment_id'];
+                $temp['comment_thread_id'] = $row['thread_id'];
+                $temp['full_name'] = $row['full_name'];
+                $temp['profile_image'] = $row['profile_image'];
+                $temp['comment'] = $row['comment'];
+                $temp['reply_count'] = $row['reply_count'];
+                $temp['user_verified'] = (int)$row['verified'] === 1;
+
+                $date_posted = $row['created'];
+                $date_posted_seconds = $this->getTimespanInSeconds($date_posted);
+                $processed_date_posted = $this->getHeadingForTimeSpan($date_posted_seconds);
+
+                $temp['created'] = $date_posted;
+                $temp['posted_date'] = $processed_date_posted;
+
+                $processed_comments_main[] = $temp;
+            }
+
+
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["MediaCommentsList"] = $processed_comments_main;
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        } else {
+            $itemRecords["page"] = $page;
+            $itemRecords["version"] = 1;
+            $itemRecords["MediaCommentsList"] = [];
+            $itemRecords["total_pages"] = $total_pages;
+            $itemRecords["total_results"] = $total_rows;
+        }
+        return $itemRecords;
+    }
+
     public function Notifications(): array
     {
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
