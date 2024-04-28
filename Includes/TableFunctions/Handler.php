@@ -1379,7 +1379,7 @@ class Handler
         $mediaID = (isset($_GET['mediaID']) && $_GET['mediaID']) ? htmlspecialchars(strip_tags($_GET["mediaID"])) : null;
         $user_ID = (isset($_GET['user_ID']) && $_GET['user_ID']) ? htmlspecialchars(strip_tags($_GET["user_ID"])) : null;
 
-        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM `comments` c JOIN users u ON u.id = c.user_id WHERE c.comment_thread_id = '$comment_thread_ID' ORDER BY CASE WHEN c.user_id = '$user_ID' THEN 0 ELSE 1 END, c.created DESC";
+        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.parent_comment_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created, IFNULL(reply_counts.reply_count, 0) AS reply_count FROM comments c JOIN users u ON u.id = c.user_id LEFT JOIN ( SELECT parent_comment_id, COUNT(*) AS reply_count FROM comments WHERE parent_comment_id IS NOT NULL GROUP BY parent_comment_id ) AS reply_counts ON c.comment_id = reply_counts.parent_comment_id WHERE c.comment_thread_id = '$comment_thread_ID' ORDER BY CASE WHEN c.user_id = '$user_ID' THEN 0 ELSE 1 END, c.created DESC";
 
         $query = mysqli_query($this->conn, $commentsSQLString);
         $result_count = mysqli_num_rows($query);
@@ -1414,6 +1414,7 @@ class Handler
                 $temp['full_name'] = $row['full_name'];
                 $temp['profile_image'] = $row['profile_image'];
                 $temp['comment'] = $row['comment'];
+                $temp['reply_count'] = $row['reply_count'];
                 $temp['user_verified'] = (int)$row['verified'] === 1;
 
                 $date_posted = $row['created'];
