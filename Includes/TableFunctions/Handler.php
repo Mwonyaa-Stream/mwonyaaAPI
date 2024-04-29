@@ -1500,14 +1500,14 @@ class Handler
 
 
             $itemRecords["page"] = $page;
-            $itemRecords["version"] = 1;
-            $itemRecords["MediaCommentsList"] = $processed_comments_main;
+            $itemRecords["comment_id"] = $parent_comment_ID;
+            $itemRecords["Reply"] = $processed_comments_main;
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
         } else {
             $itemRecords["page"] = $page;
-            $itemRecords["version"] = 1;
-            $itemRecords["MediaCommentsList"] = [];
+            $itemRecords["comment_id"] = $parent_comment_ID;
+            $itemRecords["Reply"] = [];
             $itemRecords["total_pages"] = $total_pages;
             $itemRecords["total_results"] = $total_rows;
         }
