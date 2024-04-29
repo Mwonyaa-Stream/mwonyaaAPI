@@ -1450,8 +1450,7 @@ class Handler
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
         $parent_comment_ID = (isset($_GET['parent_comment_ID']) && $_GET['parent_comment_ID']) ? htmlspecialchars(strip_tags($_GET["parent_comment_ID"])) : null;
 
-//        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM comments c JOIN users u ON u.id = c.user_id  WHERE c.parent_comment_id = '$parent_comment_ID' ORDER BY c.created DESC";
-        $commentsSQLString = "SELECT child.comment_id, child.comment_thread_id AS thread_id, child.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, child.comment, child.created FROM comments parent JOIN comments child ON parent.comment_id = child.parent_comment_id JOIN users u ON u.id = child.user_id WHERE parent.comment_id = '$parent_comment_ID' UNION SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM comments c JOIN users u ON u.id = c.user_id WHERE EXISTS ( SELECT 1 FROM comments child WHERE child.parent_comment_id = '$parent_comment_ID' AND child.comment_id = c.comment_id )";
+        $commentsSQLString = "SELECT c.comment_id, c.comment_thread_id AS thread_id, c.user_id, u.username AS full_name, u.verified, u.profilePic AS profile_image, c.comment, c.created FROM comments c JOIN users u ON u.id = c.user_id  WHERE c.parent_comment_id = '$parent_comment_ID' ORDER BY c.created DESC";
 
         $query = mysqli_query($this->conn, $commentsSQLString);
         $result_count = mysqli_num_rows($query);
