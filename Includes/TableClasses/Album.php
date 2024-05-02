@@ -212,7 +212,21 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             return $this->totaltrackplays;
         }
 
+        public function getFollowStatus(string $user_ID)
+        {
+            $stmt = $this->con->prepare("SELECT COUNT(*) FROM collectionfollowing WHERE collectionID = ? AND userid = ?");
+            $stmt->bind_param("ss", $this->id, $user_ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $count = $result->fetch_row()[0];
+            $stmt->close();
 
+            if ($count > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
 
 

@@ -1183,6 +1183,7 @@ class Handler
 
         $this->albumID = htmlspecialchars(strip_tags($_GET["albumID"]));
         $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
+        $user_ID = htmlspecialchars(strip_tags($_GET["user_ID"]));
 
         if ($this->albumID) {
             $this->pageNO = floatval($this->pageNO);
@@ -1218,6 +1219,7 @@ class Handler
                     $temp['datecreated'] = $album->getReleaseDate();
                     $temp['totaltrackplays'] = $album->getTotaltrackplays();
                     $temp['tag'] = $album->getTag();
+                    $temp['following'] = $album->getFollowStatus($user_ID);
                     $temp['trackPath'] = $album->getSongPaths();
 
                     array_push($itemRecords["Album"], $temp);
