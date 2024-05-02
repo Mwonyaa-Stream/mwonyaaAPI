@@ -145,9 +145,9 @@
         {
 
             $php_date = strtotime($this->releaseDate);
-            $date_form =  date('M Y', $php_date);
+            $date_form = date('d M Y', $php_date);
 
-            return $date_form."".$this->getDuration();
+            return $date_form . " • " . $this->getDuration();
         }
 
         public function getComments()
