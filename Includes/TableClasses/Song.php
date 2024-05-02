@@ -17,11 +17,20 @@
         private $lyrics;
         private $featuring;
         private $releaseDate;
+        /**
+         * @var mixed|null
+         */
+        private $description;
+        /**
+         * @var mixed|null
+         */
+        private $comments;
+        private $dateAdded;
 
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
-            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring,s.description,s.comments, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
+            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate,s.dateAdded, s.tag, s.cover,s.featuring,s.description,s.comments, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
             $query = mysqli_query($this->con, $song_query_sql);
 
 
@@ -41,6 +50,7 @@
                 $this->lyrics = null;
                 $this->featuring = null;
                 $this->releaseDate = null;
+                $this->dateAdded = null;
                 return false;
             }
 
@@ -60,6 +70,7 @@
                 $this->featuring = $this->mysqliData['featuring'];
                 $this->comments = $this->mysqliData['comments'];
                 $this->description = $this->mysqliData['description'];
+                $this->dateAdded =  $this->mysqliData['dateAdded'];
 
                 return true;
             }
