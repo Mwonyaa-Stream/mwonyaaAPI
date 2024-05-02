@@ -1245,6 +1245,9 @@ class Handler
                 $temp['path'] = $song->getPath();
                 $temp['totalplays'] = $song->getPlays();
                 $temp['albumID'] = $song->getAlbumId();
+                $temp['description'] = $song->getDescription();
+                $temp['comments'] = $song->getComments();
+                $temp['date_duration'] = $song->getDate_duration();
 
 
                 array_push($allProducts, $temp);

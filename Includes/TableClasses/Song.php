@@ -21,7 +21,7 @@
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
-            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
+            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate, s.tag, s.cover,s.featuring,s.description,s.comments, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
             $query = mysqli_query($this->con, $song_query_sql);
 
 
@@ -35,6 +35,8 @@
                 $this->path = null;
                 $this->plays = null;
                 $this->tag = null;
+                $this->description = null;
+                $this->comments = null;
                 $this->cover = null;
                 $this->lyrics = null;
                 $this->featuring = null;
@@ -56,6 +58,8 @@
                 $this->cover = $this->mysqliData['cover'];
                 $this->lyrics = $this->mysqliData['lyrics'];
                 $this->featuring = $this->mysqliData['featuring'];
+                $this->comments = $this->mysqliData['comments'];
+                $this->description = $this->mysqliData['description'];
 
                 return true;
             }
@@ -136,6 +140,30 @@
             return date('M Y', $php_date);
         }
 
+
+        public function getDate_duration()
+        {
+
+            $php_date = strtotime($this->releaseDate);
+            $date_form =  date('M Y', $php_date);
+
+            return $date_form."".$this->getDuration();
+        }
+
+        public function getComments()
+        {
+            return $this->comments;
+        }
+
+        public function getDuration(){
+            return $this->duration;
+        }
+
+        public function getDescription()
+        {
+            return $this->description;
+        }
+
         /**
          * @return mixed|null
          */
@@ -153,9 +181,6 @@
             return new Album($this->con, $this->albumId);
         }
 
-        public function getDuration(){
-            return $this->duration;
-        }
         public function getPath(){
             return $this->path;
         }
