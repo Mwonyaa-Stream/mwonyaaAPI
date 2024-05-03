@@ -300,11 +300,12 @@ class Handler
 
     function clearCache(): array
     {
-        $key = 'home_feed';
+
+        $key = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'general_user';
         $itemRecords = array();
         if ($this->redis->get($key)) {
             $this->redis->del($key);
-            $itemRecords['message'] = 'cache cleared successfully';
+            $itemRecords['message'] = 'cache cleared successfully for '.$key;
         } else {
             $itemRecords['message'] = 'unsuccessful';
         }
@@ -315,32 +316,23 @@ class Handler
 
     function allCombined(): array
     {
-        $key = 'v1_home_feed';
+        $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'general_user';
+
+        $key = $userID;
 
         if (!$this->redis->get($key)) {
             $source = 'MySQL Server';
 
             // Set up the prepared statement to retrieve the number of genres
             $tag_music = "music";
-            $genre_count_stmt = mysqli_prepare($this->conn, "SELECT COUNT(DISTINCT g.id) as total_genres FROM genres g JOIN songs s ON s.genre = g.id WHERE s.available = 1 AND s.tag = ?");
 
-            mysqli_stmt_bind_param($genre_count_stmt, "s", $tag_music);
-
-            mysqli_stmt_execute($genre_count_stmt);
-
-            mysqli_stmt_bind_result($genre_count_stmt, $total_genres);
-
-            mysqli_stmt_fetch($genre_count_stmt);
-
-            mysqli_stmt_close($genre_count_stmt);
 
             // Calculate the total number of pages
             $no_of_records_per_page = 10;
-            $total_pages = ceil($total_genres / $no_of_records_per_page);
+            $total_pages = 1;
 
             // Retrieve the "page" parameter from the GET request
-            $page = isset($_GET['page']) ? intval(htmlspecialchars(strip_tags($_GET["page"]))) : 1;
-            $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : null;
 
 
             // Validate the "page" parameter
