@@ -586,7 +586,7 @@ class Handler
 
                 // Close the prepared statement
                 $feat_trend = array();
-                $feat_trend['heading'] = "Music Top Trends";
+                $feat_trend['heading'] = "Trending Now";
                 $feat_trend['type'] = "trend";
                 $feat_trend['Tracks'] = $tracks_trending;
                 array_push($menuCategory, $feat_trend);
