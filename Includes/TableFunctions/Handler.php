@@ -551,7 +551,8 @@ class Handler
                 //             Trending Now
                 $featured_trending = array();
                 $tracks_trending = array();
-                $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+//                $trending_now_sql = "SELECT songid as song_id, COUNT(*) AS play_count FROM frequency WHERE lastPlayed BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE() GROUP BY songid ORDER BY play_count DESC LIMIT 10";
+                $trending_now_sql = "SELECT f.songid as song_id, COUNT(*) AS play_count FROM frequency f JOIN songs s on s.id = f.songid WHERE s.tag = 'music' AND f.lastPlayed BETWEEN CURDATE() - INTERVAL 4 DAY AND CURDATE() GROUP BY f.songid ORDER BY play_count DESC LIMIT 10";
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $trending_now_sql);
                 // Execute the query
@@ -585,7 +586,7 @@ class Handler
 
                 // Close the prepared statement
                 $feat_trend = array();
-                $feat_trend['heading'] = "Trending Now";
+                $feat_trend['heading'] = "Music Top Trends";
                 $feat_trend['type'] = "trend";
                 $feat_trend['Tracks'] = $tracks_trending;
                 array_push($menuCategory, $feat_trend);
