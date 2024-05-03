@@ -331,7 +331,7 @@ class Handler
             // Calculate the total number of pages
             $no_of_records_per_page = 10;
             $total_pages = 1;
-
+            $total_genres = 20;
             // Retrieve the "page" parameter from the GET request
 
 
@@ -3257,6 +3257,15 @@ class Handler
         return $response;
     }
 
+    function profileImagelink($username)
+    {
+        // Encode the username to make it URL-safe
+        $encodedUsername = urlencode($username);
+        // Construct the link with the encoded username
+        return "https://ui-avatars.com/api/?name={$encodedUsername}&background=random";
+    }
+
+
 
     function userRegister($data): array
     {
@@ -3265,7 +3274,7 @@ class Handler
         $m_full_name = isset($data->full_name) ? trim($data->full_name) : null;
         $m_email = isset($data->email) ? trim($data->email) : null;
         $m_phone = isset($data->phone) ? trim($data->phone) : null;
-        $m_profilePic = $data->profilePic ?? "";
+        $m_profilePic = $data->profilePic ?? $this->profileImagelink($m_username);
 
         // Validate email (if provided)
         if (!empty($m_email) && !filter_var($m_email, FILTER_VALIDATE_EMAIL)) {
