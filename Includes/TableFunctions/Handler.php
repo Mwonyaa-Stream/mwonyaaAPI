@@ -142,6 +142,7 @@ class Handler
                         'out_now' => "Date: " . $arry->getReleaseDate(),
                         'coverimage' => $arry->getArtworkPath(),
                         'song_title' => $arry->getTitle(),
+                        'exclusive' => $arry->getExclusive(),
                         'song_cover' => $arry->getArtworkPath(),
                     ];
                     array_push($ArtistPick, $temp);
@@ -201,6 +202,7 @@ class Handler
                 $temp['genre'] = $album->getGenre()->getGenre();
                 $temp['artworkPath'] = $album->getArtworkPath();
                 $temp['tag'] = $album->getTag();
+                $temp['exclusive'] = $album->getExclusive();
                 $temp['description'] = $album->getDescription();
                 $temp['datecreated'] = $album->getReleaseDate();
                 $temp['totalsongplays'] = $album->getTotaltrackplays();
@@ -377,6 +379,7 @@ class Handler
                     $temp['title'] = $al->getTitle();
                     $temp['artworkPath'] = $al->getArtworkPath();
                     $temp['tag'] = $al->getReleaseDate() . ' - ' . $al->getTag();
+                    $temp['exclusive'] = $al->getExclusive();
                     $temp['artistId'] = $al->getArtistId();
                     $temp['artist'] = $al->getArtist()->getName();
                     $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
@@ -721,6 +724,7 @@ class Handler
                     $temp['description'] = $pod->getDescription();
                     $temp['artworkPath'] = $pod->getArtworkPath();
                     $temp['artist'] = $pod->getArtist()->getName();
+                    $temp['exclusive'] = $pod->getExclusive();
                     $temp['artistImage'] = $pod->getArtist()->getProfilePath();
                     $temp['genre'] = $pod->getGenre()->getGenre();
                     $temp['tag'] = $pod->getTag();
@@ -767,6 +771,7 @@ class Handler
                     $temp['description'] = $pod->getDescription();
                     $temp['artworkPath'] = $pod->getArtworkPath();
                     $temp['artist'] = $pod->getArtist()->getName();
+                    $temp['exclusive'] = $pod->getExclusive();
                     $temp['artistImage'] = $pod->getArtist()->getProfilePath();
                     $temp['genre'] = $pod->getGenre()->getGenre();
                     $temp['tag'] = $pod->getTag();
@@ -871,6 +876,7 @@ class Handler
                 $temp['tag'] = $al->getReleaseDate() . ' - ' . ucwords($al->getTag());
                 $temp['artistId'] = $al->getArtistId();
                 $temp['artist'] = $al->getArtist()->getName();
+                $temp['exclusive'] = $al->getExclusive();
                 $temp['artistArtwork'] = $al->getArtist()->getProfilePath();
                 $temp['Tracks'] = $al->getTracks();
                 array_push($featuredAlbums, $temp);
@@ -2730,6 +2736,7 @@ class Handler
             $temp['description'] = $pod->getDescription();
             $temp['artworkPath'] = $pod->getArtworkPath();
             $temp['artist'] = $pod->getArtist()->getName();
+            $temp['exclusive'] = $pod->getExclusive();
             $temp['artistImage'] = $pod->getArtist()->getProfilePath();
             $temp['genre'] = $pod->getGenre()->getGenre();
             $temp['tag'] = $pod->getTag();
@@ -2780,6 +2787,7 @@ class Handler
             $temp['description'] = $pod->getDescription();
             $temp['artworkPath'] = $pod->getArtworkPath();
             $temp['artist'] = $pod->getArtist()->getName();
+            $temp['exclusive'] = $pod->getExclusive();
             $temp['artistImage'] = $pod->getArtist()->getProfilePath();
             $temp['genre'] = $pod->getGenre()->getGenre();
             $temp['tag'] = $pod->getTag();
@@ -2831,6 +2839,7 @@ class Handler
             $temp['description'] = $pod->getDescription();
             $temp['artworkPath'] = $pod->getArtworkPath();
             $temp['artist'] = $pod->getArtist()->getName();
+            $temp['exclusive'] = $pod->getExclusive();
             $temp['artistImage'] = $pod->getArtist()->getProfilePath();
             $temp['genre'] = $pod->getGenre()->getGenre();
             $temp['tag'] = $pod->getTag();
