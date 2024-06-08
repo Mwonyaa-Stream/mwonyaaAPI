@@ -680,6 +680,7 @@ class Handler
                     $temp['id'] = $id;
                     $temp['name'] = $name;
                     $temp['owner'] = $owner;
+                    $temp['exclusive'] = false;
                     $temp['coverurl'] = $coverurl;
                     array_push($featuredPlaylist, $temp);
                 }
