@@ -62,9 +62,9 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
 
-        public function getExclusive()
+        public function getExclusive(): bool
         {
-            return $this->exclusive;
+            return (int)$this->exclusive === 1;
         }
 
 
