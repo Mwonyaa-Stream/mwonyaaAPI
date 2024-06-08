@@ -103,38 +103,6 @@ class Handler
             $artistIntro['Type'] = "intro";
             array_push($itemRecords["Artist"], $artistIntro);
 
-
-            // popular tracks
-            $populartracks = $artist_instance->getSongIds();
-            $popular = array();
-            foreach ($populartracks as $songId) {
-                $song = new Song($this->conn, $songId);
-                $temp = array();
-                $temp['id'] = $song->getId();
-                $temp['title'] = $song->getTitle();
-                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
-                $temp['artistID'] = $song->getArtistId();
-                $temp['album'] = $song->getAlbum()->getTitle();
-                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
-                $temp['genre'] = $song->getGenre()->getGenre();
-                $temp['genreID'] = $song->getGenre()->getGenreid();
-                $temp['duration'] = $song->getDuration();
-                $temp['lyrics'] = $song->getLyrics();
-                $temp['path'] = $song->getPath();
-                $temp['totalplays'] = $song->getPlays();
-                $temp['albumID'] = $song->getAlbumId();
-
-                array_push($popular, $temp);
-            }
-
-
-            $popular_temps = array();
-            $popular_temps['heading'] = ($artist_instance->getTag() !== 'music') ? "Most Recent" : "Popular";
-            $popular_temps['Type'] = "trending";
-            $popular_temps['Tracks'] = $popular;
-            array_push($itemRecords["Artist"], $popular_temps);
-
-
             // Artist Pick - Top playlist created by the Artist
             $stmt = $this->conn->prepare("SELECT `id`, `tile`, `artistID`, `CoverArt`, `songID`, `date_created` FROM `artistpick` WHERE  artistID=? LIMIT 1");
             $stmt->bind_param("s", $artistID);
@@ -186,6 +154,40 @@ class Handler
             $artistpick_array['Type'] = "pick";
             $artistpick_array['ArtistPick'] = $ArtistPick;
             array_push($itemRecords["Artist"], $artistpick_array);
+
+
+            // popular tracks
+            $populartracks = $artist_instance->getSongIds();
+            $popular = array();
+            foreach ($populartracks as $songId) {
+                $song = new Song($this->conn, $songId);
+                $temp = array();
+                $temp['id'] = $song->getId();
+                $temp['title'] = $song->getTitle();
+                $temp['artist'] = $song->getArtist()->getName() . $song->getFeaturing();
+                $temp['artistID'] = $song->getArtistId();
+                $temp['album'] = $song->getAlbum()->getTitle();
+                $temp['artworkPath'] = $song->getAlbum()->getArtworkPath();
+                $temp['genre'] = $song->getGenre()->getGenre();
+                $temp['genreID'] = $song->getGenre()->getGenreid();
+                $temp['duration'] = $song->getDuration();
+                $temp['lyrics'] = $song->getLyrics();
+                $temp['path'] = $song->getPath();
+                $temp['totalplays'] = $song->getPlays();
+                $temp['albumID'] = $song->getAlbumId();
+
+                array_push($popular, $temp);
+            }
+
+
+            $popular_temps = array();
+            $popular_temps['heading'] = ($artist_instance->getTag() !== 'music') ? "Most Recent" : "Popular";
+            $popular_temps['Type'] = "trending";
+            $popular_temps['Tracks'] = $popular;
+            array_push($itemRecords["Artist"], $popular_temps);
+
+
+
 
             // popular releases
             $albumsIDs = $artist_instance->getArtistAlbums();
@@ -3817,6 +3819,61 @@ class Handler
         }
         return $itemRecords;
     }
+
+    function PesaPalPaymentIPNUpdate($OrderTrackingId, $OrderNotificationType, $OrderMerchantReference, $update_date): array
+    {
+        // Sanitize input parameters
+        $OrderTrackingId = htmlspecialchars(strip_tags($OrderTrackingId));
+        $OrderNotificationType = htmlspecialchars(strip_tags($OrderNotificationType));
+        $OrderMerchantReference = htmlspecialchars(strip_tags($OrderMerchantReference));
+        $update_date = htmlspecialchars(strip_tags($update_date));
+
+        // Initialize response array
+        $itemRecords = array();
+        $updateIDs = array();
+
+        // Check if OrderTrackingId exists in the table
+        $check_sql = "SELECT id FROM pesapal_ipn_records WHERE OrderTrackingId = '$OrderTrackingId'";
+        $result = mysqli_query($this->conn, $check_sql);
+
+        if (mysqli_num_rows($result) > 0) {
+            // OrderTrackingId exists, update the record
+            $stmt_update = $this->conn->prepare("UPDATE pesapal_ipn_records SET OrderNotificationType = ?, OrderMerchantReference = ?, date_created = ? WHERE OrderTrackingId = ?");
+            $stmt_update->bind_param("ssss", $OrderNotificationType, $OrderMerchantReference, $update_date, $OrderTrackingId);
+
+            if ($stmt_update->execute()) {
+                $this->exe_status = "success";
+                array_push($updateIDs, $OrderTrackingId);
+            } else {
+                $this->exe_status = "failure";
+            }
+        } else {
+            // OrderTrackingId does not exist, insert a new record
+            $stmt_insert = $this->conn->prepare("INSERT INTO pesapal_ipn_records (OrderTrackingId, OrderMerchantReference, OrderNotificationType, date_created) VALUES (?, ?, ?, ?)");
+            $stmt_insert->bind_param("ssss", $OrderTrackingId, $OrderMerchantReference, $OrderNotificationType, $update_date);
+
+            if ($stmt_insert->execute()) {
+                $this->exe_status = "success";
+                array_push($updateIDs, $OrderTrackingId);
+            } else {
+                $this->exe_status = "failure";
+            }
+        }
+
+        // Prepare response based on execution status
+        if ($this->exe_status == "success") {
+            $itemRecords['error'] = false;
+            $itemRecords['message'] = $OrderTrackingId. " Request successful";
+            $itemRecords['status'] = 200;
+        } else {
+            $itemRecords['error'] = true;
+            $itemRecords['message'] = "update failed";
+            $itemRecords['status'] = 404;
+        }
+
+        return $itemRecords;
+    }
+
 
 
     public
