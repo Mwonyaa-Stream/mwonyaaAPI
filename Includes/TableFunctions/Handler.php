@@ -93,7 +93,7 @@ class Handler
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
             $temp['verified'] = $artist_instance->getVerified();
-            $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID);
+            $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID,$temp['id']);
             $temp['circle_cost'] = $artist_instance->getCircleCost();
             $temp['circle_duration'] = $artist_instance->getCircleDuration();
             $temp['following'] = $artist_instance->getFollowStatus($user_ID);
