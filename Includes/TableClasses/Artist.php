@@ -242,12 +242,12 @@ class Artist
         return $gn->getGenre();
     }
 
-    public function getCircleCost(): mixed
+    public function getCircleCost() : float
     {
         return $this->circle_cost;
     }
 
-    public function getCircleDuration(): mixed
+    public function getCircleDuration() : int
     {
         return $this->circle_duration;
     }
