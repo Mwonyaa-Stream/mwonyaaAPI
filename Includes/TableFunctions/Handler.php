@@ -93,6 +93,9 @@ class Handler
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
             $temp['verified'] = $artist_instance->getVerified();
+            $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID);
+            $temp['circle_cost'] = $artist_instance->getCircleCost();
+            $temp['circle_duration'] = $artist_instance->getCircleDuration();
             $temp['following'] = $artist_instance->getFollowStatus($user_ID);
             $temp['intro'] = $artist_instance->getIntro();
             array_push($artist_into, $temp);
@@ -1937,9 +1940,13 @@ class Handler
 
         $confirmation_code = isset($data->confirmation_code) ? trim($data->confirmation_code) : null;
         $payment_created_date = isset($data->payment_created_date) ? trim($data->payment_created_date) : null;
-        $plan_start_datetime = isset($data->plan_start_datetime) ? trim($data->plan_start_datetime) : null;
-        $plan_end_datetime = isset($data->plan_end_datetime) ? trim($data->plan_end_datetime) : null;
+        $plan_duration = isset($data->plan_duration) ? trim($data->plan_duration) : null;
+        $plan_description = isset($data->plan_description) ? trim($data->plan_description) : null;
         $created_date =  date('Y-m-d H:i:s');
+
+        $subscription_plan = $this->generateDateTimes($plan_duration);
+        $plan_start_datetime = $subscription_plan['start_datetime'];
+        $plan_end_datetime = $subscription_plan['end_datetime'];
 
         $response = [
             'error' => false,
@@ -1949,8 +1956,8 @@ class Handler
 
         try {
             // Check if the token already exists for this user
-            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (`order_tracking_id`, `user_id`, `amount`, `currency`, `subscription_type`, `subscription_type_id`, `status_code`, `payment_status_description`, `payment_account`, `payment_method`, `confirmation_code`, `payment_created_date`, `plan_start_datetime`, `plan_end_datetime`, `created_date`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?,?,?,?)");
-            $stmt->bind_param("ssisssissssssss", $order_tracking_id, $user_id, $amount, $currency, $subscription_type, $subscription_type_id, $status_code, $payment_status_description, $payment_account, $payment_method, $confirmation_code, $payment_created_date, $plan_start_datetime, $plan_end_datetime, $created_date);
+            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (`order_tracking_id`, `user_id`, `amount`, `currency`, `subscription_type`, `subscription_type_id`, `status_code`, `payment_status_description`, `payment_account`, `payment_method`, `confirmation_code`, `payment_created_date`, `plan_start_datetime`, `plan_end_datetime`, , `plan_duration`, `plan_description`, `created_date`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?,?,?,?)");
+            $stmt->bind_param("ssisssissssssssss", $order_tracking_id, $user_id, $amount, $currency, $subscription_type, $subscription_type_id, $status_code, $payment_status_description, $payment_account, $payment_method, $confirmation_code, $payment_created_date, $plan_start_datetime, $plan_end_datetime,$plan_duration, $plan_description, $created_date);
 
             if ($stmt->execute()) {
                 $response['message'] = "Order posted successfully.";
@@ -1964,6 +1971,21 @@ class Handler
         }
         return $response;
     }
+
+    function generateDateTimes($durationInDays) {
+        // Get the current datetime in the desired format
+        $startDateTime = new DateTime('now', new DateTimeZone('UTC'));
+        $startDateTimeFormatted = $startDateTime->format('Y-m-d\TH:i:s\Z');
+
+        // Calculate the end datetime by adding the duration in days
+        $endDateTime = clone $startDateTime;
+        $endDateTime->add(new DateInterval('P' . $durationInDays . 'D'));
+        $endDateTimeFormatted = $endDateTime->format('Y-m-d\TH:i:s\Z');
+
+        // Return the array of start and end datetimes
+        return array('start_datetime' => $startDateTimeFormatted, 'end_datetime' => $endDateTimeFormatted);
+    }
+
 
     public function CommentThreadSummary(): array
     {

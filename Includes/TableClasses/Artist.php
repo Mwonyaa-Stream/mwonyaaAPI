@@ -22,13 +22,15 @@ class Artist
     private $overalplays;
     private $status;
     private $verified;
+    private $circle_cost;
+    private $circle_duration;
 
     public function __construct($con, $id)
     {
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified` FROM artists WHERE available = 1 AND id='$this->id' ");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified`, `circle_cost`, `circle_duration` FROM artists WHERE available = 1 AND id='$this->id' ");
         $artistfetched = mysqli_fetch_array($query);
 
 
@@ -51,9 +53,11 @@ class Artist
             $this->overalplays = null;
             $this->status = null;
             $this->verified = null;
+            $this->circle_cost = null;
+            $this->circle_duration = null;
         } else {
             $this->no = $artistfetched['no'];
-            $this->name = $artistfetched['id'];
+            $this->id = $artistfetched['id'];
             $this->name = $artistfetched['name'];
             $this->email = $artistfetched['email'];
             $this->phone = $artistfetched['phone'];
@@ -70,6 +74,8 @@ class Artist
             $this->overalplays = $artistfetched['overalplays'];
             $this->status = $artistfetched['status'];
             $this->verified = $artistfetched['verified'];
+            $this->circle_cost = $artistfetched['circle_cost'];
+            $this->circle_duration = $artistfetched['circle_duration'];
         }
     }
 
@@ -91,7 +97,10 @@ class Artist
     {
         return (int)$this->verified === 1;
     }
-
+    public function getDetermineUserPermission($userID)
+    {
+        return false;
+    }
     public function getName()
     {
         return $this->name;
@@ -203,6 +212,17 @@ class Artist
 
         return $gn->getGenre();
     }
+
+    public function getCircleCost(): mixed
+    {
+        return $this->circle_cost;
+    }
+
+    public function getCircleDuration(): mixed
+    {
+        return $this->circle_duration;
+    }
+
 
 
     function convertToSentenceCase($string)
