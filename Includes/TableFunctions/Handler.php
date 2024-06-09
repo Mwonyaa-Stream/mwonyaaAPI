@@ -1970,7 +1970,7 @@ class Handler
             }
         } catch (Exception $e) {
             $response['error'] = true;
-            $response['message'] = "Error Post Order Details to Mwonya. Contact Admin";
+            $response['message'] = $e->getMessage();
         }
         return $response;
     }
