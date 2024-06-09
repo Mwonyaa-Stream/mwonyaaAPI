@@ -1995,7 +1995,7 @@ class Handler
     function generateDateTimes($durationInDays): array
     {
         // Get the current datetime in the desired format
-        $startDateTime = new DateTime('now');
+        $startDateTime = new DateTime('now', new DateTimeZone('UTC'));
         $startDateTimeFormatted = $startDateTime->format('Y-m-d\TH:i:s\Z');
 
         // Calculate the end datetime by adding the duration in days
@@ -2006,6 +2006,42 @@ class Handler
         // Return the array of start and end datetimes
         return array('start_datetime' => $startDateTimeFormatted, 'end_datetime' => $endDateTimeFormatted);
     }
+
+    public function hasActiveSubscription($userId): bool
+    {
+        $response = false;
+
+        try {
+            // Query to find the most recent subscription for the given user
+            $stmt = $this->conn->prepare("
+            SELECT plan_end_datetime 
+            FROM pesapal_transactions 
+            WHERE user_id = ? 
+            ORDER BY plan_end_datetime DESC 
+            LIMIT 1
+        ");
+            $stmt->bind_param("s", $userId);
+            $stmt->execute();
+            $stmt->bind_result($planEndDatetime);
+            $stmt->fetch();
+            $stmt->close();
+
+            // Check if the most recent subscription is still active
+            if ($planEndDatetime) {
+                $currentDate = new DateTime('now', new DateTimeZone('UTC'));
+                $endDate = new DateTime($planEndDatetime, new DateTimeZone('UTC'));
+
+                if ($endDate > $currentDate) {
+                    $response = true;
+                }
+            }
+        } catch (Exception $e) {
+            // Handle exceptions if needed, e.g., logging the error
+        }
+
+        return $response;
+    }
+
 
 
     public function CommentThreadSummary(): array
