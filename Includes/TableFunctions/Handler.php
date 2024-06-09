@@ -188,8 +188,6 @@ class Handler
             array_push($itemRecords["Artist"], $popular_temps);
 
 
-
-
             // popular releases
             $albumsIDs = $artist_instance->getArtistAlbums();
             $popular_release = array();
@@ -309,7 +307,7 @@ class Handler
         $itemRecords = array();
         if ($this->redis->get($key)) {
             $this->redis->del($key);
-            $itemRecords['message'] = 'cache cleared successfully for '.$key;
+            $itemRecords['message'] = 'cache cleared successfully for ' . $key;
         } else {
             $itemRecords['message'] = 'unsuccessful';
         }
@@ -1378,7 +1376,6 @@ class Handler
     }
 
 
-
     public function MediaComments(): array
     {
         $page = (isset($_GET['page']) && $_GET['page']) ? htmlspecialchars(strip_tags($_GET["page"])) : '1';
@@ -1852,7 +1849,7 @@ class Handler
                 try {
                     // Check if the token already exists for this user
                     $stmt = $this->conn->prepare("INSERT INTO comments (comment_id, comment_thread_id, parent_comment_id, user_id, comment,created) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("ssssss", $comment_ID, $commentThreadID, $parentCommentID, $userId, $comment,$commentDate);
+                    $stmt->bind_param("ssssss", $comment_ID, $commentThreadID, $parentCommentID, $userId, $comment, $commentDate);
                     $operation = 'posted';
 
                     if ($stmt->execute()) {
@@ -1890,12 +1887,12 @@ class Handler
 
                         // Insert into join_tracks_comments table for the first comment only
                         $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO comment_threads (thread_id, thread_name, created) VALUES (?, ?, ?)");
-                        $stmt_insert_track_comment->bind_param("sss", $comment_thread_id, $thread_name,$commentDate);
+                        $stmt_insert_track_comment->bind_param("sss", $comment_thread_id, $thread_name, $commentDate);
                         $stmt_insert_track_comment->execute();
 
                         // Insert into join_tracks_comments table for the first comment only
                         $stmt_insert_track_comment = $this->conn->prepare("INSERT INTO join_tracks_comments (track_id, comment_thread_id, datecreated) VALUES (?, ?, ?)");
-                        $stmt_insert_track_comment->bind_param("sss", $mediaID, $comment_thread_id,$commentDate);
+                        $stmt_insert_track_comment->bind_param("sss", $mediaID, $comment_thread_id, $commentDate);
                         $stmt_insert_track_comment->execute();
 
                     }
@@ -1924,6 +1921,49 @@ class Handler
         return $response;
     }
 
+    public function postOrderDetailsToMwonya($data): array
+    {
+        $order_tracking_id = isset($data->order_tracking_id) ? trim($data->order_tracking_id) : null;
+        $user_id = isset($data->user_id) ? trim($data->user_id) : null;
+        $amount = isset($data->amount) ? trim($data->amount) : null;
+        $currency = isset($data->currency) ? trim($data->currency) : null;
+        $subscription_type = isset($data->subscription_type) ? trim($data->subscription_type) : null;
+
+        $subscription_type_id = isset($data->subscription_type_id) ? trim($data->subscription_type_id) : null;
+        $status_code = isset($data->status_code) ? trim($data->status_code) : null;
+        $payment_status_description = isset($data->payment_status_description) ? trim($data->payment_status_description) : null;
+        $payment_account = isset($data->payment_account) ? trim($data->payment_account) : null;
+        $payment_method = isset($data->payment_method) ? trim($data->payment_method) : null;
+
+        $confirmation_code = isset($data->confirmation_code) ? trim($data->confirmation_code) : null;
+        $payment_created_date = isset($data->payment_created_date) ? trim($data->payment_created_date) : null;
+        $plan_start_datetime = isset($data->plan_start_datetime) ? trim($data->plan_start_datetime) : null;
+        $plan_end_datetime = isset($data->plan_end_datetime) ? trim($data->plan_end_datetime) : null;
+        $created_date =  date('Y-m-d H:i:s');
+
+        $response = [
+            'error' => false,
+            'message' => 'Comment Default'
+        ];
+
+
+        try {
+            // Check if the token already exists for this user
+            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (`order_tracking_id`, `user_id`, `amount`, `currency`, `subscription_type`, `subscription_type_id`, `status_code`, `payment_status_description`, `payment_account`, `payment_method`, `confirmation_code`, `payment_created_date`, `plan_start_datetime`, `plan_end_datetime`, `created_date`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?,?,?,?)");
+            $stmt->bind_param("ssisssissssssss", $order_tracking_id, $user_id, $amount, $currency, $subscription_type, $subscription_type_id, $status_code, $payment_status_description, $payment_account, $payment_method, $confirmation_code, $payment_created_date, $plan_start_datetime, $plan_end_datetime, $created_date);
+
+            if ($stmt->execute()) {
+                $response['message'] = "Order posted successfully.";
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'Failed, Try again';
+            }
+        } catch (Exception $e) {
+            $response['error'] = true;
+            $response['message'] = "Error Post Order Details to Mwonya. Contact Admin";
+        }
+        return $response;
+    }
 
     public function CommentThreadSummary(): array
     {
@@ -3278,7 +3318,6 @@ class Handler
     }
 
 
-
     function userRegister($data): array
     {
         // Getting the values
@@ -3873,7 +3912,7 @@ class Handler
         // Prepare response based on execution status
         if ($this->exe_status == "success") {
             $itemRecords['error'] = false;
-            $itemRecords['message'] = $OrderTrackingId. " Request successful";
+            $itemRecords['message'] = $OrderTrackingId . " Request successful";
             $itemRecords['status'] = 200;
         } else {
             $itemRecords['error'] = true;
@@ -3883,7 +3922,6 @@ class Handler
 
         return $itemRecords;
     }
-
 
 
     public
