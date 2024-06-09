@@ -16,7 +16,7 @@ include_once 'includedFiles.php';
 if (!empty($db)) {
 
     $data = json_decode(file_get_contents("php://input"));
-    if (!empty($data->commentThreadID) || !empty($data->userId)) {
+    if (!empty($data->order_tracking_id) || !empty($data->user_id)) {
         $handler = new Handler($db,$redis_con);
         $result = $handler->postOrderDetailsToMwonya($data);
         if ($result) {
