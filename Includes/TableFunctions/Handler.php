@@ -1949,6 +1949,7 @@ class Handler
         $plan_end_datetime = $subscription_plan['end_datetime'];
 
 
+        echo  $plan_start_datetime ."--". $plan_end_datetime;
 
         $response = [
             'error' => false,
