@@ -1948,9 +1948,6 @@ class Handler
         $plan_start_datetime = $subscription_plan['start_datetime'];
         $plan_end_datetime = $subscription_plan['end_datetime'];
 
-
-        echo  $plan_start_datetime ."--". $plan_end_datetime;
-
         $response = [
             'error' => false,
             'message' => 'Comment Default'
@@ -1975,9 +1972,13 @@ class Handler
         return $response;
     }
 
-    function generateDateTimes($durationInDays) {
+    /**
+     * @throws Exception
+     */
+    function generateDateTimes($durationInDays): array
+    {
         // Get the current datetime in the desired format
-        $startDateTime = new DateTime('now', new DateTimeZone('UTC'));
+        $startDateTime = new DateTime('now');
         $startDateTimeFormatted = $startDateTime->format('Y-m-d\TH:i:s\Z');
 
         // Calculate the end datetime by adding the duration in days
