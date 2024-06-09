@@ -97,10 +97,39 @@ class Artist
     {
         return (int)$this->verified === 1;
     }
+
     public function getDetermineUserPermission($userID)
     {
-        return false;
+
+        $response = false;
+
+        try {
+            // Query to find the most recent subscription for the given user
+            $stmt = $this->con->prepare("SELECT plan_end_datetime FROM pesapal_transactions WHERE user_id = ? AND subscription_type_id = ? ORDER BY plan_end_datetime DESC LIMIT 1");
+            $stmt->bind_param("ss", $userID, $this->id);
+            $stmt->execute();
+            $planEndDatetime = "now";
+            $stmt->bind_result($planEndDatetime);
+            $stmt->fetch();
+            $stmt->close();
+
+            // Check if the most recent subscription is still active
+            if ($planEndDatetime) {
+                $currentDate = new DateTime('now', new DateTimeZone('UTC'));
+                $endDate = new DateTime($planEndDatetime, new DateTimeZone('UTC'));
+
+                if ($endDate > $currentDate) {
+                    $response = true;
+                }
+            }
+        } catch (Exception $e) {
+            // Handle exceptions if needed, e.g., logging the error
+        }
+
+        return $response;
+
     }
+
     public function getName()
     {
         return $this->name;
@@ -224,7 +253,6 @@ class Artist
     }
 
 
-
     function convertToSentenceCase($string)
     {
         $sentence = strtolower($string); // Convert the string to lowercase
@@ -298,10 +326,10 @@ class Artist
 
         if ($this->tag !== 'music') {
 //            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE  available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY `dateAdded` DESC LIMIT 8");
-            $query = mysqli_query($this->con,"select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
+            $query = mysqli_query($this->con, "select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
         } else {
 //            $query = mysqli_query($this->con, "SELECT id, featuring FROM songs WHERE available = 1 AND (artist='$this->id' OR FIND_IN_SET('$this->id', featuring) > 0) AND tag != 'ad' ORDER BY plays DESC LIMIT 8");
-            $query = mysqli_query($this->con,"select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
+            $query = mysqli_query($this->con, "select s.id,t.total_plays, s.title, a.name, s.featuring from track_plays t join songs s on s.id = t.songid join artists a on a.id = s.artist where s.tag != 'ad' and s.available = 1 and (a.id='$this->id' OR FIND_IN_SET('$this->id', s.featuring) > 0) order by t.total_plays desc limit 8");
 
 
         }

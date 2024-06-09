@@ -2022,6 +2022,7 @@ class Handler
         ");
             $stmt->bind_param("s", $userId);
             $stmt->execute();
+            $planEndDatetime = "now";
             $stmt->bind_result($planEndDatetime);
             $stmt->fetch();
             $stmt->close();
