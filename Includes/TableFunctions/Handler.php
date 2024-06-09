@@ -96,6 +96,7 @@ class Handler
             $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID,$temp['id']);
             $temp['circle_cost'] = $artist_instance->getCircleCost();
             $temp['circle_duration'] = $artist_instance->getCircleDuration();
+            $temp['circle_cost_maximum'] = $artist_instance->getCircleCostMaximum();
             $temp['following'] = $artist_instance->getFollowStatus($user_ID);
             $temp['intro'] = $artist_instance->getIntro();
             array_push($artist_into, $temp);

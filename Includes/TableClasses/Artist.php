@@ -24,13 +24,14 @@ class Artist
     private $verified;
     private $circle_cost;
     private $circle_duration;
+    private $circle_cost_maximum;
 
     public function __construct($con, $id)
     {
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified`, `circle_cost`, `circle_duration` FROM artists WHERE available = 1 AND id='$this->id' ");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified`, `circle_cost`, `circle_cost_maximum`, `circle_duration` FROM artists WHERE available = 1 AND id='$this->id' ");
         $artistfetched = mysqli_fetch_array($query);
 
 
@@ -55,6 +56,7 @@ class Artist
             $this->verified = null;
             $this->circle_cost = null;
             $this->circle_duration = null;
+            $this->circle_cost_maximum = null;
         } else {
             $this->no = $artistfetched['no'];
             $this->id = $artistfetched['id'];
@@ -76,6 +78,7 @@ class Artist
             $this->verified = $artistfetched['verified'];
             $this->circle_cost = $artistfetched['circle_cost'];
             $this->circle_duration = $artistfetched['circle_duration'];
+            $this->circle_cost_maximum = $artistfetched['circle_cost_maximum'];
         }
     }
 
@@ -138,6 +141,9 @@ class Artist
     {
         return $this->email;
     }
+
+
+
 
     /**
      * @return mixed|null
@@ -249,6 +255,10 @@ class Artist
     public function getCircleDuration() : int
     {
         return $this->circle_duration;
+    }
+    public function getCircleCostMaximum():int
+    {
+        return $this->circle_cost_maximum;
     }
 
 
