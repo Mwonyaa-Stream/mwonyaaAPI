@@ -98,7 +98,7 @@ class Artist
         return (int)$this->verified === 1;
     }
 
-    public function getDetermineUserPermission($userID)
+    public function getDetermineUserPermission($userID, $artistID)
     {
 
         $response = false;
@@ -106,9 +106,8 @@ class Artist
         try {
             // Query to find the most recent subscription for the given user
             $stmt = $this->con->prepare("SELECT plan_end_datetime FROM pesapal_transactions WHERE user_id = ? AND subscription_type_id = ? ORDER BY plan_end_datetime DESC LIMIT 1");
-            $stmt->bind_param("ss", $userID, $this->id);
+            $stmt->bind_param("ss", $userID, $artistID);
             $stmt->execute();
-            $planEndDatetime = "now";
             $stmt->bind_result($planEndDatetime);
             $stmt->fetch();
             $stmt->close();
