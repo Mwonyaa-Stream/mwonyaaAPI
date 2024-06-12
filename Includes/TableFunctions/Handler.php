@@ -4086,7 +4086,8 @@ class Handler
 
     public function Versioning()
     {
-        $user_subscription_sql = "SELECT `user_id` AS userId, `subscription_type` AS subscription_type, `amount` AS planCost, `plan_duration` AS durationInDays, UNIX_TIMESTAMP(`payment_created_date`) * 1000 AS date FROM `pesapal_transactions` WHERE user_id = 'mwUWTsKbYeIVPV20BN8or955NA1J43' LIMIT 1";
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'general_user';
+        $user_subscription_sql = "SELECT `user_id` AS userId, `subscription_type` AS subscription_type, `amount` AS planCost, `plan_duration` AS durationInDays, UNIX_TIMESTAMP(`payment_created_date`) * 1000 AS date FROM `pesapal_transactions` WHERE user_id = '$userID' ORDER BY `payment_created_date` DESC LIMIT 1";
         $subscription_details = array();
         $user_subscription_sql_result = mysqli_query($this->conn, $user_subscription_sql);
         while ($row = mysqli_fetch_array($user_subscription_sql_result)) {
@@ -4098,8 +4099,6 @@ class Handler
             $temp['date'] = $row['date'];
             array_push($subscription_details, $temp);
         }
-
-
 
         $itemRecords = array();
         $itemRecords["version"] = "14"; // build number should match
