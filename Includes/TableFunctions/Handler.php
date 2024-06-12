@@ -93,7 +93,7 @@ class Handler
             $temp['coverimage'] = $artist_instance->getArtistCoverPath();
             $temp['monthly'] = $artist_instance->getTotalPlays();
             $temp['verified'] = $artist_instance->getVerified();
-            $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID,$temp['id']);
+            $temp['user_access_exclusive'] = $artist_instance->getDetermineUserPermission($user_ID, $temp['id']);
             $temp['circle_cost'] = $artist_instance->getCircleCost();
             $temp['circle_duration'] = $artist_instance->getCircleDuration();
             $temp['circle_cost_maximum'] = $artist_instance->getCircleCostMaximum();
@@ -1943,7 +1943,7 @@ class Handler
         $payment_created_date = isset($data->payment_created_date) ? trim($data->payment_created_date) : null;
         $plan_duration = isset($data->plan_duration) ? trim($data->plan_duration) : null;
         $plan_description = isset($data->plan_description) ? trim($data->plan_description) : null;
-        $created_date =  date('Y-m-d H:i:s');
+        $created_date = date('Y-m-d H:i:s');
 
         $subscription_plan = $this->generateDateTimes($plan_duration);
         $plan_start_datetime = $subscription_plan['start_datetime'];
@@ -2042,7 +2042,6 @@ class Handler
 
         return $response;
     }
-
 
 
     public function CommentThreadSummary(): array
@@ -4085,12 +4084,27 @@ class Handler
         return $itemRecords;
     }
 
-    public
-    function Versioning()
+    public function Versioning()
     {
+        $user_subscription_sql = "SELECT `user_id` AS userId, `subscription_type` AS subscription_type, `amount` AS planCost, `plan_duration` AS durationInDays, UNIX_TIMESTAMP(`payment_created_date`) * 1000 AS date FROM `pesapal_transactions` WHERE user_id = 'mwUWTsKbYeIVPV20BN8or955NA1J43' LIMIT 1";
+        $subscription_details = array();
+        $user_subscription_sql_result = mysqli_query($this->conn, $user_subscription_sql);
+        while ($row = mysqli_fetch_array($user_subscription_sql_result)) {
+            $temp = array();
+            $temp['id'] = $row['userId'];
+            $temp['subscription_type'] = $row['subscription_type'];
+            $temp['planCost'] = $row['planCost'];
+            $temp['durationInDays'] = $row['durationInDays'];
+            $temp['date'] = $row['date'];
+            array_push($subscription_details, $temp);
+        }
+
+
+
         $itemRecords = array();
         $itemRecords["version"] = "14"; // build number should match
         $itemRecords["update"] = true; // update dialog dismissable
+        $itemRecords["subcription"] = $subscription_details;
         $itemRecords["message"] = "We have new updates for you";
         return $itemRecords;
     }
