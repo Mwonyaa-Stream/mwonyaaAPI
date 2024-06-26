@@ -525,9 +525,14 @@ class Handler
                 //            $text_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/newmusic_designtwo.png";
                 //            array_push($menuCategory, $text_temp);
 
+
+
+
                 // weekly Now
-                $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-                array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+//                $weeklyTracks_data = new WeeklyTopTracks($this->conn);
+//                array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+
+
 
                 // end weekly
 
