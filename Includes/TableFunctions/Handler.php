@@ -723,7 +723,7 @@ class Handler
                 mysqli_stmt_close($stmt);
 
                 $feat_Cat_temps = array();
-                $feat_Cat_temps['heading'] = "Akeine";
+                $feat_Cat_temps['heading'] = "Joshua Baraka";
                 $feat_Cat_temps['subheading'] = "More like";
                 $feat_Cat_temps['type'] = "artist_more_like";
                 $feat_Cat_temps['featuredArtists'] = $featuredCategory;
