@@ -473,6 +473,7 @@ class Handler
                 ///
                 ///
 
+
                 //get genres
                 $featured_genres = array();
                 $top_genre_stmt = "SELECT DISTINCT(genre),g.name,s.tag FROM songs s INNER JOIN genres g on s.genre = g.id WHERE s.available = 1 AND s.tag IN ('music') ORDER BY s.plays DESC LIMIT 8";
@@ -697,6 +698,39 @@ class Handler
                 array_push($menuCategory, $feat_playlist_temps);
                 ///end featuredPlaylist
 
+
+                //get MoreLike Artist
+                $featuredCategory = array();
+                $musicartistQuery = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name, $verified);
+
+                // Fetch the results
+                while (mysqli_stmt_fetch($stmt)) {
+                    $temp = array();
+                    $temp['id'] = $id;
+                    $temp['profilephoto'] = $profilephoto;
+                    $temp['name'] = $name;
+                    $temp['verified'] = (int)$verified === 1;
+                    array_push($featuredCategory, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_Cat_temps = array();
+                $feat_Cat_temps['heading'] = "Akeine";
+                $feat_Cat_temps['subheading'] = "More like";
+                $feat_Cat_temps['type'] = "artist_more_like";
+                $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+                array_push($menuCategory, $feat_Cat_temps);
+                ///end featuredArtist
+                ///
+                ///
 
                 //get featured Album
                 $featured_Albums = array();
