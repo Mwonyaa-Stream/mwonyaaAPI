@@ -2029,6 +2029,67 @@ class Handler
         return $response;
     }
 
+
+
+    public function capturePaymentRequest($data): array
+    {
+        $orderTrackingId = isset($data->orderTrackingId) ? trim($data->orderTrackingId) : null;
+        $userId = isset($data->userId) ? trim($data->userId) : null;
+        $amount = isset($data->amount) ? trim($data->amount) : null;
+        $currency = isset($data->currency) ? trim($data->currency) : null;
+        $subscriptionType = isset($data->subscriptionType) ? trim($data->subscriptionType) : null;
+
+        $subscriptionTypeId = isset($data->subscriptionTypeId) ? trim($data->subscriptionTypeId) : null;
+        $paymentCreatedDate = isset($data->paymentCreatedDate) ? trim($data->paymentCreatedDate) : null;
+        $planDuration = isset($data->planDuration) ? trim($data->planDuration) : null;
+        $planDescription = isset($data->planDescription) ? trim($data->planDescription) : null;
+        $created_date = date('Y-m-d H:i:s');
+
+        $subscription_plan = $this->generateDateTimes($planDuration);
+        $plan_start_datetime = $subscription_plan['start_datetime'];
+        $plan_end_datetime = $subscription_plan['end_datetime'];
+
+        $response = [
+            'error' => false,
+            'message' => 'Comment Default'
+        ];
+
+
+        try {
+            // Check if the order ID already exists
+            $checkStmt = $this->conn->prepare("SELECT COUNT(*) FROM pesapal_transactions WHERE order_tracking_id = ?");
+            $checkStmt->bind_param("s", $orderTrackingId);
+            $checkStmt->execute();
+            $count = 0;
+            $checkStmt->bind_result($count);
+            $checkStmt->fetch();
+            $checkStmt->close();
+
+            if ($count > 0) {
+                $response['error'] = true;
+                $response['message'] = 'Duplicate order ID, entry already exists.';
+                return $response;
+            }
+
+            // Insert the order if it does not exist
+            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (order_tracking_id, user_id, amount, currency, subscription_type, subscription_type_id, payment_created_date, plan_start_datetime, plan_end_datetime, plan_duration, plan_description, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssisssssssss", $orderTrackingId, $userId, $amount, $currency, $subscriptionType, $subscriptionTypeId,  $paymentCreatedDate, $plan_start_datetime, $plan_end_datetime, $planDuration, $planDescription, $created_date);
+
+            if ($stmt->execute()) {
+                $response['message'] = "Order posted successfully.";
+            } else {
+                $response['error'] = true;
+                $response['message'] = 'Failed, Try again';
+            }
+
+            $stmt->close();
+        } catch (Exception $e) {
+            $response['error'] = true;
+            $response['message'] = $e->getMessage();
+        }
+        return $response;
+    }
+
     /**
      * @throws Exception
      */
