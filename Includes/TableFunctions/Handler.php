@@ -2033,7 +2033,7 @@ class Handler
 
     public function capturePaymentRequest($data): array
     {
-        $orderTrackingId = isset($data->orderTrackingId) ? trim($data->orderTrackingId) : null;
+        $merchant_reference = isset($data->merchant_reference) ? trim($data->merchant_reference) : null;
         $userId = isset($data->userId) ? trim($data->userId) : null;
         $amount = isset($data->amount) ? trim($data->amount) : null;
         $currency = isset($data->currency) ? trim($data->currency) : null;
@@ -2057,8 +2057,8 @@ class Handler
 
         try {
             // Check if the order ID already exists
-            $checkStmt = $this->conn->prepare("SELECT COUNT(*) FROM pesapal_transactions WHERE order_tracking_id = ?");
-            $checkStmt->bind_param("s", $orderTrackingId);
+            $checkStmt = $this->conn->prepare("SELECT COUNT(*) FROM pesapal_transactions WHERE merchant_reference = ?");
+            $checkStmt->bind_param("s", $merchant_reference);
             $checkStmt->execute();
             $count = 0;
             $checkStmt->bind_result($count);
@@ -2072,8 +2072,8 @@ class Handler
             }
 
             // Insert the order if it does not exist
-            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (order_tracking_id, user_id, amount, currency, subscription_type, subscription_type_id, payment_created_date, plan_start_datetime, plan_end_datetime, plan_duration, plan_description, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssisssssssss", $orderTrackingId, $userId, $amount, $currency, $subscriptionType, $subscriptionTypeId,  $paymentCreatedDate, $plan_start_datetime, $plan_end_datetime, $planDuration, $planDescription, $created_date);
+            $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (merchant_reference, user_id, amount, currency, subscription_type, subscription_type_id, payment_created_date, plan_start_datetime, plan_end_datetime, plan_duration, plan_description, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssisssssssss", $merchant_reference, $userId, $amount, $currency, $subscriptionType, $subscriptionTypeId,  $paymentCreatedDate, $plan_start_datetime, $plan_end_datetime, $planDuration, $planDescription, $created_date);
 
             if ($stmt->execute()) {
                 $response['message'] = "Order posted successfully.";
