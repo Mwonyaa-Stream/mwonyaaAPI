@@ -526,12 +526,9 @@ class Handler
                 //            array_push($menuCategory, $text_temp);
 
 
-
-
                 // weekly Now
 //                $weeklyTracks_data = new WeeklyTopTracks($this->conn);
 //                array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
-
 
 
                 // end weekly
@@ -2030,7 +2027,6 @@ class Handler
     }
 
 
-
     public function capturePaymentRequest($data): array
     {
         $merchant_reference = isset($data->merchant_reference) ? trim($data->merchant_reference) : null;
@@ -2073,7 +2069,7 @@ class Handler
 
             // Insert the order if it does not exist
             $stmt = $this->conn->prepare("INSERT INTO pesapal_transactions (merchant_reference, user_id, amount, currency, subscription_type, subscription_type_id, payment_created_date, plan_start_datetime, plan_end_datetime, plan_duration, plan_description, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssisssssssss", $merchant_reference, $userId, $amount, $currency, $subscriptionType, $subscriptionTypeId,  $paymentCreatedDate, $plan_start_datetime, $plan_end_datetime, $planDuration, $planDescription, $created_date);
+            $stmt->bind_param("ssisssssssss", $merchant_reference, $userId, $amount, $currency, $subscriptionType, $subscriptionTypeId, $paymentCreatedDate, $plan_start_datetime, $plan_end_datetime, $planDuration, $planDescription, $created_date);
 
             if ($stmt->execute()) {
                 $response['message'] = "Order posted successfully.";
@@ -3434,6 +3430,56 @@ class Handler
         return "mw" . uniqid() . $username . $timestamp;
     }
 
+    function getUserDetails(): array
+    {
+        // Get userID from GET request, sanitize it, and handle missing userID
+        $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET['userID'])) : null;
+        $response = [
+            'error' => false,
+            'message' => 'default',
+            'userDetails' => []
+        ];
+
+        if (is_null($userID)) {
+            $response['error'] = true;
+            $response['message'] = 'User ID is missing.';
+            return $response;
+        }
+
+        // SQL query to fetch user details
+        $query = "SELECT `id`, `username`, `firstName`, `lastName`, `email`, `profilePic`, `signUpDate`, `verified`, `mwRole` FROM `users` WHERE `id` = ?";
+
+        // Prepare and execute the statement
+        if ($stmt = mysqli_prepare($this->conn, $query)) {
+            mysqli_stmt_bind_param($stmt, "s", $userID);
+            mysqli_stmt_execute($stmt);
+
+            $user_details_stmt_result = mysqli_stmt_get_result($stmt);
+
+            if ($user_details_stmt_result && mysqli_num_rows($user_details_stmt_result) > 0) {
+                // Fetch user data if found
+                while ($row = mysqli_fetch_array($user_details_stmt_result, MYSQLI_ASSOC)) {
+                    $response['userDetails'][] = $row;
+                }
+                $response['message'] = 'User details retrieved successfully.';
+            } else {
+                // User does not exist
+                $response['error'] = true;
+                $response['message'] = 'User not found.';
+            }
+
+            // Free result and close statement
+            mysqli_free_result($user_details_stmt_result);
+            mysqli_stmt_close($stmt);
+        } else {
+            // Error preparing the statement
+            $response['error'] = true;
+            $response['message'] = 'Database query error: ' . mysqli_error($this->conn);
+        }
+
+        return $response;
+    }
+
 
     function addOrUpdateToken($data): array
     {
@@ -4137,7 +4183,7 @@ class Handler
     }
 
 
-    // generate daily trend
+// generate daily trend
     function dailyTrend(): array
     {
 
@@ -4184,7 +4230,8 @@ class Handler
         return $itemRecords;
     }
 
-    public function Versioning()
+    public
+    function Versioning()
     {
         $userID = isset($_GET['userID']) ? htmlspecialchars(strip_tags($_GET["userID"])) : 'general_user';
         $current_now = date('Y-m-d H:i:s');
