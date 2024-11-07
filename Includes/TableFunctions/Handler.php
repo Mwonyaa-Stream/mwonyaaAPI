@@ -3430,6 +3430,53 @@ class Handler
         return "mw" . uniqid() . $username . $timestamp;
     }
 
+    function getArtistCircleInfo(): array
+    {
+        $artistID = isset($_GET['artistID']) ? htmlspecialchars(strip_tags($_GET['artistID'])) : null;
+        $response = [
+            'error' => false,
+            'message' => 'default',
+            'artistDetails' => []
+        ];
+
+        if (is_null($artistID)) {
+            $response['error'] = true;
+            $response['message'] = 'artistID is missing.';
+            return $response;
+        }
+
+        $query = "SELECT a.`id`, a.`name`,a.`profilephoto`, g.name as genre, a.`verified`, a.`circle_cost`, a.`circle_duration` FROM `artists` a join genres g on a.genre=g.id WHERE a.`id` = ?";
+
+        // Prepare and execute the statement
+        if ($stmt = mysqli_prepare($this->conn, $query)) {
+            mysqli_stmt_bind_param($stmt, "s", $artistID);
+            mysqli_stmt_execute($stmt);
+
+            $artist_details_stmt_result = mysqli_stmt_get_result($stmt);
+
+            if ($artist_details_stmt_result && mysqli_num_rows($artist_details_stmt_result) > 0) {
+                while ($row = mysqli_fetch_array($artist_details_stmt_result, MYSQLI_ASSOC)) {
+                    $response['artistDetails'][] = $row;
+                }
+                $response['message'] = 'Artist details retrieved successfully.';
+            } else {
+                // User does not exist
+                $response['error'] = true;
+                $response['message'] = 'Artist not found.';
+            }
+
+            // Free result and close statement
+            mysqli_free_result($artist_details_stmt_result);
+            mysqli_stmt_close($stmt);
+        } else {
+            // Error preparing the statement
+            $response['error'] = true;
+            $response['message'] = 'Database query error: ' . mysqli_error($this->conn);
+        }
+
+        return $response;
+    }
+
     function getUserDetails(): array
     {
         // Get userID from GET request, sanitize it, and handle missing userID
