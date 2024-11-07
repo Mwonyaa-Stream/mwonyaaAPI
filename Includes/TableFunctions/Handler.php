@@ -3436,7 +3436,7 @@ class Handler
         $response = [
             'error' => false,
             'message' => 'default',
-            'artistDetails' => []
+            'artistDetails' => null
         ];
 
         if (is_null($artistID)) {
@@ -3455,9 +3455,7 @@ class Handler
             $artist_details_stmt_result = mysqli_stmt_get_result($stmt);
 
             if ($artist_details_stmt_result && mysqli_num_rows($artist_details_stmt_result) > 0) {
-                while ($row = mysqli_fetch_array($artist_details_stmt_result, MYSQLI_ASSOC)) {
-                    $response['artistDetails'][] = $row;
-                }
+                $response['artistDetails'][] = mysqli_fetch_array($artist_details_stmt_result, MYSQLI_ASSOC);
                 $response['message'] = 'Artist details retrieved successfully.';
             } else {
                 // User does not exist
