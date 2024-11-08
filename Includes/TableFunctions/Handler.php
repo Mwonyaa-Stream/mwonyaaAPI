@@ -1015,6 +1015,60 @@ class Handler
             ///
 
 
+            //get artists circles Artist
+            $featuredCategory = array();
+            $current_now = date('Y-m-d H:i:s');
+            $musicartistQuery = "SELECT 
+    pt.subscription_type_id, 
+    a.id AS artist_id, 
+    a.profilephoto, 
+    a.name
+FROM 
+    pesapal_transactions pt
+JOIN 
+    pesapal_payment_status pps 
+    ON pt.merchant_reference = pps.merchant_reference
+JOIN 
+    artists a 
+    ON a.id = pt.subscription_type_id
+WHERE 
+    pt.subscription_type = 'artist_circle' 
+    AND pt.user_id = '$libraryUserID' 
+    AND pps.status_code = 1 
+    AND pt.plan_start_datetime <= '$current_now' 
+    AND pt.plan_end_datetime >= '$current_now' 
+    AND a.available = 1 
+    AND a.status = 1
+ORDER BY 
+    pt.payment_created_date DESC, RAND()
+LIMIT 10;
+";
+            // Set up the prepared statement
+            $stmt = mysqli_prepare($this->conn, $musicartistQuery);
+            // Execute the query
+            mysqli_stmt_execute($stmt);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt, $id, $profilephoto, $name);
+
+            // Fetch the results
+            while (mysqli_stmt_fetch($stmt)) {
+                $temp = array();
+                $temp['id'] = $id;
+                $temp['profilephoto'] = $profilephoto;
+                $temp['name'] = $name;
+                array_push($featuredCategory, $temp);
+            }
+
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+
+            $feat_Cat_temps = array();
+            $feat_Cat_temps['heading'] = "Current Artist's Circles";
+            $feat_Cat_temps['featuredArtists'] = $featuredCategory;
+            array_push($menuCategory, $feat_Cat_temps);
+            ///end featuredArtist
+            ///
+
         }
 
 
