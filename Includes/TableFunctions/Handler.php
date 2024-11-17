@@ -1285,7 +1285,7 @@ class Handler
                     $temp['genreName'] = $album->getGenre()->getGenre();
                     $temp['tracks_count'] = $album->getNumberOfSongs();
                     $temp['exclusive'] = $album->getExclusive();
-                    $temp['user_allowed'] = $album->getExclusive();
+                    $temp['user_allowed'] = false;
                     $temp['artist_profile'] = $album->getArtist()->getProfilePath();
                     $temp['artworkPath'] = $album->getArtworkPath();
                     $temp['description'] = $album->getDescription();
