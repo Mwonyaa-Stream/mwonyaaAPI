@@ -1284,6 +1284,7 @@ class Handler
                     $temp['genreID'] = $album->getGenre()->getGenreid();
                     $temp['genreName'] = $album->getGenre()->getGenre();
                     $temp['tracks_count'] = $album->getNumberOfSongs();
+                    $temp['artist_profile'] = $album->getArtist()->getProfilePath();
                     $temp['artworkPath'] = $album->getArtworkPath();
                     $temp['description'] = $album->getDescription();
                     $temp['datecreated'] = $album->getReleaseDate();
@@ -1359,6 +1360,14 @@ class Handler
             $popular_temps['Type'] = "releases";
             $popular_temps['ArtistAlbum'] = $popular_release;
             array_push($itemRecords["Album"], $popular_temps);
+
+
+            //credits
+            $credits_temps['heading'] = "credits";
+            $credits_temps['Type'] = "credits";
+            $credits_temps['description'] = "All rights reserved";
+            array_push($itemRecords["Album"], $credits_temps);
+
         }
 
 
