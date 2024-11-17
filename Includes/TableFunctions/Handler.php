@@ -1300,7 +1300,7 @@ class Handler
 
         $this->albumID = htmlspecialchars(strip_tags($_GET["albumID"]));
         $this->pageNO = htmlspecialchars(strip_tags($_GET["page"]));
-        $user_ID = htmlspecialchars(strip_tags($_GET["user_ID"]));
+        $user_ID = htmlspecialchars(strip_tags($_GET["userID"]));
 
         if ($this->albumID) {
             $this->pageNO = floatval($this->pageNO);
