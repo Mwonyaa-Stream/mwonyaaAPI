@@ -109,6 +109,9 @@
             //            return $this->lyrics;
             $caption = new Caption($this->con, $this->id);
 
+            if(empty($caption->getCaptions())){
+                return $this->lyrics;
+            }
             return $caption->getCaptions();
         }
 
