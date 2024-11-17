@@ -1297,32 +1297,7 @@ class Handler
             }
 
 
-            // popular releases
-            $albumsIDs = $album->getSameArtistAlbums();
-            $popular_release = array();
-            foreach ($albumsIDs as $Id) {
-                $album = new Album($this->conn, $Id);
-                $temp = array();
-                $temp['id'] = $album->getId();
-                $temp['title'] = $album->getTitle();
-                $temp['artist'] = $album->getArtist()->getName();
-                $temp['genre'] = $album->getGenre()->getGenre();
-                $temp['artworkPath'] = $album->getArtworkPath();
-                $temp['tag'] = $album->getTag();
-                $temp['exclusive'] = $album->getExclusive();
-                $temp['description'] = $album->getDescription();
-                $temp['datecreated'] = $album->getReleaseDate();
-                $temp['totalsongplays'] = $album->getTotaltrackplays();
 
-
-                array_push($popular_release, $temp);
-            }
-
-            $popular_temps = array();
-            $popular_temps['heading'] = "By the same artist";
-            $popular_temps['Type'] = "releases";
-            $popular_temps['ArtistAlbum'] = $popular_release;
-            array_push($itemRecords["Album"], $popular_temps);
 
 
             // get products id from the same cat
@@ -1356,6 +1331,34 @@ class Handler
             $slider_temps = array();
             $slider_temps['Tracks'] = $allProducts;
             array_push($itemRecords['Album'], $slider_temps);
+
+
+            // popular releases
+            $albumsIDs = $album->getSameArtistAlbums();
+            $popular_release = array();
+            foreach ($albumsIDs as $Id) {
+                $album = new Album($this->conn, $Id);
+                $temp = array();
+                $temp['id'] = $album->getId();
+                $temp['title'] = $album->getTitle();
+                $temp['artist'] = $album->getArtist()->getName();
+                $temp['genre'] = $album->getGenre()->getGenre();
+                $temp['artworkPath'] = $album->getArtworkPath();
+                $temp['tag'] = $album->getTag();
+                $temp['exclusive'] = $album->getExclusive();
+                $temp['description'] = $album->getDescription();
+                $temp['datecreated'] = $album->getReleaseDate();
+                $temp['totalsongplays'] = $album->getTotaltrackplays();
+
+
+                array_push($popular_release, $temp);
+            }
+
+            $popular_temps = array();
+            $popular_temps['heading'] = "By the same artist";
+            $popular_temps['Type'] = "releases";
+            $popular_temps['ArtistAlbum'] = $popular_release;
+            array_push($itemRecords["Album"], $popular_temps);
         }
 
 
