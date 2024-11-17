@@ -234,7 +234,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
         public function getSameArtistAlbums()
         {
-            $query = mysqli_query($this->con, "SELECT id as id FROM albums WHERE available = 1 and artist='$this->artistId' and tag != 'ad' ORDER BY datecreated DESC LIMIT 20");
+            $query = mysqli_query($this->con, "SELECT id as id FROM albums WHERE available = 1 and id != '$this->id' and  artist='$this->artistId' and tag != 'ad' ORDER BY datecreated DESC LIMIT 20");
             $array = array();
 
             while ($row = mysqli_fetch_array($query)) {
