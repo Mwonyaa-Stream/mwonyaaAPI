@@ -594,6 +594,53 @@ class Handler
                 array_push($menuCategory, $feat_trend);
 
 
+                //get exclusive Album
+                $featured_Albums = array();
+
+                $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND exclusive = 1 ORDER BY RAND() LIMIT 10";
+
+                // Set up the prepared statement
+                $stmt = mysqli_prepare($this->conn, $featured_album_Query);
+
+                // Execute the query
+                mysqli_stmt_execute($stmt);
+
+                // Bind the result variables
+                mysqli_stmt_bind_result($stmt, $id, $title, $artworkPath, $tag);
+
+                $featured_album_ids = array();
+
+                while (mysqli_stmt_fetch($stmt)) {
+                    array_push($featured_album_ids, $id);
+                }
+
+                // Fetch the results
+                foreach ($featured_album_ids as $row) {
+                    $pod = new Album($this->conn, $row);
+                    $temp = array();
+                    $temp['id'] = $pod->getId();
+                    $temp['title'] = $pod->getTitle();
+                    $temp['description'] = $pod->getDescription();
+                    $temp['artworkPath'] = $pod->getArtworkPath();
+                    $temp['artist'] = $pod->getArtist()->getName();
+                    $temp['exclusive'] = $pod->getExclusive();
+                    $temp['artistImage'] = $pod->getArtist()->getProfilePath();
+                    $temp['genre'] = $pod->getGenre()->getGenre();
+                    $temp['tag'] = $pod->getTag();
+                    array_push($featured_Albums, $temp);
+                }
+
+                // Close the prepared statement
+                mysqli_stmt_close($stmt);
+
+                $feat_albums_temps = array();
+                $feat_albums_temps['heading'] = "Exclusive Release";
+                $feat_albums_temps['type'] = "albums";
+                $feat_albums_temps['featuredAlbums'] = $featured_Albums;
+                array_push($menuCategory, $feat_albums_temps);
+                ///end featuredAlbums
+
+
                 // Recommended
                 $recommendedSongs = array();
 
