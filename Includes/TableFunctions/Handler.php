@@ -2750,9 +2750,10 @@ class Handler
 
             $coverUrl = $playlist->getCoverurl();
             $defaultCoverUrl = 'https://assets.mwonya.com/images/createdplaylist/newplaylist.png';
+            $trackCount = $total_rows;
 
             // Generate a new cover only if the current one is null or the default
-            if ($coverUrl === null || $coverUrl === $defaultCoverUrl) {
+            if ($coverUrl === null || $coverUrl === $defaultCoverUrl || $trackCount < 5) {
                 $coverPath = $generator->generateCover($playlist->getId(), $playlist->getName());
             } else {
                 $coverPath = $coverUrl; // Use the existing cover URL
@@ -2767,7 +2768,7 @@ class Handler
                     $temp['cover'] = $coverPath;
                     $temp['description'] = $playlist->getDescription();
                     $temp['status'] = $playlist->getStatus();
-                    $temp['total'] = $total_rows;
+                    $temp['total'] = $trackCount;
                     array_push($itemRecords["Playlists"], $temp);
                 }
             }
