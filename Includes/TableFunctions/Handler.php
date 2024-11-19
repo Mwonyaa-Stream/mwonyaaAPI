@@ -2745,6 +2745,10 @@ class Handler
             $itemRecords["total_results"] = $total_rows;
             $playlist = new Playlist($this->conn, $playlistID);
 
+            $generator = new PlaylistCoverGenerator($this->conn);
+
+//            if($playlist->getCoverurl() = "https://assets.mwonya.com/images/createdplaylist/newplaylist.png")
+            $coverPath = $generator->generateCover($playlistID);
 
             if ($page == 1) {
 
@@ -2753,7 +2757,7 @@ class Handler
                     $temp['id'] = $playlist->getId();
                     $temp['name'] = $playlist->getName();
                     $temp['owner'] = $playlist->getOwner();
-                    $temp['cover'] = $playlist->getCoverurl();
+                    $temp['cover'] = $coverPath;
                     $temp['description'] = $playlist->getDescription();
                     $temp['status'] = $playlist->getStatus();
                     $temp['total'] = $total_rows;

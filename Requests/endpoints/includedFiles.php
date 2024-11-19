@@ -19,7 +19,7 @@ require "../../Includes/TableClasses/Constants.php";
 require "../../Includes/TableClasses/Account.php";
 require "../../Includes/TableClasses/TrackTotalPlay.php";
 require "../../Includes/TableClasses/WeeklyTopTracks.php";
-
+require  "../../Includes/TableClasses/PlaylistCoverGenerator.php";
 include_once '../../Includes/TableFunctions/Handler.php';
 include_once '../../Includes/TableFunctions/FilterGateway.php';
 
