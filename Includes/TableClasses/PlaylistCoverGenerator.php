@@ -14,8 +14,23 @@ class PlaylistCoverGenerator {
 
         // Ensure output path exists and is writable
         $this->outputPath = rtrim($outputPath, '/') . '/';
-        if (!file_exists($this->outputPath)) {
-            mkdir($this->outputPath, 0755, true);
+        // Detailed directory check and creation
+        try {
+            if (!file_exists($this->outputPath)) {
+                // Use recursive mkdir with proper permissions
+                if (!mkdir($this->outputPath, 0755, true)) {
+                    throw new Exception("Cannot create directory: " . $this->outputPath);
+                }
+            }
+
+            // Verify directory is writable
+            if (!is_writable($this->outputPath)) {
+                throw new Exception("Directory is not writable: " . $this->outputPath);
+            }
+        } catch (Exception $e) {
+            // Log the exact error
+            error_log("Directory Creation Error: " . $e->getMessage());
+            throw $e;
         }
 
         // Set base URL for accessing assets
