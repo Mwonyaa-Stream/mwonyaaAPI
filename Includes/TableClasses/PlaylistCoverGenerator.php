@@ -40,8 +40,11 @@ class PlaylistCoverGenerator {
     public function generateCover($playlistId, $playlistName = '') {
 
         // Generate a unique filename
-        $uniqueId = substr(md5(uniqid($playlistName . '_' . $playlistId, true)), 0, 10);
-        $filename = 'playlist_mwonya_' . $uniqueId . '_cover.jpg';
+//        $uniqueId = substr(md5(uniqid($playlistName . '_' . $playlistId, true)), 0, 10);
+//        $filename = 'playlist_mwonya_' . $uniqueId . '_cover.jpg';
+
+        // Generate a deterministic filename based on playlist ID and name
+        $filename = 'playlist_mwonya_' . md5($playlistName . '_' . $playlistId) . '_cover.jpg';
         $fullPath = $this->outputPath . $filename;
         $webPath = $this->assetBaseUrl . $filename;
 
