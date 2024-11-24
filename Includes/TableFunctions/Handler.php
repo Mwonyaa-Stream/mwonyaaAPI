@@ -3682,9 +3682,9 @@ class Handler
                 $stmt->fetch();
 
                 // Check if the new token is different from the existing token
-                if ($token !== $existingToken) {
+                if ($token != $existingToken) {
                     // Token is different, update it
-                    $stmt = $this->conn->prepare("UPDATE user_notification_tokens SET token = ? WHERE user_id = ?");
+                    $stmt = $this->conn->prepare("UPDATE user_notification_tokens SET token = ?, dateUpdated= NOW() WHERE user_id = ?");
                     $stmt->bind_param("ss", $token, $userId);
                     $operation = 'updated';
                 } else {
