@@ -3929,52 +3929,121 @@ class Handler
         }
     }
 
-    function UpdateTrackPlay(): array
+    public function UpdateTrackPlay(): array
     {
         $current_Time_InSeconds = time();
         $date_now = date('Y-m-d H:i:s', $current_Time_InSeconds);
 
-        $userID = htmlspecialchars(strip_tags($_GET["userID"]));
-        $trackID = htmlspecialchars(strip_tags($_GET["trackID"]));
-        $lastPlayed = htmlspecialchars(strip_tags($_GET["lastPlayed"]));
+        // Sanitize input parameters
+        $userID = htmlspecialchars(strip_tags($_GET["userID"] ?? ''));
+        $trackID = htmlspecialchars(strip_tags($_GET["trackID"] ?? ''));
+        $lastPlayed = htmlspecialchars(strip_tags($_GET["lastPlayed"] ?? ''));
+        $listened_duration = htmlspecialchars(strip_tags($_GET["listened_duration"] ?? ''));
 
-        $itemRecords = array();
-        $itemRecords['error'] = true;
-        $itemRecords['message'] = "";
-        $itemRecords['date'] = $date_now;
+        // Initialize response array
+        $itemRecords = [
+            'error' => true,
+            'message' => '',
+            'date' => $date_now,
+            'action' => ''
+        ];
 
+        // Validate required parameters
+        if (empty($userID) || empty($trackID) || empty($lastPlayed)) {
+            $itemRecords['message'] = "Invalid parameters provided";
+            return $itemRecords;
+        }
 
-        if (!empty($userID) && !empty($trackID) && !empty($lastPlayed)) {
+        try {
+            // Start transaction
             mysqli_begin_transaction($this->conn);
 
-            // Check if the user and track combination exists in the 'frequency' table
-            $query = "SELECT * FROM frequency WHERE userid = ? AND songid = ?";
+            // Check existing record and get lastPlayed date
+            $query = "SELECT lastPlayed FROM frequency WHERE userid = ? AND songid = ? ORDER BY lastPlayed DESC LIMIT 1";
             $stmt = mysqli_prepare($this->conn, $query);
             mysqli_stmt_bind_param($stmt, 'si', $userID, $trackID);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
+            $existing_record = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
 
-            if (mysqli_num_rows($result) > 0) {
-                // User and track combination exists, update the record
-                $updateQuery = "UPDATE frequency SET plays = plays + 1, lastPlayed = ? WHERE userid = ? AND songid = ?";
-                $stmt = mysqli_prepare($this->conn, $updateQuery);
-                mysqli_stmt_bind_param($stmt, 'ssi', $lastPlayed, $userID, $trackID);
-                mysqli_stmt_execute($stmt);
-                $itemRecords['message'] = "Track play updated successfully";
+            // Format the incoming lastPlayed date to compare dates only (not times)
+            $lastPlayed_date = date('Y-m-d', strtotime($lastPlayed));
+
+            if ($existing_record) {
+                $existing_date = date('Y-m-d', strtotime($existing_record['lastPlayed']));
+
+                if ($existing_date === $lastPlayed_date) {
+                    // Same day - update existing record
+                    $updateQuery = "UPDATE frequency 
+                    SET plays = plays + 1,
+                        listened_duration = COALESCE(listened_duration, 0) + ?,
+                        lastPlayed = ?,
+                        dateUpdated = ?
+                    WHERE userid = ? 
+                    AND songid = ? 
+                    AND DATE(lastPlayed) = DATE(?)";
+
+                    $stmt = mysqli_prepare($this->conn, $updateQuery);
+                    mysqli_stmt_bind_param($stmt, 'isssss',
+                        $listened_duration,
+                        $lastPlayed,
+                        $date_now,
+                        $userID,
+                        $trackID,
+                        $lastPlayed
+                    );
+                    mysqli_stmt_execute($stmt);
+
+                    $itemRecords['action'] = 'updated';
+                    $itemRecords['message'] = "Track play updated for existing day";
+                } else {
+                    // Different day - insert new record
+                    $insertQuery = "INSERT INTO frequency 
+                    (userid, songid, plays, lastPlayed, dateUpdated, listened_duration) 
+                    VALUES (?, ?, 1, ?, ?, ?)";
+
+                    $stmt = mysqli_prepare($this->conn, $insertQuery);
+                    mysqli_stmt_bind_param($stmt, 'sisss',
+                        $userID,
+                        $trackID,
+                        $lastPlayed,
+                        $date_now,
+                        $listened_duration
+                    );
+                    mysqli_stmt_execute($stmt);
+
+                    $itemRecords['action'] = 'inserted_new_day';
+                    $itemRecords['message'] = "New day track play recorded";
+                }
             } else {
-                // User and track combination doesn't exist, insert a new record
-                $insertQuery = "INSERT INTO frequency (userid, songid, plays, lastPlayed) VALUES (?, ?, 1, ?)";
+                // First time play - insert new record
+                $insertQuery = "INSERT INTO frequency 
+                (userid, songid, plays, lastPlayed, dateUpdated, listened_duration) 
+                VALUES (?, ?, 1, ?, ?, ?)";
+
                 $stmt = mysqli_prepare($this->conn, $insertQuery);
-                mysqli_stmt_bind_param($stmt, 'sis', $userID, $trackID, $lastPlayed);
+                mysqli_stmt_bind_param($stmt, 'sisss',
+                    $userID,
+                    $trackID,
+                    $lastPlayed,
+                    $date_now,
+                    $listened_duration
+                );
                 mysqli_stmt_execute($stmt);
-                $itemRecords['message'] = "Track play inserted successfully";
+
+                $itemRecords['action'] = 'inserted_first_play';
+                $itemRecords['message'] = "First track play recorded";
             }
 
+            mysqli_stmt_close($stmt);
             mysqli_commit($this->conn);
-
             $itemRecords['error'] = false;
-        } else {
-            $itemRecords['message'] = "Invalided parameters provided";
+
+        } catch (Exception $e) {
+            mysqli_rollback($this->conn);
+            $itemRecords['message'] = "Error updating track play: " . $e->getMessage();
+            $itemRecords['error'] = true;
         }
 
         return $itemRecords;
@@ -4205,20 +4274,67 @@ class Handler
                 $total_plays = htmlspecialchars(strip_tags($i_value->totalplays));
                 $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
                 $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
+                $listenedDuration = htmlspecialchars(strip_tags($i_value->listenedDuration));
+                $userLongitude = htmlspecialchars(strip_tags($i_value->userLongitude));
+                $userLatitude = htmlspecialchars(strip_tags($i_value->userLatitude));
 
+                // First check if the user-song combination exists
+                $check_sql = "SELECT lastPlayed FROM frequency WHERE userid = ? AND songid = ?";
+                $stmt_check = $this->conn->prepare($check_sql);
+                $stmt_check->bind_param("si", $user_id, $id);
+                $stmt_check->execute();
+                $result = $stmt_check->get_result();
 
-                //user favourites
-                $fav_sql = "SELECT * FROM frequency where  userid='$user_id' AND songid='$id'";
-                $sql = mysqli_query($this->conn, $fav_sql);
+                if ($result->num_rows > 0) {
+                    // Record exists, get the existing lastPlayed date
+                    $row = $result->fetch_assoc();
+                    $existing_lastPlayed = $row['lastPlayed'];
 
-
-                if (mysqli_num_rows($sql) > 0) {
-                    // echo "song and user Id Already Exists";
-                    $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency SET plays = plays + ?, dateUpdated = ? , lastPlayed = ? WHERE userid= ? AND songid= ?");
-                    $stmt_RecentPlays->bind_param("isssi", $total_plays, $update_date, $trackLastPlayed, $user_id, $id);
+                    if ($existing_lastPlayed === $trackLastPlayed) {
+                        // Same day - update existing record
+                        $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency 
+                    SET plays = plays + ? listened_duration = ?, user_longitude = ?, user_latitude = ?, 
+                        dateUpdated = ? 
+                    WHERE userid = ? 
+                    AND songid = ?");
+                        $stmt_RecentPlays->bind_param("isssssi",
+                            $total_plays,
+                            $listenedDuration,
+                            $userLongitude,
+                            $userLatitude,
+                            $update_date,
+                            $user_id,
+                            $id
+                        );
+                    } else {
+                        // Different day - insert new record
+                        $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency
+                    (songid, userid, plays, lastPlayed,user_longitude, user_latitude,listened_duration) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        $stmt_RecentPlays->bind_param("isissss",
+                            $id,
+                            $user_id,
+                            $total_plays,
+                            $trackLastPlayed,
+                            $userLongitude,
+                            $userLatitude,
+                            $listenedDuration
+                        );
+                    }
                 } else {
-                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency(songid,userid,plays,lastPlayed) VALUES (?,?,?,?)");
-                    $stmt_RecentPlays->bind_param("isis", $id, $user_id, $total_plays, $trackLastPlayed);
+                    // No existing record - insert new one
+                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency
+                (songid, userid, plays, lastPlayed,user_longitude, user_latitude,listened_duration) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $stmt_RecentPlays->bind_param("isissss",
+                        $id,
+                        $user_id,
+                        $total_plays,
+                        $trackLastPlayed,
+                        $userLongitude,
+                        $userLatitude,
+                        $listenedDuration
+                    );
                 }
 
                 if ($stmt_RecentPlays->execute()) {
@@ -4227,6 +4343,9 @@ class Handler
                 } else {
                     $this->exe_status = "failure";
                 }
+
+                $stmt_check->close();
+                $stmt_RecentPlays->close();
             }
         }
 
