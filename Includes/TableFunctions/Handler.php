@@ -4547,7 +4547,7 @@ class Handler
         }
 
         $itemRecords = array();
-        $itemRecords["version"] = "14"; // build number should match
+        $itemRecords["version"] = "18"; // build number should match
         $itemRecords["update"] = true; // update dialog dismissable
         $itemRecords["subcription"] = $subscription_details;
         $itemRecords["message"] = "We have new updates for you";
