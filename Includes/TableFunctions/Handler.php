@@ -4264,54 +4264,66 @@ class Handler
 
 
         if ($this->liteRecentTrackList != null) {
-            foreach ($this->liteRecentTrackList as $i => $i_value) {
-                $artist = htmlspecialchars(strip_tags($i_value->artist));
-                $artistID = htmlspecialchars(strip_tags($i_value->artistID));
-                $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
-                $id = htmlspecialchars(strip_tags($i_value->id));
-                $path = htmlspecialchars(strip_tags($i_value->path));
-                $title = htmlspecialchars(strip_tags($i_value->title));
-                $total_plays = htmlspecialchars(strip_tags($i_value->totalplays));
-                $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
-                $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
-                $listenedDuration = htmlspecialchars(strip_tags($i_value->listenedDuration));
-                $userLongitude = htmlspecialchars(strip_tags($i_value->userLongitude));
-                $userLatitude = htmlspecialchars(strip_tags($i_value->userLatitude));
+            try {
+                // Start transaction
+                $this->conn->begin_transaction();
 
-                // First check if the user-song combination exists
-                $check_sql = "SELECT lastPlayed FROM frequency WHERE userid = ? AND songid = ?";
-                $stmt_check = $this->conn->prepare($check_sql);
-                $stmt_check->bind_param("si", $user_id, $id);
-                $stmt_check->execute();
-                $result = $stmt_check->get_result();
+                foreach ($this->liteRecentTrackList as $i => $i_value) {
+                    $artist = htmlspecialchars(strip_tags($i_value->artist));
+                    $artistID = htmlspecialchars(strip_tags($i_value->artistID));
+                    $artworkPath = htmlspecialchars(strip_tags($i_value->artworkPath));
+                    $id = htmlspecialchars(strip_tags($i_value->id));
+                    $path = htmlspecialchars(strip_tags($i_value->path));
+                    $title = htmlspecialchars(strip_tags($i_value->title));
+                    $total_plays = htmlspecialchars(strip_tags($i_value->totalplays));
+                    $trackLastPlayed = htmlspecialchars(strip_tags($i_value->trackLastPlayed));
+                    $trackUserPlays = htmlspecialchars(strip_tags($i_value->trackUserPlays));
+                    $listenedDuration = htmlspecialchars(strip_tags($i_value->listenedDuration));
+                    $userLongitude = htmlspecialchars(strip_tags($i_value->userLongitude));
+                    $userLatitude = htmlspecialchars(strip_tags($i_value->userLatitude));
 
-                if ($result->num_rows > 0) {
-                    // Record exists, get the existing lastPlayed date
-                    $row = $result->fetch_assoc();
-                    $existing_lastPlayed = $row['lastPlayed'];
+                    // First check if we have a record for the same day
+                    $check_sql = "SELECT id, lastPlayed FROM frequency 
+                         WHERE userid = ? 
+                         AND songid = ? 
+                         AND DATE(lastPlayed) = DATE(?)
+                         LIMIT 1";
 
-                    if ($existing_lastPlayed === $trackLastPlayed) {
+                    $stmt_check = $this->conn->prepare($check_sql);
+                    $stmt_check->bind_param("sis", $user_id, $id, $trackLastPlayed);
+                    $stmt_check->execute();
+                    $result = $stmt_check->get_result();
+
+                    if ($result->num_rows > 0) {
                         // Same day - update existing record
-                        $stmt_RecentPlays = $this->conn->prepare("UPDATE frequency 
-                    SET plays = plays + ? listened_duration = ?, user_longitude = ?, user_latitude = ?, 
-                        dateUpdated = ? 
+                        $update_sql = "UPDATE frequency 
+                    SET plays = ?,
+                        listened_duration = COALESCE(listened_duration, 0) + ?,
+                        user_longitude = ?,
+                        user_latitude = ?,
+                        dateUpdated = NOW()
                     WHERE userid = ? 
-                    AND songid = ?");
-                        $stmt_RecentPlays->bind_param("isssssi",
+                    AND songid = ?
+                    AND DATE(lastPlayed) = DATE(?)";
+
+                        $stmt = $this->conn->prepare($update_sql);
+                        $stmt->bind_param("issssss",
                             $total_plays,
                             $listenedDuration,
                             $userLongitude,
                             $userLatitude,
-                            $update_date,
                             $user_id,
-                            $id
+                            $id,
+                            $trackLastPlayed
                         );
                     } else {
-                        // Different day - insert new record
-                        $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency
-                    (songid, userid, plays, lastPlayed,user_longitude, user_latitude,listened_duration) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)");
-                        $stmt_RecentPlays->bind_param("isissss",
+                        // Different day or no record - insert new record
+                        $insert_sql = "INSERT INTO frequency 
+                    (songid, userid, plays, lastPlayed, user_longitude, user_latitude, listened_duration, dateUpdated) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+                        $stmt = $this->conn->prepare($insert_sql);
+                        $stmt->bind_param("isissss",
                             $id,
                             $user_id,
                             $total_plays,
@@ -4321,31 +4333,25 @@ class Handler
                             $listenedDuration
                         );
                     }
-                } else {
-                    // No existing record - insert new one
-                    $stmt_RecentPlays = $this->conn->prepare("INSERT INTO frequency
-                (songid, userid, plays, lastPlayed,user_longitude, user_latitude,listened_duration) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt_RecentPlays->bind_param("isissss",
-                        $id,
-                        $user_id,
-                        $total_plays,
-                        $trackLastPlayed,
-                        $userLongitude,
-                        $userLatitude,
-                        $listenedDuration
-                    );
-                }
 
-                if ($stmt_RecentPlays->execute()) {
-                    $this->exe_status = "success";
+                    if (!$stmt->execute()) {
+                        throw new Exception("Failed to update track: " . $stmt->error);
+                    }
+
                     array_push($updateIDs, $id);
-                } else {
-                    $this->exe_status = "failure";
+                    $stmt_check->close();
+                    $stmt->close();
                 }
 
-                $stmt_check->close();
-                $stmt_RecentPlays->close();
+                // Commit transaction
+                $this->conn->commit();
+                $this->exe_status = "success";
+
+            } catch (Exception $e) {
+                // Rollback on error
+                $this->conn->rollback();
+                $this->exe_status = "failure";
+                error_log("Track update failed: " . $e->getMessage());
             }
         }
 
@@ -4547,7 +4553,7 @@ class Handler
         }
 
         $itemRecords = array();
-        $itemRecords["version"] = "14"; // build number should match
+        $itemRecords["version"] = "18"; // build number should match
         $itemRecords["update"] = true; // update dialog dismissable
         $itemRecords["subcription"] = $subscription_details;
         $itemRecords["message"] = "We have new updates for you";
