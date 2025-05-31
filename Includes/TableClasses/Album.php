@@ -89,8 +89,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }
 
         public function getArtworkPath(){
-
-            return $this->artworkPath;
+            return $this->getUploadData($this->artworkPath)->getUploadfile_path() ?: "assets/images/default_album_artwork.png";  
         }
 
         public function getReleaseDate(): string
@@ -109,6 +108,10 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             }
         }
 
+
+        public function getUploadData($uploadID){
+            return  new Uploads($this->con, $uploadID);
+        }
 
 
         public function getGenre(){

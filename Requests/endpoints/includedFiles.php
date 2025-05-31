@@ -1,5 +1,6 @@
 <?php
 require '../../Includes/config/Database.php';
+require "../../Includes/TableClasses/Uploads.php";
 require "../../Includes/TableClasses/User.php";
 require "../../Includes/TableClasses/Artist.php";
 require "../../Includes/TableClasses/Album.php";
