@@ -3066,9 +3066,9 @@ private function formatSearchResult(array $row): ?array
         $menuCategory = array();
         $itemRecords = array();
 
-        $query_podcast_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='podcast' ORDER BY RAND() LIMIT 8";
-        $query_dj_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='dj' ORDER BY RAND()  LIMIT 8";
-        $query_live_artists = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='live' ORDER BY RAND() LIMIT 8";
+        $query_podcast_artists = "SELECT id, profile_image_id as profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='podcast' ORDER BY RAND() LIMIT 8";
+        $query_dj_artists = "SELECT id, profile_image_id as profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='dj' ORDER BY RAND()  LIMIT 8";
+        $query_live_artists = "SELECT id, profile_image_id as profilephoto, name,verified FROM artists WHERE available = 1 AND  tag='live' ORDER BY RAND() LIMIT 8";
 
         $query_podcast_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'podcast' ORDER BY RAND() LIMIT 8";
         $query_dj_albums = "SELECT id FROM albums WHERE available = 1 AND tag = 'dj' ORDER BY RAND() LIMIT 8";
@@ -3122,7 +3122,12 @@ private function formatSearchResult(array $row): ?array
         while ($row = mysqli_fetch_array($feat_cat_id_result)) {
             $temp = array();
             $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
+            if($row['profilephoto'] == null || $row['profilephoto'] == '') {
+                $temp['profilephoto'] = 'https://assets.mwonya.com/all_images/default_artist.png';
+            } else {
+                $profile_path = new Uploads($this->conn, $row['profilephoto']);
+                $temp['profilephoto'] = $profile_path->getUploadfile_path();
+            }
             $temp['name'] = $row['name'];
             $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
@@ -3173,7 +3178,12 @@ private function formatSearchResult(array $row): ?array
         while ($row = mysqli_fetch_array($feat_cat_id_result)) {
             $temp = array();
             $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
+            if($row['profilephoto'] == null || $row['profilephoto'] == '') {
+                $temp['profilephoto'] = 'https://assets.mwonya.com/all_images/default_artist.png';
+            } else {
+                $profile_path = new Uploads($this->conn, $row['profilephoto']);
+                $temp['profilephoto'] = $profile_path->getUploadfile_path();
+            }
             $temp['name'] = $row['name'];
             $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
@@ -3224,7 +3234,12 @@ private function formatSearchResult(array $row): ?array
         while ($row = mysqli_fetch_array($feat_cat_id_result)) {
             $temp = array();
             $temp['id'] = $row['id'];
-            $temp['profilephoto'] = $row['profilephoto'];
+            if($row['profilephoto'] == null || $row['profilephoto'] == '') {
+                $temp['profilephoto'] = 'https://assets.mwonya.com/all_images/default_artist.png';
+            } else {
+                $profile_path = new Uploads($this->conn, $row['profilephoto']);
+                $temp['profilephoto'] = $profile_path->getUploadfile_path();
+            }
             $temp['name'] = $row['name'];
             $temp['verified'] = (int)$row['verified'] === 1;
             array_push($featuredArtist, $temp);
