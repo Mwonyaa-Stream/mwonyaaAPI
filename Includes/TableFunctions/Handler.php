@@ -2814,11 +2814,11 @@ private function formatSearchResult(array $row): ?array
             $itemRecords["total_results"] = $total_rows;
             $playlist = new Playlist($this->conn, $playlistID);
 
-            $generator = new PlaylistCoverGenerator($this->conn, '/var/www/mwonya_assets/assets/playlist_covers/', 'https://assets.mwonya.com/playlist_covers/');
+            $generator = new PlaylistCoverGenerator($this->conn, '/var/www/mwonya_assets/assets/all_images/', 'https://assets.mwonya.com/all_images/');
 
 
             $coverUrl = $playlist->getCoverurl();
-            $defaultCoverUrl = 'https://assets.mwonya.com/images/createdplaylist/newplaylist.png';
+            $defaultCoverUrl = 'https://assets.mwonya.com/all_images/newplaylist.png';
             $trackCount = $total_rows;
 
             // Generate a new cover only if the current one is null or the default

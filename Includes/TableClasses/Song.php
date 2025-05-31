@@ -9,6 +9,7 @@
         private $artistId;
         private $albumId;
         private $genre;
+        private $upload_id;
         private $duration;
         private $cover;
         private $path;
@@ -30,7 +31,7 @@
         public function __construct($con , $id) {
             $this->con = $con;
             $this->id = $id;
-            $song_query_sql = "SELECT  s.id, s.title, s.artist, s.album, s.genre, s.duration, s.path, s.releaseDate,s.dateAdded, s.tag, s.cover,s.featuring,s.description,s.comments, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
+            $song_query_sql = "SELECT s.id, s.title, s.artist, s.album, s.genre, s.upload_id, s.duration, s.path, s.releaseDate,s.dateAdded, s.tag, s.cover,s.featuring,s.description,s.comments, s.lyrics FROM songs s where s.available = 1 AND s.id = '$this->id'";
             $query = mysqli_query($this->con, $song_query_sql);
 
 
@@ -44,6 +45,7 @@
                 $this->path = null;
                 $this->plays = null;
                 $this->tag = null;
+                $this->upload_id = null;
                 $this->description = null;
                 $this->comments = null;
                 $this->cover = null;
@@ -65,6 +67,7 @@
                 $this->path = $this->mysqliData['path'];
                 $this->releaseDate = $this->mysqliData['releaseDate'];
                 $this->tag = $this->mysqliData['tag'];
+                $this->upload_id = $this->mysqliData['upload_id'];
                 $this->cover = $this->mysqliData['cover'];
                 $this->lyrics = $this->mysqliData['lyrics'];
                 $this->featuring = $this->mysqliData['featuring'];
@@ -193,7 +196,13 @@
         }
 
         public function getPath(){
-            return $this->path;
+            //if upload_id is not null, then return the upload path
+            if($this->upload_id != null){
+                $upload = new Uploads($this->con, $this->upload_id);
+                return $upload->getUploadfile_path();
+            } else {
+                return 'unavailable';
+            }
         }
         public function getMysqliData(){
             return  $this->mysqliData;

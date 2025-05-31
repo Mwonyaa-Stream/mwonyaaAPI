@@ -14,6 +14,8 @@ class Artist
     private $instagramurl;
     private $RecordLable;
     private $profilephoto;
+    private $profileimageid;
+    private $coverimageid;
     private $coverimage;
     private $bio;
     private $genre;
@@ -31,7 +33,7 @@ class Artist
         $this->con = $con;
         $this->id = $id;
 
-        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified`, `circle_cost`, `circle_cost_maximum`, `circle_duration` FROM artists WHERE available = 1 AND id='$this->id' ");
+        $query = mysqli_query($this->con, "SELECT `no`, `id`, `name`, `email`, `phone`, `profile_image_id`,`cover_image_id`, `facebookurl`, `twitterurl`, `instagramurl`, `RecordLable`, `password`, `profilephoto`, `coverimage`, `bio`, `genre`, `datecreated`, `lastupdate`, `tag`, `overalplays`, `status`, `verified`, `circle_cost`, `circle_cost_maximum`, `circle_duration` FROM artists WHERE available = 1 AND id='$this->id' ");
         $artistfetched = mysqli_fetch_array($query);
 
 
@@ -47,6 +49,8 @@ class Artist
             $this->RecordLable = null;
             $this->profilephoto = null;
             $this->coverimage = null;
+            $this->profileimageid = null;
+            $this->coverimageid = null;
             $this->bio = null;
             $this->genre = null;
             $this->tag = null;
@@ -69,6 +73,8 @@ class Artist
             $this->RecordLable = $artistfetched['RecordLable'];;
             $this->profilephoto = $artistfetched['profilephoto'];
             $this->coverimage = $artistfetched['coverimage'];
+            $this->profileimageid = $artistfetched['profile_image_id'];
+            $this->coverimageid = $artistfetched['cover_image_id'];
             $this->bio = $artistfetched['bio'];
             $this->genre = $artistfetched['genre'];
             $this->tag = $artistfetched['tag'];
@@ -204,12 +210,24 @@ class Artist
 
     public function getProfilePath()
     {
-        return $this->profilephoto;
+        //return $this->profilephoto;
+        if ($this->profileimageid) {
+            $upload = new Uploads($this->con, $this->profileimageid);
+            return $upload->getUploadfile_path() ?: "assets/images/default_profile_image.png";
+        } else {
+            return "assets/images/default_profile_image.png";
+        }
     }
 
     public function getArtistCoverPath()
     {
-        return $this->coverimage;
+        //return $this->coverimage;
+        if ($this->coverimageid) {
+            $upload = new Uploads($this->con, $this->coverimageid);
+            return $upload->getUploadfile_path() ?: "assets/images/default_cover_image.png";
+        } else {
+            return "assets/images/default_cover_image.png";
+        }
     }
 
     public function getArtistBio()

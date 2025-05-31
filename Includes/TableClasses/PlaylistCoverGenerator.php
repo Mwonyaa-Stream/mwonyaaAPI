@@ -4,7 +4,7 @@ class PlaylistCoverGenerator {
     private $outputPath;
     private $assetBaseUrl;
 
-    public function __construct($dbConnection, $outputPath = '/var/www/mwonya_assets/assets/playlist_covers/', $assetBaseUrl = 'https://assets.mwonya.com/playlist_covers/') {
+    public function __construct($dbConnection, $outputPath = '/var/www/mwonya_assets/assets/all_images/', $assetBaseUrl = 'https://assets.mwonya.com/all_images/') {
         // Check if GD library is installed
         if (!extension_loaded('gd')) {
             throw new Exception("GD Library is not installed. Please install php-gd extension.");
@@ -49,7 +49,7 @@ class PlaylistCoverGenerator {
         $webPath = $this->assetBaseUrl . $filename;
 
         // Get tracks for this playlist
-        $query = "SELECT DISTINCT a.artworkPath AS album_cover FROM  playlistsongs ps JOIN  songs s ON ps.songId = s.id JOIN  albums a ON s.album = a.id WHERE  ps.playlistId = ? limit 4";
+        $query = "SELECT DISTINCT u.file_path AS album_cover FROM playlistsongs ps JOIN songs s ON ps.songId = s.id JOIN albums a ON s.album = a.id join Uploads u on u.upload_id=a.artworkPath WHERE ps.playlistId = ? limit 4";
 
         $stmt = $this->dbConnection->prepare($query);
         $stmt->bind_param('s', $playlistId);
