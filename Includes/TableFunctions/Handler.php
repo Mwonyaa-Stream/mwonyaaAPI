@@ -426,24 +426,25 @@ class Handler
 //                 end get_Slider_banner
 
 
-//                $image_temp = array();
-//                $image_temp['ad_title'] = "Editors' Pick";
-//                $image_temp['type'] = "image_ad";
-//                $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
-//                $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
-//                //            $image_temp['ad_type'] = "collection";
-//                //            $image_temp['ad_type'] = "track";
-//                //            $image_temp['ad_type'] = "event";
-//                //            $image_temp['ad_type'] = "artist";
-//                $image_temp['ad_type'] = "playlist";
-//                //            $image_temp['ad_type'] = "link";
-//                $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/thatsound.png";
-//                array_push($menuCategory, $image_temp);
+               $image_temp = array();
+               $image_temp['ad_title'] = "Editors' Pick";
+               $image_temp['type'] = "image_ad";
+               $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
+               $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
+               //            $image_temp['ad_type'] = "collection";
+               //            $image_temp['ad_type'] = "track";
+               //            $image_temp['ad_type'] = "event";Hmzes412412!
+
+               //            $image_temp['ad_type'] = "artist";
+               $image_temp['ad_type'] = "playlist";
+               //            $image_temp['ad_type'] = "link";
+               $image_temp['ad_image'] = "https://assets.mwonya.com/all_images/thatsound.png";
+               array_push($menuCategory, $image_temp);
 
 
                 //get Featured Artist
                 $featuredCategory = array();
-                $musicartistQuery = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+                $musicartistQuery = "SELECT a.id, u.file_path as profilephoto, a.name, a.verified FROM artists a LEFT join Uploads u on a.profile_image_id = u.upload_id WHERE a.available = 1 AND a.tag='music' AND a.featured = 1 ORDER BY RAND () LIMIT 20";
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $musicartistQuery);
                 // Execute the query
@@ -527,8 +528,8 @@ class Handler
 
 
                 // weekly Now
-//                $weeklyTracks_data = new WeeklyTopTracks($this->conn);
-//                array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
+               $weeklyTracks_data = new WeeklyTopTracks($this->conn);
+               array_push($menuCategory, $weeklyTracks_data->getWeeklyData());
 
 
                 // end weekly
@@ -597,7 +598,7 @@ class Handler
                 //get exclusive Album
                 $featured_Albums = array();
 
-                $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND exclusive = 1 ORDER BY RAND() LIMIT 10";
+                $featured_album_Query = "SELECT a.id,a.title, u.file_path as artworkPath, a.tag FROM albums a LEFT join Uploads u on a.artworkPath=u.upload_id WHERE a.available = 1 AND a.tag = 'music' AND a.exclusive = 1 ORDER BY RAND() LIMIT 10";
 
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $featured_album_Query);
@@ -707,19 +708,19 @@ class Handler
                 ///
 
 
-                //            $text_temp = array();
-                //            $text_temp['ad_title'] = "Mwonya Artist Program";
-                //            $text_temp['type'] = "text_ad";
-                //            $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
-                //            $text_temp['ad_link'] = "https://artist.mwonya.com/";
-                //            $text_temp['ad_type'] = "link";
-                //            $text_temp['ad_image'] = "http://urbanflow256.com/ad_images/fakher.png";
-                //            array_push($menuCategory, $text_temp);
+                           $text_temp = array();
+                           $text_temp['ad_title'] = "Mwonya Artist Program";
+                           $text_temp['type'] = "text_ad";
+                           $text_temp['ad_description'] = "Empowering Ugandan Music: Creating Opportunities for Aspiring Artists";
+                           $text_temp['ad_link'] = "https://creator.mwonya.com/";
+                           $text_temp['ad_type'] = "link";
+                           $text_temp['ad_image'] = "http://assets.mwonya.com/all_images/fakher.png";
+                           array_push($menuCategory, $text_temp);
 
 
                 //get Featured Playlist
                 $featuredPlaylist = array();
-                $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
+                $featured_playlist_Query = "SELECT p.id,p.name, p.owner, u.file_path as coverurl FROM playlists p left join Uploads u on p.coverurl = u.upload_id where p.status = 1 AND p.featuredplaylist ='yes' ORDER BY RAND () LIMIT 20";
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
                 // Execute the query
@@ -750,7 +751,8 @@ class Handler
 
                 //get MoreLike Artist
                 $featuredCategory = array();
-                $musicartistQuery = "SELECT id, profilephoto, name,verified FROM artists WHERE available = 1 AND tag='music' AND featured = 1 ORDER BY RAND () LIMIT 20";
+                $musicartistQuery = "SELECT a.id, u.file_path as profilephoto, a.name, a.verified FROM artists a LEFT join Uploads u on a.profile_image_id = u.upload_id  WHERE a.available = 1 AND a.tag='music' AND a.featured = 1 ORDER BY RAND () LIMIT 20";
+                
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $musicartistQuery);
                 // Execute the query
@@ -772,8 +774,8 @@ class Handler
                 mysqli_stmt_close($stmt);
 
                 $feat_Cat_temps = array();
-                $feat_Cat_temps['heading'] = "Joshua Baraka";
-                $feat_Cat_temps['subheading'] = "More like";
+                $feat_Cat_temps['heading'] = "Artists you might like";
+                $feat_Cat_temps['subheading'] = "Promoted";
                 $feat_Cat_temps['type'] = "artist_more_like";
                 $feat_Cat_temps['featuredArtists'] = $featuredCategory;
                 array_push($menuCategory, $feat_Cat_temps);
@@ -784,7 +786,7 @@ class Handler
                 //get featured Album
                 $featured_Albums = array();
 
-                $featured_album_Query = "SELECT id,title,artworkPath, tag FROM albums WHERE available = 1 AND tag = \"music\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+                $featured_album_Query = "SELECT a.id,a.title, u.file_path as artworkPath, a.tag FROM albums a LEFT join Uploads u on a.artworkPath=u.upload_id join artists ar on a.artist= ar.id WHERE (a.available = 1 or ar.verified=1) AND a.tag = 'music' AND a.featured = 1 ORDER BY RAND() LIMIT 15";
 
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $featured_album_Query);
@@ -831,7 +833,7 @@ class Handler
                 //get featured Dj mixes
                 $featured_dj_mixes = array();
 
-                $featured_album_Query = "SELECT id,title,artworkPath,tag FROM albums WHERE available = 1 AND tag = \"dj\" AND featured = 1 ORDER BY RAND() LIMIT 10";
+                $featured_album_Query = "SELECT a.id,a.title, u.file_path as artworkPath, a.tag FROM albums a LEFT join Uploads u on a.artworkPath=u.upload_id join artists ar on a.artist= ar.id WHERE (a.available = 1 or ar.verified=1)  AND a.tag = 'dj' AND a.featured = 1 ORDER BY RAND() LIMIT 12";
 
                 // Set up the prepared statement
                 $stmt = mysqli_prepare($this->conn, $featured_album_Query);
@@ -976,7 +978,7 @@ class Handler
             ///
             //get unfollowed artist based on followed artist genre
             $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.available = 1 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5;";
+            $musicartistQuery = "SELECT a.id,u.file_path as profilephoto,a.name FROM artists a left join Uploads u on u.upload_id=a.profile_image_id LEFT JOIN (SELECT genre, count(artistid) as follow_count FROM artists JOIN artistfollowing ON artists.id = artistfollowing.artistid WHERE artistfollowing.userid = '$libraryUserID' group by genre) as s on a.genre=s.genre WHERE (s.follow_count>0 and a.available = 1 and a.id NOT IN ( SELECT artistid FROM artistfollowing WHERE userid = '$libraryUserID' ) OR (s.follow_count is null and s.genre is null)) and a.status = 1 ORDER BY RAND() LIMIT 5";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -1005,7 +1007,7 @@ class Handler
 
             //get Featured Playlist
             $featuredPlaylist = array();
-            $featured_playlist_Query = "SELECT id,name, owner, coverurl FROM playlists where status = 1 AND featuredplaylist ='yes' ORDER BY RAND () LIMIT 10";
+            $featured_playlist_Query = "SELECT p.id,p.name, p.owner, u.file_path as coverurl FROM playlists p left join Uploads u on p.coverurl=u.upload_id where p.status = 1 AND p.featuredplaylist ='yes' ORDER BY RAND () LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $featured_playlist_Query);
             // Execute the query
@@ -1034,7 +1036,8 @@ class Handler
             ///
             //get Featured Artist
             $featuredCategory = array();
-            $musicartistQuery = "SELECT a.id,a.profilephoto,a.name FROM artists a JOIN artistfollowing af ON a.id = af.artistid WHERE a.available = 1 AND status = 1 AND af.userid = '$libraryUserID' ORDER BY RAND () LIMIT 10";
+            //join uploads 
+            $musicartistQuery = "SELECT a.id,u.file_path as profilephoto,a.name FROM artists a LEFT join Uploads u on a.profile_image_id = u.upload_id JOIN artistfollowing af ON a.id = af.artistid WHERE a.available = 1 AND a.status = 1 AND af.userid = '$libraryUserID' ORDER BY RAND () LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -1065,7 +1068,9 @@ class Handler
             //get artists circles Artist
             $featuredCategory = array();
             $current_now = date('Y-m-d H:i:s');
-            $musicartistQuery = "SELECT a.id AS id, a.profilephoto as profilephoto, a.name as name FROM pesapal_transactions pt JOIN pesapal_payment_status pps ON pt.merchant_reference = pps.merchant_reference JOIN artists a ON a.id = pt.subscription_type_id WHERE pt.subscription_type = 'artist_circle' AND pt.user_id = '$libraryUserID' AND pps.status_code = 1 AND pt.plan_start_datetime <= '$current_now' AND pt.plan_end_datetime >= '$current_now' AND a.available = 1 AND a.status = 1 ORDER BY pt.payment_created_date DESC, RAND() LIMIT 10";
+            //join uploads table join to get profilephoto path
+
+            $musicartistQuery = "SELECT a.id AS id, u.file_path as profilephoto, a.name as name FROM pesapal_transactions pt JOIN pesapal_payment_status pps ON pt.merchant_reference = pps.merchant_reference JOIN artists a ON a.id = pt.subscription_type_id LEFT join Uploads u on a.profile_image_id = u.upload_id WHERE pt.subscription_type = 'artist_circle' AND pt.user_id = '$libraryUserID' AND pps.status_code = 1 AND pt.plan_start_datetime <= '$current_now' AND pt.plan_end_datetime >= '$current_now' AND a.available = 1 AND a.status = 1 ORDER BY pt.payment_created_date DESC, RAND() LIMIT 10";
             // Set up the prepared statement
             $stmt = mysqli_prepare($this->conn, $musicartistQuery);
             // Execute the query
@@ -1458,7 +1463,7 @@ class Handler
         //            $image_temp['ad_type'] = "artist";
         $image_temp['ad_type'] = "playlist";
         //            $image_temp['ad_type'] = "link";
-        $image_temp['ad_image'] = "https://assets.mwonya.com/images/createdplaylist/editorspick.png";
+        $image_temp['ad_image'] = "https://assets.mwonya.com/all_images/editorspick.png";
         array_push($menuCategory, $image_temp);
 
 
