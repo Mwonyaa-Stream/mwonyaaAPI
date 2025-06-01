@@ -364,6 +364,22 @@ class Handler
                 array_push($menuCategory, $home_hero);
 
 
+                $image_temp = array();
+                $image_temp['ad_title'] = "Editors' Pick";
+                $image_temp['type'] = "image_ad";
+                $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
+                $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
+                //            $image_temp['ad_type'] = "collection";
+                //            $image_temp['ad_type'] = "track";
+                //            $image_temp['ad_type'] = "event";Hmzes412412!
+ 
+                //            $image_temp['ad_type'] = "artist";
+                $image_temp['ad_type'] = "playlist";
+                //            $image_temp['ad_type'] = "link";
+                $image_temp['ad_image'] = "https://assets.mwonya.com/all_images/thatsound.png";
+                array_push($menuCategory, $image_temp);
+
+
                 //get the latest album Release less than 14 days old
                 $featured_albums = array();
                 $featuredAlbums = array();
@@ -390,7 +406,7 @@ class Handler
                 }
 
                 $feat_albums_temps = array();
-                $feat_albums_temps['heading'] = "New Release on Mwonya";
+                $feat_albums_temps['heading'] = "New Releases";
                 $feat_albums_temps['type'] = "newRelease";
                 $feat_albums_temps['HomeRelease'] = $featuredAlbums;
                 array_push($menuCategory, $feat_albums_temps);
@@ -419,27 +435,14 @@ class Handler
                 mysqli_stmt_close($stmt);
 
                 $slider_temps = array();
-                $slider_temps['heading'] = "Discover";
+                $slider_temps['heading'] = "Curated Playlists";
                 $slider_temps['type'] = "slider";
                 $slider_temps['featured_sliderBanners'] = $sliders;
                 array_push($menuCategory, $slider_temps);
 //                 end get_Slider_banner
 
 
-               $image_temp = array();
-               $image_temp['ad_title'] = "Editors' Pick";
-               $image_temp['type'] = "image_ad";
-               $image_temp['ad_description'] = "Selection of hand-picked music by our editors";
-               $image_temp['ad_link'] = "mwP_mobile65d1e4bd520f7";
-               //            $image_temp['ad_type'] = "collection";
-               //            $image_temp['ad_type'] = "track";
-               //            $image_temp['ad_type'] = "event";Hmzes412412!
 
-               //            $image_temp['ad_type'] = "artist";
-               $image_temp['ad_type'] = "playlist";
-               //            $image_temp['ad_type'] = "link";
-               $image_temp['ad_image'] = "https://assets.mwonya.com/all_images/thatsound.png";
-               array_push($menuCategory, $image_temp);
 
 
                 //get Featured Artist
