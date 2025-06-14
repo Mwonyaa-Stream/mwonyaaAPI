@@ -14,7 +14,7 @@ class Uploads
         $this->uploadid = $uploadid;
         $this->file_path;
 
-        $checkupload = mysqli_query($this->con, "SELECT `upload_id`, `user_id`, `upload_type`, `file_path`, `s3_path`, `awsfile_status`, `file_name`, `file_size`, `file_format`, `file_hash`, `metadata`, `uploaded_at`, `upload_status`, `is_active`, `date_updated` FROM `Uploads` WHERE upload_id ='$this->uploadid' limit 1");
+        $checkupload = mysqli_query($this->con, "SELECT file_path FROM Uploads WHERE upload_id ='$this->uploadid' limit 1");
 
         if (mysqli_num_rows($checkupload) == 0) {
             $this->file_path = null;
