@@ -199,7 +199,7 @@
             //if upload_id is not null, then return the upload path
             if($this->upload_id != null){
                 $upload = new Uploads($this->con, $this->upload_id);
-                return $upload->getUploadfile_path();
+                return $upload->getTrackStreamingUrl();
             } else {
                 return 'unavailable';
             }
