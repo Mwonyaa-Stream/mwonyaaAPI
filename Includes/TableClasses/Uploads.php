@@ -38,28 +38,28 @@ class Uploads
     }
     
 
-    //streaming url hls for tracks
-    // public function getTrackStreamingUrl()
-    // {
-    //     //first strip the extension from file name
-    //     if ($this->file_name) {
-    //         $file_name_without_extension = pathinfo($this->file_name, PATHINFO_FILENAME);
-    //         return "https://audio.mwonya.com/stream/" . $file_name_without_extension . "/playlist.m3u8"; // Adjust the URL as needed
-    //     } else {
-    //         return null;
-    //     }
-    // }
-
+    // streaming url hls for tracks
     public function getTrackStreamingUrl()
     {
         //first strip the extension from file name
         if ($this->file_name) {
             $file_name_without_extension = pathinfo($this->file_name, PATHINFO_FILENAME);
-            return "https://audio.mwonya.com/file/" . $file_name_without_extension; // Adjust the URL as needed
+            return "https://audio.mwonya.com/stream/" . $file_name_without_extension . "/playlist.m3u8"; // Adjust the URL as needed
         } else {
-            return $this->file_path;
+            return  $this->file_path;
         }
     }
+
+    // public function getTrackStreamingUrl()
+    // {
+    //     //first strip the extension from file name
+    //     if ($this->file_name) {
+    //         $file_name_without_extension = pathinfo($this->file_name, PATHINFO_FILENAME);
+    //         return "https://audio.mwonya.com/file/" . $file_name_without_extension; // Adjust the URL as needed
+    //     } else {
+    //         return $this->file_path;
+    //     }
+    // }
 
 
   
